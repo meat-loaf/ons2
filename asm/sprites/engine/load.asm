@@ -37,41 +37,17 @@ load_new_sprite_dat:
 	sta !sprite_load_index,x
 
 	phy
+	iny
+	lda [!level_sprite_data_ptr],y
+	sta !spr_extra_byte_1,x
 	; go to spr y pos: get extra bits
-	dey #2
+	dey #3
 	lda [!level_sprite_data_ptr],y
 	and #$0C
 	lsr #2
 	sta !spr_extra_bits,x
 	lda $05
 	sta !sprite_num,x
-	phx
-	ldx $05
-	lda.l sprite_size_table,x
-	plx
-	sec
-	sbc #03
-	beq .fin
-	sta $07
-	iny #3
-	lda [!level_sprite_data_ptr],y
-	sta !spr_extra_byte_1,x
-	dec $07
-	beq .fin
-	iny
-	lda [!level_sprite_data_ptr],y
-	sta !spr_extra_byte_2,x
-	dec $07
-	beq .fin
-	iny
-	lda [!level_sprite_data_ptr],y
-	sta !spr_extra_byte_3,x
-	dec $07
-	beq .fin
-	iny
-	lda [!level_sprite_data_ptr],y
-	sta !spr_extra_byte_4,x
-.fin:
 	ply
 	bra load_normal_sprite_fin
 warnpc load_normal_sprite_fin
@@ -129,14 +105,9 @@ sprite_loader_prep_for_next_sprite:
 	iny
 ; y should be at sprite id here
 .no_y_adj:
-	phx
-	lda [!level_sprite_data_ptr],y
-	tax
 	tya
 	clc
-	adc.l sprite_size_table,x
-	; subtract 2
-	adc #$FE
+	adc #$02
 	bpl .no_update_spr_data_ptr
 	clc
 	adc !level_sprite_data_ptr
@@ -147,7 +118,6 @@ sprite_loader_prep_for_next_sprite:
 	inc !level_sprite_data_ptr+1
 .no_update_spr_data_ptr:
 	tay
-	plx
 	inx
 	jml load_next_sprite
 

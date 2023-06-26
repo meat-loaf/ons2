@@ -1,6 +1,6 @@
 !starcoin_sprnum = $B9
 
-%alloc_sprite_dynamic_512k(!starcoin_sprnum, "starcoin", starcoin_init, starcoin_main, 4, 1,\
+%alloc_sprite_dynamic_512k(!starcoin_sprnum, "starcoin", starcoin_init, starcoin_main, 4, \
 	$8E, $0E, $75, $9B, $B9, $46, "bank7")
 
 !starcoin_collect_sfx = $1A

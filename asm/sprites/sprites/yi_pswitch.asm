@@ -2,7 +2,7 @@ includefrom "list.def"
 
 !yi_pswitch_sprnum = $BD
 
-%alloc_sprite_dynamic_free(!yi_pswitch_sprnum, "yi_pswitch", yi_pswitch_init, yi_pswitch_main, 4, 0,\
+%alloc_sprite_dynamic_free(!yi_pswitch_sprnum, "yi_pswitch", yi_pswitch_init, yi_pswitch_main, 4, \
 	$11, $89, $39, $A3, $19, $44)
 
 !pswitch_squish_state = !sprite_misc_151c

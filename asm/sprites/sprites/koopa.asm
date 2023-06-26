@@ -46,24 +46,24 @@ org $019E1C|!bank
 
 %alloc_sprite_sharedgfx_entry_3(!goomba_sprnum,$AE,$AE,$AE)
 
-%alloc_sprite(!goomba_sprnum, "goomba", koopa_init_goomba, goomba_main, 2, 0,\
+%alloc_sprite(!goomba_sprnum, "goomba", koopa_init_goomba, goomba_main, 2, \
 	$30, $00, $00, $00, $00, $00)
 %alloc_sprite_sharedgfx_entry_mirror(!paragoomba_sprnum, !goomba_sprnum)
 
 %alloc_sprite_sharedgfx_entry_3(!shelless_koopa_sprnum,$CE,$CC,$80)
 
-%alloc_sprite(!shelless_koopa_sprnum, "shelless_koopa", koopa_init, shelless_koopa_main, 2, 0,\
+%alloc_sprite(!shelless_koopa_sprnum, "shelless_koopa", koopa_init, shelless_koopa_main, 2, \
 	$70, $00, $00, $00, $00, $00)
 
-%alloc_sprite(!koopa_sprnum, "koopas", koopa_init, koopa_main, 5, 0,\
+%alloc_sprite(!koopa_sprnum, "koopas", koopa_init, koopa_main, 5, \
 	$10, $40, $00, $00, $02, $A0)
-%alloc_sprite(!shell_sprnum, "koopa_shell", koopa_init_stun, koopa_main, 5, 0,\
+%alloc_sprite(!shell_sprnum, "koopa_shell", koopa_init_stun, koopa_main, 5, \
 	$10, $40, $00, $00, $02, $A0)
-%alloc_sprite(!lame_parakoopa_sprnum, "lame_parakoopa", koopa_init, koopa_main, 3, 0,\
+%alloc_sprite(!lame_parakoopa_sprnum, "lame_parakoopa", koopa_init, koopa_main, 3, \
 	$10, $40, $00, $00, $42, $B0)
-%alloc_sprite(!flyin_parakoopa_v_sprnum, "flyin_parakoopa_vert", koopa_init, flyin_parakoopa_main, 3, 0,\
+%alloc_sprite(!flyin_parakoopa_v_sprnum, "flyin_parakoopa_vert", koopa_init, flyin_parakoopa_main, 3, \
 	$10, $40, $00, $00, $52, $B0)
-%alloc_sprite(!flyin_parakoopa_h_sprnum, "flyin_parakoopa_horz", koopa_init, flyin_parakoopa_main, 3, 0,\
+%alloc_sprite(!flyin_parakoopa_h_sprnum, "flyin_parakoopa_horz", koopa_init, flyin_parakoopa_main, 3, \
 	$10, $40, $00, $00, $52, $B0)
 
 %alloc_sprite_sharedgfx_entry_9(!koopa_sprnum, $82,$A0,$82,$A2,$84,$A4,$8C,$8A,$8E)

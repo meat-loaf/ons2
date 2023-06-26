@@ -1,31 +1,31 @@
 includefrom "macros.asm"
 
 ; spriteset files are implicitly $100-$1FF. use $7F to skip a file where a sprite's tile offsets require it.
-macro alloc_sprite_spriteset_1(sprite_id, name, init_rt, main_rt, n_oam_tiles, n_exbyte, ssfile_1, spr_1656_val, spr_1662_val, spr_166E_val, spr_167A_val, spr_1686_val, spr_190F_val)
+macro alloc_sprite_spriteset_1(sprite_id, name, init_rt, main_rt, n_oam_tiles, ssfile_1, spr_1656_val, spr_1662_val, spr_166E_val, spr_167A_val, spr_1686_val, spr_190F_val)
 	!{sprite_!{sid}_n_ss_files} #= 1
 	!{sprite_!{sid}_ss_file_1} = <ssfile_1>
-	%alloc_sprite(<sprite_id>, <gfx_name>, <init_rt>, <main_rt>, <n_oam_tiles>, <n_exbyte>, <spr_1656_val>, <spr_1662_val>, <spr_166E_val>, <spr_167A_val>, <spr_1686_val>, <spr_190F_val>)
+	%alloc_sprite(<sprite_id>, <gfx_name>, <init_rt>, <main_rt>, <n_oam_tiles>, <spr_1656_val>, <spr_1662_val>, <spr_166E_val>, <spr_167A_val>, <spr_1686_val>, <spr_190F_val>)
 endmacro
 
-macro alloc_sprite_spriteset_2(sprite_id, name, init_rt, main_rt, n_oam_tiles, n_exbyte, ssfile_1, ssfile_2, spr_1656_val, spr_1662_val, spr_166E_val, spr_167A_val, spr_1686_val, spr_190F_val)
-	%alloc_sprite_spriteset_1(<sprite_id>, <gfx_name>, <init_rt>, <main_rt>, <n_oam_tiles>, <n_exbyte>, <ssfile_1>, <spr_1656_val>, <spr_1662_val>, <spr_166E_val>, <spr_167A_val>, <spr_1686_val>, <spr_190F_val>)
+macro alloc_sprite_spriteset_2(sprite_id, name, init_rt, main_rt, n_oam_tiles, ssfile_1, ssfile_2, spr_1656_val, spr_1662_val, spr_166E_val, spr_167A_val, spr_1686_val, spr_190F_val)
+	%alloc_sprite_spriteset_1(<sprite_id>, <gfx_name>, <init_rt>, <main_rt>, <n_oam_tiles>, <ssfile_1>, <spr_1656_val>, <spr_1662_val>, <spr_166E_val>, <spr_167A_val>, <spr_1686_val>, <spr_190F_val>)
 	!{sprite_!{sid}_n_ss_files} #= !{sprite_!{sid}_n_ss_files}+1
 	!{sprite_!{sid}_ss_file_2} = <ssfile_2>
 endmacro
 
-macro alloc_sprite_spriteset_3(sprite_id, name, init_rt, main_rt, n_oam_tiles, n_exbyte, ssfile_1, ssfile_2, ssfile_3, spr_1656_val, spr_1662_val, spr_166E_val, spr_167A_val, spr_1686_val, spr_190F_val)
-	%alloc_sprite_spriteset_2(<sprite_id>, <gfx_name>, <init_rt>, <main_rt>, <n_oam_tiles>, <n_exbyte>, <ssfile_1>, <ssfile_2>, <spr_1656_val>, <spr_1662_val>, <spr_166E_val>, <spr_167A_val>, <spr_1686_val>, <spr_190F_val>)
+macro alloc_sprite_spriteset_3(sprite_id, name, init_rt, main_rt, n_oam_tiles, ssfile_1, ssfile_2, ssfile_3, spr_1656_val, spr_1662_val, spr_166E_val, spr_167A_val, spr_1686_val, spr_190F_val)
+	%alloc_sprite_spriteset_2(<sprite_id>, <gfx_name>, <init_rt>, <main_rt>, <n_oam_tiles>, <ssfile_1>, <ssfile_2>, <spr_1656_val>, <spr_1662_val>, <spr_166E_val>, <spr_167A_val>, <spr_1686_val>, <spr_190F_val>)
 	!{sprite_!{sid}_n_ss_files} #= !{sprite_!{sid}_n_ss_files}+1
 	!{sprite_!{sid}_ss_file_3} = <ssfile_3>
 endmacro
 
-macro alloc_sprite_spriteset_4(sprite_id, name, init_rt, main_rt, n_oam_tiles, n_exbyte, ssfile_1, ssfile_2, ssfile_3, ssfile_4, spr_1656_val, spr_1662_val, spr_166E_val, spr_167A_val, spr_1686_val, spr_190F_val)
-	%alloc_sprite_spriteset_3(<sprite_id>, <gfx_name>, <init_rt>, <main_rt>, <n_oam_tiles>, <n_exbyte>, <ssfile_1>, <ssfile_2>, <ssfile_3>, <spr_1656_val>, <spr_1662_val>, <spr_166E_val>, <spr_167A_val>, <spr_1686_val>, <spr_190F_val>)
+macro alloc_sprite_spriteset_4(sprite_id, name, init_rt, main_rt, n_oam_tiles, ssfile_1, ssfile_2, ssfile_3, ssfile_4, spr_1656_val, spr_1662_val, spr_166E_val, spr_167A_val, spr_1686_val, spr_190F_val)
+	%alloc_sprite_spriteset_3(<sprite_id>, <gfx_name>, <init_rt>, <main_rt>, <n_oam_tiles>, <ssfile_1>, <ssfile_2>, <ssfile_3>, <spr_1656_val>, <spr_1662_val>, <spr_166E_val>, <spr_167A_val>, <spr_1686_val>, <spr_190F_val>)
 	!{sprite_!{sid}_n_ss_files} #= !{sprite_!{sid}_n_ss_files}+1
 	!{sprite_!{sid}_ss_file_4} = <ssfile_4>
 endmacro
 
-macro alloc_sprite(sprite_id, name, init_rt, main_rt, n_oam_tiles, n_exbyte, spr_1656_val, spr_1662_val, spr_166E_val, spr_167A_val, spr_1686_val, spr_190F_val)
+macro alloc_sprite(sprite_id, name, init_rt, main_rt, n_oam_tiles, spr_1656_val, spr_1662_val, spr_166E_val, spr_167A_val, spr_1686_val, spr_190F_val)
 	!sid #= <sprite_id>
 	if defined("sprite_!{sid}_defined")
 		error "Sprite id <sprite_id> already defined."
@@ -34,15 +34,10 @@ macro alloc_sprite(sprite_id, name, init_rt, main_rt, n_oam_tiles, n_exbyte, spr
 		!{sprite_!{sid}_n_ss_files} #= 0
 	endif
 
-	!{sprite_!{sid}_defined} = 1
-	assert <n_exbyte> <= 4, "Maximum allowed number of extra bytes is 4."
-	if <n_exbyte> > 0
-		!sprites_have_exbytes = 1
-	endif
 	!{sprite_!{sid}_tag} = <name>
 	!{sprite_!{sid}_init} = (<init_rt>)-1
 	!{sprite_!{sid}_main} = (<main_rt>)-1
-	!{sprite_!{sid}_sz}   #= 3+<n_exbyte>
+	!{sprite_!{sid}_sz}   #= 4
 	!{sprite_!{sid}_oamtiles} = <n_oam_tiles>*4
 	!{sprite_!{sid}_1656} = <spr_1656_val>
 	!{sprite_!{sid}_1662} = <spr_1662_val>
@@ -52,8 +47,8 @@ macro alloc_sprite(sprite_id, name, init_rt, main_rt, n_oam_tiles, n_exbyte, spr
 	!{sprite_!{sid}_190F} = <spr_190F_val>
 endmacro
 
-macro alloc_sprite_dynamic_512k(sprite_id, gfx_name, init_rt, main_rt, n_oam_tiles, n_exbyte, spr_1656_val, spr_1662_val, spr_166E_val, spr_167A_val, spr_1686_val, spr_190F_val, free_tag)
-	%alloc_sprite(<sprite_id>, <gfx_name>, <init_rt>, <main_rt>, <n_oam_tiles>, <n_exbyte>, <spr_1656_val>, <spr_1662_val>, <spr_166E_val>, <spr_167A_val>, <spr_1686_val>, <spr_190F_val>)
+macro alloc_sprite_dynamic_512k(sprite_id, gfx_name, init_rt, main_rt, n_oam_tiles, spr_1656_val, spr_1662_val, spr_166E_val, spr_167A_val, spr_1686_val, spr_190F_val, free_tag)
+	%alloc_sprite(<sprite_id>, <gfx_name>, <init_rt>, <main_rt>, <n_oam_tiles>, <spr_1656_val>, <spr_1662_val>, <spr_166E_val>, <spr_167A_val>, <spr_1686_val>, <spr_190F_val>)
 	if not(defined("n_dyn_gfx"))
 		!n_dyn_gfx #= 0
 	endif
@@ -75,8 +70,8 @@ macro alloc_sprite_dynamic_512k(sprite_id, gfx_name, init_rt, main_rt, n_oam_til
 	endif
 endmacro
 
-macro alloc_sprite_dynamic_free(sprite_id, gfx_name, init_rt, main_rt, n_oam_tiles, n_exbyte, spr_1656_val, spr_1662_val, spr_166E_val, spr_167A_val, spr_1686_val, spr_190F_val)
-	%alloc_sprite(<sprite_id>, <gfx_name>, <init_rt>, <main_rt>, <n_oam_tiles>, <n_exbyte>, <spr_1656_val>, <spr_1662_val>, <spr_166E_val>, <spr_167A_val>, <spr_1686_val>, <spr_190F_val>)
+macro alloc_sprite_dynamic_free(sprite_id, gfx_name, init_rt, main_rt, n_oam_tiles, spr_1656_val, spr_1662_val, spr_166E_val, spr_167A_val, spr_1686_val, spr_190F_val)
+	%alloc_sprite(<sprite_id>, <gfx_name>, <init_rt>, <main_rt>, <n_oam_tiles>, <spr_1656_val>, <spr_1662_val>, <spr_166E_val>, <spr_167A_val>, <spr_1686_val>, <spr_190F_val>)
 	if not(defined("n_dyn_gfx"))
 		!n_dyn_gfx #= 0
 	endif
