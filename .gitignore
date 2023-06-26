@@ -3,4 +3,5 @@
 *.srm
 *.sym
 *.vim
+*.ts
 rom_src/*.smc
