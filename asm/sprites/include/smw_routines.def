@@ -1,0 +1,71 @@
+
+spr_killed           = $019AA2|!bank
+spr_smushed          = $019AE4|!bank
+spr_spinkill         = $019A52|!bank
+spr_lavadie          = $019A7B|!bank
+spr_levelend         = $01816D|!bank
+spr_stunned          = $01953C|!bank
+spr_kicked           = $019913|!bank
+spr_carried          = $019F71|!bank
+;spr_goal_power       = $018157|!bank
+
+; LONG-CALLABLE ROUTINES
+;hurt_mario           = $00F5B7|!bank
+generate_block       = $00BEB0|!bank
+mario_spr_interact_l = $01A7DC|!bank
+update_sprite_pos    = $01802A|!bank
+spr_spr_interact     = $018032|!bank
+;get_rand             = $01ACF9|!bank
+spr_invis_blk_rt_l   = $01B44F|!bank
+spr_obj_interact     = $019138|!bank
+get_spr_clipping_a   = $03B69F|!bank
+get_spr_clipping_b   = $03B6E5|!bank
+get_mario_clipping   = $03B664|!bank
+check_for_contact    = $03B72B|!bank
+
+; BANK-LOCAL ROUTINES
+; bank 1
+_spr_jump_over_shell = $018898|!bank
+_spr_face_mario_rt   = $01857C|!bank
+_set_some_y_spd      = $019A04|!bank
+_spr_set_ani_frame   = $018E5F|!bank
+_sprspr_mario_spr_rt = $018FC1|!bank
+_spr_upd_pos         = $019032|!bank
+_flip_if_side_blocked = $019089|!bank
+_flip_sprite_dir     = $019098|!bank
+_flip_sprite_dir_imm = $0190A2|!bank
+_spr_obj_interact    = $019140|!bank
+_spr_update_dir      = $019A15|!bank
+_spr_spr_interact    = $01A40D|!bank
+_get_draw_info_bank1 = $01A365|!bank
+_mario_spr_interact  = $01A7E4|!bank
+_spr_upd_x_no_grav   = $01ABCC|!bank
+_spr_upd_y_no_grav   = $01ABD8|!bank
+_sub_horz_pos_bank1  = $01AD30|!bank
+_suboffscr0_bank1    = $01AC31|!bank
+_suboffscr1_bank1    = $01AC2B|!bank
+_suboffscr2_bank1    = $01AC27|!bank
+_suboffscr3_bank1    = $01AC21|!bank
+_spr_kick            = $01B12A|!bank
+_spr_invis_solid_rt  = $01B457|!bank
+
+_load_spr_from_lvl   = $02A7FC|!bank
+
+; bank 3
+_get_draw_info_bank3 = $03B760|!bank
+_suboffscr0_bank3    = $03B85D|!bank
+_suboffscr2_bank3    = $03B853|!bank
+_suboffscr1_bank3    = $03B857|!bank
+_suboffscr3_bank3    = $03B84F|!bank
+_sub_horz_pos_bank3  = $03B817|!bank
+_sub_vert_pos_bank3  = $03B829|!bank
+
+spr_tweaker_1656_tbl = $07F26C|!bank
+spr_tweaker_1662_tbl = $07F335|!bank
+spr_tweaker_166E_tbl = $07F3FE|!bank
+spr_tweaker_167A_tbl = $07F4C7|!bank
+spr_tweaker_1686_tbl = $07F590|!bank
+spr_tweaker_190F_tbl = $07F659|!bank
+
+_spr_inits_start     = $01817D|!bank
+_spr_mains_start     = $0185CC|!bank

@@ -1,0 +1,6 @@
+*.smc
+*.sfc
+*.srm
+*.sym
+*.vim
+rom_src/*.smc

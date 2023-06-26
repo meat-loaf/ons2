@@ -1,0 +1,11 @@
+includefrom "list.def"
+
+incsrc "sprites/ambient/mario_turn_dust.asm"
+incsrc "sprites/ambient/wiggler_flower.asm"
+incsrc "sprites/ambient/bounce.asm"
+incsrc "sprites/ambient/spincoin.asm"
+incsrc "sprites/ambient/score.asm"
+incsrc "sprites/ambient/fireball.asm"
+incsrc "sprites/ambient/falling_piece.asm"
+incsrc "sprites/ambient/contact.asm"
+incsrc "sprites/ambient/maskblock.asm"

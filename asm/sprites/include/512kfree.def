@@ -1,0 +1,59 @@
+!bank1_fish_free_start       = $01B00B|!bank
+!bank1_fish_free_end         = $01B192|!bank
+
+!bank1_sprcall_inits_free_start = $0180D2|!bank
+!bank1_sprcall_inits_free_end   = $018898|!bank
+
+!bank1_thwomp_free_start     = $01AE96|!bank
+!bank1_thwomp_free_end       = $01AF9F|!bank
+
+!bank1_plats_free_start      = $01B268|!bank
+!bank1_plats_free_end        = $01B44F|!bank
+
+!bank1_growvine_free_start   = $01C183|!bank
+!bank1_growvine_free_end     = $01C1EE|!bank
+
+; TODO validate this range. this is a lot of code and i only
+;      skimmed through it. some of it is used by the moving coin
+;      as well, which is yet to be implemented at the time of writing
+!bank1_powerups_free_start   = $01C313|!bank
+!bank1_powerups_free_end     = $01C74A|!bank
+
+!bank1_boss_mode7_free_start = $01CC9D|!bank
+!bank1_boss_mode7_free_end   = $01CCF0|!bank
+
+!bank1_bossfire_free_start   = $01D442|!bank
+!bank1_bossfire_free_end     = $01D4E4|!bank
+
+!bank1_koopakids_free_start  = $01FA4C|!bank
+!bank1_koopakids_free_end    = $020000|!bank
+
+!bank2_d51e_free_start       = $02D51E|!bank
+!bank2_d51e_free_end         = $02D580|!bank
+
+; TODO there's more space here, but there's also
+;  some cape interaction after this range?
+!bank2_altspr1_free_start     = $028B67|!bank
+!bank2_altspr1_free_end       = $029391|!bank
+
+; TODO validate this range! bank2 has a bunch of random
+;      stuff smattered throughout it. this nukes shooters,
+;      generators, cluster sprites, and some other original
+;      normal sprite code
+; TODO there is two routines at $02A751, invoked as part of the level transition
+;      repoint these
+; This range is mostly intended for use by the new ambient sprites system
+!bank2_altspr2_free_start     = $02ACE5|!bank
+!bank2_altspr2_free_end       = $030000|!bank
+
+!bank3_sprites_free_start    = $038000|!bank
+!bank3_sprites_free_end      = $03AF34|!bank
+
+!bank4_free_start            = $04A1B6|!bank
+!bank4_free_end              = $04A400|!bank
+
+!bank6_free_start            = $068063|!bank
+!bank6_free_end              = $06F600|!bank
+
+!bank7_free_start            = $078003|!bank
+!bank7_free_end              = $07F0C8|!bank
