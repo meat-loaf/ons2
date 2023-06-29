@@ -35,6 +35,7 @@ endif
 !RTL_OPCODE           = $6B
 
 !num_turnblock_slots  = $10
+!num_skidsmoke_slots  = $0C
 
 hurt_mario            = $00F5B7|!bank
 
@@ -135,6 +136,14 @@ _spr_face_mario_bank1 = $01857C|!bank
 
 ; NEW, added by changes (TODO);
 !gen_spr_prop_reverse_gravity   = %00010000
+
+!sprite_blocked_layer2_above  = %10000000
+!sprite_blocked_layer2_side   = %01000000
+!sprite_blocked_layer2_below  = %00100000
+!sprite_blocked_above         = %00001000
+!sprite_blocked_below         = %00000100
+!sprite_blocked_left          = %00000010
+!sprite_blocked_right         = %00000001
 
 
 ;;; screen scrolling pipe stuff ;;;

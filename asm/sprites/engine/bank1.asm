@@ -20,6 +20,18 @@ org $01A7C9|!bank
 	db $00,$00,$00,$00
 	db $04,$04,$04,$04
 
+; todo testing only.
+; originally --
+;   stores 1540,x|1558,x to c2,x as part of standard stunned routine
+org $019628|!bank
+code_019624_hijack:
+	bra .done
+org $01965C|!bank
+	nop #3
+	nop #3
+	nop #2
+.done:
+
 ; sprite unstun: replace original spike top number check
 ; todo check if this is actually used
 org $0196AF|!bank

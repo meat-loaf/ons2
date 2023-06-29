@@ -46,11 +46,12 @@
 	!ambient_twk_pos_upd|!ambient_twk_has_grav|!ambient_gfx_tilesz_big|!ambient_twk_spr_interact, \
 	$13, $30)
 
+!invis_solid_tile_id = $0152
 
 ; TODO sprite interaction
 %set_free_start("bank2_altspr2")
 ambient_spawn_block:
-	sta $9C
+	tay
 	lda !ambient_y_pos,x
 	and #$FFF0
 	sta !block_ypos
@@ -58,7 +59,9 @@ ambient_spawn_block:
 	and #$FFF0
 	sta !block_xpos
 	; todo handle being on layer 2
-	jsl generate_tile
+	tyx
+	jsl change_map16
+	ldx !current_ambient_process
 	rts
 
 ambient_bounce_spr:
@@ -86,19 +89,17 @@ ambient_bounce_spr:
 	lda #ambient_physics-1
 	pha
 	jmp ($0000)
-; in 9C format
-;; todo port a more general map16 spawn routine
 .block_draw_death:
 	; turn blocks
-	dw $0005,$000D
+	dw $0048,$0132
 	; yoshi blocks
-	dw $000D,$000D,$000D,$000D
+	dw $0132,$0132,$0132,$0132
 	; question block
-	dw $000D
-	; brick blocks
-	dw $000D,$000D
+	dw $0132
+	; brick blocks (todo breakable brick id)
+	dw $0132,$0300
 	; onoff switch
-	dw $0013
+	dw $0112
 .block_props:
 	; turn blocks
 	dw $00C4,$00C4
@@ -120,7 +121,7 @@ ambient_bounce_spr:
 ..spawn_solid:
 	; todo interact with sprites here
 	inc !ambient_misc_1,x
-	lda #$0009
+	lda #!invis_solid_tile_id
 	jmp ambient_spawn_block
 ..do_bounce:
 	lda !ambient_gen_timer,x

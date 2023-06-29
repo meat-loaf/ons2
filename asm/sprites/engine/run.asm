@@ -162,9 +162,8 @@ warnpc $028B67|!bank
 
 %set_free_start("bank2_altspr1")
 ambient_sprcaller:
-	lda !sprites_locked
-	sta !ambient_sprlocked_mirror
-	stz !ambient_sprlocked_mirror+1
+	; note: may not be necessary in the future if all beb0 calls are eliminated
+	stz !ambient_sprlocked_mirror
 
 	lda #$24
 	sta !next_oam_index
@@ -185,16 +184,15 @@ if !ambient_debug
 	inc !ambient_resident
 endif
 	jsr (!ambient_rt_ptr,x)
-;	lda !ambient_twk_tilesz,x
-;	bpl .go_next
-;	jsr ambient_physics
+
 .go_next:
 	dex : dex
 	bpl .loop
 
 handle_turnblocks:
 	lda !ambient_sprlocked_mirror
-	bne .done
+	bne handle_skidsmoke
+
 	lda.w #(!num_turnblock_slots-1)
 	sta $45
 	ldx !turnblock_run_index
@@ -211,7 +209,7 @@ handle_turnblocks:
 	; if current run index has a zero timer,
 	; there is nothing after it to run, this ring
 	; is first-in last-out
-	beq .done
+	beq handle_skidsmoke
 	dec
 	sta turnblock_status_d.timer,x
 	bne .no_terminate
@@ -221,17 +219,83 @@ handle_turnblocks:
 	sta !block_ypos
 	; turn block
 	lda #$000C
-	sta $9C
-	jsl $00BEB0|!addr
+	ldx #$011E
+	jsl change_map16
 	ldx $47
 	stx !turnblock_run_index
 .no_terminate:
 	ldx $47
 	dec $45
 	bpl .loop
-.done:
+
+handle_skidsmoke:
+	lda.w #(!num_skidsmoke_slots-1)
+	sta $45
+	ldx !skidsmoke_run_index
+.loop:
+	txa
+	sec
+	sbc #$0006
+	bpl .next_ix_ok
+	lda.w #(!num_skidsmoke_slots-1)*sizeof(skidsmoke_status_d)
+.next_ix_ok:
+	sta $47
+
+	lda skidsmoke_status_d.timer,x
+	; if current run index has a zero timer,
+	; there is nothing after it to run, this ring
+	; is first-in last-out
+	beq all_done
+
+	ldy !ambient_sprlocked_mirror
+	bne .skip_timer_dec
+	dec
+	sta skidsmoke_status_d.timer,x
+.skip_timer_dec:
+	sta $04
+	lsr #2
+	asl
+	tay
+
+	lda skidsmoke_status_d.x_pos,x
+	sec
+	sbc !layer_1_xpos_curr
+	sta $00
+	lda skidsmoke_status_d.y_pos,x
+	sec
+	sbc !layer_1_ypos_curr
+	sta $01
+	lda !next_oam_index
+	cmp #$0100
+	; no oam remaining (but we still want to handle timers...)
+	bcs .next
+	tax
+	clc : adc #$0004
+	sta !next_oam_index
+	lda $00
+	sta $0200|!addr,x
+	lda smoke_prop_tiles,y
+	sta $0202|!addr,x
+	txa
+	lsr #2
+	tax
+	stz $0420|!addr,x
+.next:
+	ldx $47
+	lda $04
+	bne .no_kill
+	stx !skidsmoke_run_index
+.no_kill:
+	dec $45
+	bpl .loop
+
+all_done:
 	sep #$30
 	rts
+
+smoke_prop_tiles:
+	dw $2066,$2066,$2064,$2062,$2062,$2062
+
 ambient_sprcaller_done:
 %set_free_finish("bank2_altspr1", ambient_sprcaller_done)
 

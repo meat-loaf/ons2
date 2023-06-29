@@ -98,6 +98,30 @@ bounce_ids:
 	skip 2
 warnpc $00F080|!bank
 
+freecode
+fuckme:
+	sta !skidsmoke_free_index
+
+;	lda !player_x_next
+;	adc #$0004
+;	sta $45
+;	lda !player_y_next
+;	adc #$001A
+;	ldy !player_on_yoshi
+;	beq .no_yoshi
+;	adc #$0010
+;.no_yoshi:
+;	sta $47
+;	lda #$0018
+;	sta $49
+;
+;	lda #$0000
+;	jsl ambient_get_slot
+	; axy width cleaned up here
+	sep #$30
+	rtl
+
+
 ; this replaces old sprite types with ambient ones.
 ; see 'bank2.asm' for the ambient sprite caller
 org $00FE56|!bank
@@ -105,26 +129,27 @@ mario_turn_smoke_spawn_hijack:
 	bne .ret
 org $00FE65|!bank
 	bcc .ret
-	rep #$20
+	rep #$30
+	ldx !skidsmoke_free_index
 	lda !player_x_next
 	adc #$0004
-	sta $45
+	sta skidsmoke_status_d.x_pos,x
 	lda !player_y_next
 	adc #$001A
-	ldy !player_on_yoshi
-	beq .no_yoshi
-	adc #$0010
-.no_yoshi:
-	sta $47
+	sta skidsmoke_status_d.y_pos,x
 	lda #$0018
-	sta $49
-
-	lda #$0000
-	jsl ambient_get_slot
-	; axy width cleaned up here
+	sta skidsmoke_status_d.timer,x
+	txa
+	sec
+	sbc.w #sizeof(skidsmoke_status_d)
+	bpl .next_slot_ok
+	lda.w #(!num_skidsmoke_slots-1)*6
+.next_slot_ok:
+autoclean \
+	jsl fuckme
 .ret:
 	rts
-warnpc $00FE93|!bank
+warnpc $00FE94|!bank
 
 org $028779|!bank
 	jsl shatter_block

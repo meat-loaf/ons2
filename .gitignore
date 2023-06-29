@@ -4,4 +4,5 @@
 *.sym
 *.vim
 *.ts
+RATS.log
 rom_src/*.smc

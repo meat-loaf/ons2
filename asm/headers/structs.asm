@@ -16,6 +16,13 @@ struct turnblock_status_d
 	.timer: skip 2
 endstruct align 6
 
+org !skidsmoke_status
+struct skidsmoke_status_d
+	.x_pos: skip 2
+	.y_pos: skip 2
+	.timer: skip 2
+endstruct align 6
+
 !oam_lo = oam_entry[$0000]
 !oam_hi = oam_entry[$0100]
 

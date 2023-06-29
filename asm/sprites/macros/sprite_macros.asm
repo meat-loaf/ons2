@@ -33,7 +33,7 @@ macro alloc_sprite(sprite_id, name, init_rt, main_rt, n_oam_tiles, spr_1656_val,
 	if not(defined("sprite_!{sid}_n_ss_files"))
 		!{sprite_!{sid}_n_ss_files} #= 0
 	endif
-
+	!{sprite_!{sid}_defined} = 1
 	!{sprite_!{sid}_tag} = <name>
 	!{sprite_!{sid}_init} = (<init_rt>)-1
 	!{sprite_!{sid}_main} = (<main_rt>)-1

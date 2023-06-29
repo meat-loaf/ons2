@@ -131,6 +131,10 @@ includeonce
 !block_ypos              = $98
 ; 2 bytes.
 !block_xpos              = $9A
+; note the conflict: ambient sprite runner clears this and
+;      does not use BEB0. Expects to be able to do a 16 bit load
+;      on this properly
+!ambient_sprlocked_mirror = $9C
 !block_to_generate       = $9C
 !sprites_locked          = $9D
 !level_sprite_data_ptr   = $CE
@@ -232,9 +236,11 @@ includeonce
 ; 20 bytes free here
 !turnblock_run_index    = !ambient_gen_timer+!ambient_tblsz  ; $0F9A
 !turnblock_free_index   = !turnblock_run_index+2
+!skidsmoke_run_index    = !turnblock_free_index+2
+!skidsmoke_free_index   = !skidsmoke_run_index+2
 ; 12 bytes, gfx file numbers to load during sprite gfx decompression
 ; free during levels
-!level_spriteset_gfx_files = !turnblock_free_index+2
+;!level_spriteset_gfx_files = !turnblock_free_index+2
 
 !main_level_num         = $13BF|!addr
 
@@ -392,20 +398,13 @@ assert (!ambient_y_speed)+(!num_ambient_sprs*2) <= $185C, "ambient sprite ram ex
 
 ; XXX: in SA1 add |!addr define to these, but you cant do them all!
 !spr_extra_bits           = $19F8                                ; 384 bytes free due to relocating item memory (up until $1B84)
-!spr_extra_byte_1         = !spr_extra_bits+!num_sprites         ; $1A04
-!spr_extra_byte_2         = !spr_extra_byte_1+!num_sprites       ; $1A10
-!spr_extra_byte_3         = !spr_extra_byte_1+!num_sprites       ; $1A1C
-!spr_extra_byte_4         = !spr_extra_byte_2+!num_sprites       ; $1A28
-!spr_spriteset_off        = !spr_extra_byte_3+!num_sprites       ; $1A34
-!ambient_twk_tilesz       = !spr_spriteset_off+!num_sprites      ; $1A40
-!ambient_grav_setting     = !ambient_twk_tilesz+!ambient_tblsz   ; $1A90
-!ambient_misc_2           = !ambient_grav_setting+!ambient_tblsz ; $1AE0
-!ambient_x_speed          = !ambient_misc_2+!ambient_tblsz       ; $1B30
-; two bytes! used as a mirror of $9D to not cause trouble loading
-; in 16 bit mode
-!ambient_sprlocked_mirror = !ambient_x_speed+!ambient_tblsz      ; $1B80
-!ambient_playerfireballs = !ambient_sprlocked_mirror+$2          ; $1B82
-assert (!ambient_playerfireballs)+2 <= $1B84
+!spr_extra_byte_1         = !spr_extra_bits+!num_sprites
+!spr_spriteset_off        = !spr_extra_byte_1+!num_sprites
+!ambient_twk_tilesz       = !spr_spriteset_off+!num_sprites
+!ambient_grav_setting     = !ambient_twk_tilesz+!ambient_tblsz
+!ambient_misc_2           = !ambient_grav_setting+!ambient_tblsz
+!ambient_x_speed          = !ambient_misc_2+!ambient_tblsz
+assert (!ambient_x_speed+!ambient_tblsz) <= $1B84
 
 ; needs to be set to (!ambient_spr_sz*2)-2 on level load
 !ambient_spr_ring_ix     = $1B97|!addr
@@ -419,10 +418,12 @@ assert (!ambient_playerfireballs)+2 <= $1B84
 !spc_io_3_music_1DFB     = $1DFB|!addr
 !spc_io_4_sfx_1DFC       = $1DFC|!addr
 
+; two bytes
+!ambient_playerfireballs = $1DFD
+
 !ambient_props           = $1E02|!addr
 !ambient_misc_1          = !ambient_props+!ambient_tblsz
-
-assert (!ambient_misc_1)+(!num_ambient_sprs*2) <= $1EA2, "ambient sprite ram exceeded bounds"
+assert (!ambient_misc_1)+(!ambient_tblsz) <= $1EA2, "ambient sprite ram exceeded bounds"
 
 !red_coin_sfx_port       ?= !spc_io_1_sfx_1DF9
 
@@ -480,8 +481,6 @@ assert (!ambient_misc_1)+(!num_ambient_sprs*2) <= $1EA2, "ambient sprite ram exc
 !sprite_misc_1fd6         = $1FD6
 !sprite_cape_disable_time = $1FE2
 
-
-
 !mario_gfx               = $7E2000
 
 ; sram stuff
@@ -521,8 +520,11 @@ assert bank(!big_hdma_decomp_buff_rg) == bank(!big_hdma_decomp_buff_b), "hdma de
 ; 7FA800 - 7FABFF free
 ; 16*6 bytes = 96 bytes
 !turnblock_status = !dynamic_buffer+$800
+!skidsmoke_status = !turnblock_status+$60
+; 12*6 bytes = 72 bytes
+!level_ss_sprite_offs = !smoke_status+$48
 ; 256 bytes
-!level_ss_sprite_offs = !turnblock_status+$60
+;!level_ss_sprite_offs = !turnblock_status+$60
 
 ; ram defs ;
 !Freeram_SSP_PipeDir    ?= !sspipes_dir

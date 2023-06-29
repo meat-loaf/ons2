@@ -315,23 +315,21 @@ koopa_main:
 	bra .interact
 
 .airborne:
-	; todo things turning on steep slopes will fall off
-	; how does the original handle this...?
 	lda !koopa_stays_on_ledges,x
+	beq .check_wings
 	lda !koopa_falling_last_frame,x
-	bne .check_flip
+	cmp #$02
+	bcs .check_wings
 	inc !koopa_falling_last_frame,x
 .check_flip:
-	and !koopa_stays_on_ledges,x
-	beq .check_wings
+	bcs .check_wings
 	; only parakoopas jump over shells
 	lda !koopa_jumping_over_shell,x
 	bne .double_ani
-	; todo - koopas that get nudged off ledges will
-	;        spin in the air. fix this
 	jsr _flip_sprite_dir_imm
+	; TODO if kicked as a shell don't do this. might need 'was airborne last frame'
+	;      as part of standard stunned routine...original never had a state 9 -> 8 transition
 	stz !sprite_speed_y,x
-	stz !koopa_falling_last_frame,x
 	bra .interact
 .check_wings:
 	lda !koopa_is_winged_scr
