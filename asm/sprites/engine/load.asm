@@ -1,4 +1,4 @@
-if !sprites_use_exbytes
+;if !sprites_use_exbytes
 
 load_next_sprite       = $02A82E|!bank
 load_normal_sprite     = $02A8DD|!bank
@@ -52,14 +52,39 @@ load_new_sprite_dat:
 	bra load_normal_sprite_fin
 warnpc load_normal_sprite_fin
 
+org load_normal_sprite_fin
+	jsl init_sprite_tables
+
 ; y here points to the current loading sprite's id, as required
 org $02A9D7|!bank
 	; restore 'sprite index in level' count
 	ldx $02
-autoclean \
 	jml sprite_loader_prep_for_next_sprite_no_y_adj
 
-freecode
+%set_free_start("bank7")
+; todo maybe can fit this inline
+; y should be just before sprite id here
+sprite_loader_prep_for_next_sprite:
+	iny
+; y should be at sprite id here
+.no_y_adj:
+	tya
+	clc
+	adc #$02
+	bpl .no_update_spr_data_ptr
+	clc
+	adc !level_sprite_data_ptr
+	sta !level_sprite_data_ptr
+	
+	lda #$00
+	bcc .no_update_spr_data_ptr
+	inc !level_sprite_data_ptr+1
+.no_update_spr_data_ptr:
+	tay
+	inx
+	jml load_next_sprite
+
+
 ; a = sprite id
 ; y = index to sprite x position
 load_control_spr:
@@ -99,26 +124,7 @@ load_control_spr:
 ..ok:
 	dey
 	bra sprite_loader_prep_for_next_sprite_no_y_adj
+camera_done:
+%set_free_finish("bank7", camera_done)
 
-; y should be just before sprite id here
-sprite_loader_prep_for_next_sprite:
-	iny
-; y should be at sprite id here
-.no_y_adj:
-	tya
-	clc
-	adc #$02
-	bpl .no_update_spr_data_ptr
-	clc
-	adc !level_sprite_data_ptr
-	sta !level_sprite_data_ptr
-	
-	lda #$00
-	bcc .no_update_spr_data_ptr
-	inc !level_sprite_data_ptr+1
-.no_update_spr_data_ptr:
-	tay
-	inx
-	jml load_next_sprite
-
-endif
+;endif

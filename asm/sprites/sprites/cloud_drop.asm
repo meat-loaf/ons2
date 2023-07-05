@@ -6,7 +6,8 @@ includefrom "list.def"
 
 !cloud_drop_sprnum = $69
 
-%alloc_sprite(!cloud_drop_sprnum, "yi_cloud_drop", cloud_drop_init, cloud_drop_main, 2, 2, \
+%alloc_sprite_spriteset_2(!cloud_drop_sprnum, "yi_cloud_drop", cloud_drop_init, cloud_drop_main, 2, \
+	$102, $103, \
 	$80, $80, $37, $19, $91, $44)
 
 !cloud_drop_orient  = !spr_extra_bits
@@ -16,27 +17,27 @@ includefrom "list.def"
 
 ;Graphics defines:
 ; Horizontal
-!Head1 =	$0A	; head frame 1
-!Head2 =	$0C	; head frame 2
-!Head3 =	$0E	; head frame 3
-!Head4 =	$20	; head frame 4
-!Head5 =	$22	; head frame 5
-!Tail =		$34	; tail
-!Tail2 =        $35     ; second tail frame
+!Head1 =	$2A	; head frame 1
+!Head2 =	$2C	; head frame 2
+!Head3 =	$2E	; head frame 3
+!Head4 =	$00	; head frame 4
+!Head5 =	$02	; head frame 5
+!Tail =		$14	; tail
+!Tail2 =        $15     ; second tail frame
 
 ; Vertical
-!VHead1 =	$00	; head frame 1
-!VHead2 =	$02	; head frame 2
-!VHead3 =	$04	; head frame 3
-!VHead4 =	$06	; head frame 4
-!VHead5 =	$08	; head frame 5
-!VTail  =	$24	; tail
+!VHead1 =	$20	; head frame 1
+!VHead2 =	$22	; head frame 2
+!VHead3 =	$24	; head frame 3
+!VHead4 =	$26	; head frame 4
+!VHead5 =	$28	; head frame 5
+!VTail  =	$04	; tail
 
 ; todo this clusterfuck can almost certainly be cleaned up. do so
 %set_free_start("bank6")
 cloud_drop_init:
-	lda !spr_extra_byte_2,x
-	jsl spr_init_pos_offset
+;	lda !spr_extra_byte_2,x
+;	jsl spr_init_pos_offset
 
 	lda !cloud_drop_top_spd,x
 	bmi .backwards

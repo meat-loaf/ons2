@@ -11,6 +11,8 @@
 
 %set_free_start("bank3_sprites")
 starcoin_init:
+	lda #$C0
+	sta !spr_spriteset_off,x
 	jsl sprite_read_item_memory
 	beq .nodie
 	stz !sprite_status,x

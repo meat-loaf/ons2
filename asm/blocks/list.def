@@ -1,0 +1,2 @@
+incsrc "blocks/test.asm"
+incsrc "blocks/smb3_brick.asm"

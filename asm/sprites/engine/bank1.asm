@@ -120,8 +120,6 @@ spr_display_contact_gfx_p_alt:
 	adc !player_y_next
 	sta !ambient_get_slot_ypos
 
-;	stz !ambient_get_slot_xspd
-
 	lda #$0030
 	jsl ambient_get_slot
 

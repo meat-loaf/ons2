@@ -2,7 +2,7 @@ includefrom "list.def"
 
 !megamole_sprnum = $BF
 
-%alloc_sprite(!megamole_sprnum, "mega_mole", mega_mole_init, mega_mole_main, 4, 0,\
+%alloc_sprite_spriteset_1(!megamole_sprnum, "mega_mole", mega_mole_init, mega_mole_main, 4, $101, \
 	$0E, $30, $11, $A1, $00, $20)
 
 !mega_mole_falling_timer = !sprite_misc_1540

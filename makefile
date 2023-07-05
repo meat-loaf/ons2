@@ -32,6 +32,16 @@ sprites_asm_sources= \
 	$(wildcard ${SPRITES_DIR}/sprites/ambient/*.asm) \
 	$(wildcard ${SPRITES_DIR}/dyn_gfx/*.bin)
 
+blocks_dir=${asm_dir}/blocks
+blocks_asm_main_file=${blocks_dir}/blocks.asm
+blocks_asm_sources= \
+	${blocks_asm_main_file} \
+	$(wildcard ${blocks_dir}/*.def) \
+	$(wildcard ${blocks_dir}/engine/*.asm) \
+	$(wildcard ${blocks_dir}/macros/*.asm) \
+	$(wildcard ${blocks_dir}/include/*.def) \
+	$(wildcard ${blocks_dir}/blocks/*.asm) \
+
 headers_asm_sources= \
 	$(wildcard ${asm_dir}/headers/*.asm)
 
@@ -41,15 +51,16 @@ tweaks_asm_sources= \
 
 core_asm_sources= \
 	$(wildcard ${asm_dir}/core/*.asm) \
+	$(wildcard ${asm_dir}/core/gm/*.asm) \
 	$(wildcard ${asm_dir}/core/objs/*.asm) \
 	$(wildcard ${asm_dir}/core/spr/*.asm) \
 
 ALL_ASM_DEPS= \
 	${sprites_asm_sources} \
+	${blocks_asm_sources} \
 	${tweaks_asm_sources} \
 	${core_asm_sources} \
-	${headers_asm_sources}
-
+	${headers_asm_sources} \
 
 .PHONY: ons test debug
 

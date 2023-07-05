@@ -60,7 +60,9 @@ includeonce
 !object_load_pos   = $57      ; \ note: free outside object code. good scratch ram
 !object_dimensions = $59      ; | > High nybble is height, low is width. Sometimes one of these nybbles will be used as an arg instead
 !object_load_num   = $5A      ; /
-!tile_off_scratch  = $5A      ; used in sprites only
+
+; scratch ram for sprite gfx routines. two bytes.
+!tile_off_scratch  = $59
 ; CD----Vv
 ; C - Toggle collision with Layer 2 (0: no, 1: yes)
 ; D = Toggle collision with Layer 1 (0: yes, 1: no)
@@ -209,16 +211,21 @@ includeonce
 ;      is reloaded on overworld load, so this ram is available for use
 ;      elsewhere (0ddf through 0ef4 inclusive)
 
+!level_load_spriteset_files = $0DDF
 ; camera ram is all 2 bytes each
-!camera_control_x_pos     = $0DDF|!addr
+;!camera_control_x_pos     = $0DDF|!addr
+!camera_control_x_pos     = !level_load_spriteset_files+(10*2)
 !camera_control_y_pos     = !camera_control_x_pos+$2
 !camera_bound_left_delta  = !camera_control_y_pos+$2
 !camera_bound_right_delta = !camera_bound_left_delta+$2
-; scratch
+;; scratch
 !camera_state             = !camera_bound_right_delta+$2
 
 ; 4 bytes
 ;!camera_scratch          = !camera_target_x_pos+2
+; scratch used by spriteset code during level load:
+; holds graphics files to be decompressed to vram
+;!level_load_spriteset_files = $0EF4-(12*2)
 
 !status_bar_tilemap     = $0EF9|!addr
 
@@ -392,6 +399,7 @@ assert (!ambient_y_speed)+(!num_ambient_sprs*2) <= $185C, "ambient sprite ram ex
 !level_general_purpose_2 = !level_general_purpose_1+$01
 ; 2 bytes
 !current_ambient_process = $1926|!addr
+!current_layer_process   = $1933|!addr
 
 !exit_table              = $19B8|!addr
 !exit_table_new_lm       = $19D8|!addr
@@ -400,7 +408,8 @@ assert (!ambient_y_speed)+(!num_ambient_sprs*2) <= $185C, "ambient sprite ram ex
 !spr_extra_bits           = $19F8                                ; 384 bytes free due to relocating item memory (up until $1B84)
 !spr_extra_byte_1         = !spr_extra_bits+!num_sprites
 !spr_spriteset_off        = !spr_extra_byte_1+!num_sprites
-!ambient_twk_tilesz       = !spr_spriteset_off+!num_sprites
+!spr_spriteset_off_hi     = !spr_spriteset_off+!num_sprites
+!ambient_twk_tilesz       = !spr_spriteset_off_hi+!num_sprites
 !ambient_grav_setting     = !ambient_twk_tilesz+!ambient_tblsz
 !ambient_misc_2           = !ambient_grav_setting+!ambient_tblsz
 !ambient_x_speed          = !ambient_misc_2+!ambient_tblsz
@@ -437,8 +446,8 @@ assert (!ambient_misc_1)+(!ambient_tblsz) <= $1EA2, "ambient sprite ram exceeded
 !sprite_status            = $14C8
 !sprite_y_high            = $14D4
 !sprite_x_high            = $14E0
-!sprite_speed_y_frac      = $14EC
-!sprite_speed_x_frac      = $14F8
+!sprite_pos_y_frac        = $14EC
+!sprite_pos_x_frac        = $14F8
 !sprite_misc_1504         = $1504
 !sprite_misc_1510         = $1510
 !sprite_misc_151c         = $151C
@@ -493,13 +502,13 @@ assert (!ambient_misc_1)+(!ambient_tblsz) <= $1EA2, "ambient sprite ram exceeded
 ; 7168 bytes
 ; Item memory, divided in four blocks of 1792 bytes per block.
 !item_memory        = $7F0000
-!rcoin_count_bak    = !item_memory+$1C00
-!scoin_count_bak    = !rcoin_count_bak+$01
-!on_off_state_bak   = !scoin_count_bak+$01
-!got_moon_bak       = !on_off_state_bak+$01
-; 3 bytes
-!score_bak          = !got_moon_bak+$01
-!player_power_bak   = !score_bak+$03
+;!rcoin_count_bak    = !item_memory+$1C00
+;!scoin_count_bak    = !rcoin_count_bak+$01
+;!on_off_state_bak   = !scoin_count_bak+$01
+;!got_moon_bak       = !on_off_state_bak+$01
+;; 3 bytes
+;!score_bak          = !got_moon_bak+$01
+;!player_power_bak   = !score_bak+$03
 ; 7F1C07 - 7F1C0F free
 
 ; skip a few bytes here
@@ -520,11 +529,10 @@ assert bank(!big_hdma_decomp_buff_rg) == bank(!big_hdma_decomp_buff_b), "hdma de
 ; 7FA800 - 7FABFF free
 ; 16*6 bytes = 96 bytes
 !turnblock_status = !dynamic_buffer+$800
-!skidsmoke_status = !turnblock_status+$60
 ; 12*6 bytes = 72 bytes
-!level_ss_sprite_offs = !smoke_status+$48
-; 256 bytes
-;!level_ss_sprite_offs = !turnblock_status+$60
+!skidsmoke_status = !turnblock_status+$60
+; 256 bytes: an entry for each sprite index
+!level_ss_sprite_offs = !skidsmoke_status+$48
 
 ; ram defs ;
 !Freeram_SSP_PipeDir    ?= !sspipes_dir

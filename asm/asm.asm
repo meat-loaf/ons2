@@ -1,3 +1,5 @@
+includeonce
+
 incsrc "headers/consts.asm"
 incsrc "headers/routines.asm"
 incsrc "headers/macros.asm"

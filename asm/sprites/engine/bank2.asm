@@ -436,24 +436,23 @@ ambient_get_slot:
 	xba
 	pha
 	ldy.w !ambient_spr_ring_ix
-	lda.w #$0000
-.loop:
+	lda !num_ambient_sprs
 	sta $0E
+;	lda.w #$0000
+.loop:
 	lda !ambient_rt_ptr,y
 	beq .found
 	dey : dey
 	bpl .y_ok
 	ldy.w #(!num_ambient_sprs*2)-2
 .y_ok:
-	lda $0E
-	inc
-	cmp !num_ambient_sprs-1
-	bne .loop
+	dec $0E
+	bpl .loop
 	
 	; tidy the stack
 	pla
-	sep #$30
-	sec
+	sep #$31
+;	sec
 	rtl
 .found:
 	tya

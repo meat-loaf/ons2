@@ -36,19 +36,31 @@ endif
 
 !num_turnblock_slots  = $10
 !num_skidsmoke_slots  = $0C
+!max_ss_data_files    = 10
 
 hurt_mario            = $00F5B7|!bank
+
+; dma
+!dma_control_direction      = %10000000
+!dma_control_hdma_indir     = %01000000
+; decrements when clear, if fixed_tx is set
+!dma_control_addr_inc       = %00010000
+; if set, use addr_inc to inc/dec dma addr
+!dma_control_no_fixed_tx    = %00001000
+;; transfer modes
+!dma_control_tx_mode_1w1    = %00000000
+!dma_control_tx_mode_2w1    = %00000001
+!dma_control_tx_mode_1w2    = %00000010
+!dma_control_tx_mode_2w2    = %00000011
+!dma_control_tx_mode_4w1    = %00000100
+!dma_control_tx_mode_2w2a   = %00000101
+; 1w2 and 2w2 repeated..
+!dma_control_tx_mode_1w1_h  = %00000110
+!dma_control_tx_mode_2w2_h  = %00000111
 
 !num_ambient_sprs = $28
 
 !ambient_sprid_max = $3F
-
-!spr_tweaker_1656_tbl = $07F26C|!bank
-!spr_tweaker_1662_tbl = $07F335|!bank
-!spr_tweaker_166E_tbl = $07F3FE|!bank
-!spr_tweaker_167A_tbl = $07F4C7|!bank
-!spr_tweaker_1686_tbl = $07F590|!bank
-!spr_tweaker_190F_tbl = $07F659|!bank
 
 !spr_inits_start     = $01817D|!bank
 !spr_mains_start     = $0185CC|!bank
@@ -115,7 +127,17 @@ _spr_face_mario_bank1 = $01857C|!bank
 !19D8_flag_b8_12_seconary = %11110000
 
 !slip_block_slipperyness = $FF
+
 ;; sprite props ;;
+; tweaker 166e ;
+!spr_166e_prop_gfx_tile_highbit            = %00000001
+!spr_166e_prop_gfx_palette                 = %00001110
+!spr_166e_prop_no_fireball_kill            = %00010000
+!spr_166e_prop_no_cape_kill                = %00100000
+!spr_166e_prop_no_water_splash             = %01000000
+!spr_166e_prop_no_layer2_interact          = %10000000
+
+; tweaker 167a ;
 !spr_167a_prop_keep_clipping_on_starkill   = %00000001
 !spr_167a_prop_nodie_fire_cape_star_bounce = %00000010
 !spr_167a_prop_process_offscreen           = %00000100
@@ -124,6 +146,7 @@ _spr_face_mario_bank1 = $01857C|!bank
 !spr_167a_player_interact_every_frame      = %00100000
 !spr_167a_powerup_on_yoshi_eat             = %01000000
 !spr_167a_no_default_player_interaction    = %10000000
+
 
 ;; spr 0 to 13 props ;;
 ; originals

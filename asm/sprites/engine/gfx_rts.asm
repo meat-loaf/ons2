@@ -4,7 +4,13 @@ spr_tmap_off = $019C7F|!bank
 spr_tiles    = $019B83|!bank
 
 ; subspr gfx 0 optimization
-org $019CFC|!bank
+org $019CF3|!bank
+_sub_spr_gfx_0:
+	ldy #$00
+.entry_1:
+	sta $05
+	sty $0F
+	jsr _get_draw_info_bank1
 	; saves a byte, originally LDY/TYA for no discernable reason
 	LDA.b $0F
 	CLC
@@ -124,10 +130,22 @@ sub_spr_gfx_1:
 	STA.w $0461|!addr,y
 	JMP.w $01A3DF|!bank
 getdrawinfo_generic_prefix:
-	LDA   !spriteset_offset,x
+	LDA   !spr_spriteset_off,x
 	STA.b !tile_off_scratch
+	LDA   !spr_spriteset_off_hi,x
+	STA.b !tile_off_scratch+1
 	JMP.w $01A365|!bank
+
 ; todo mark free space here to be usable
+ssgfx2_tilestore_temp:
+	rep #$21
+	and #$00ff
+	adc !tile_off_scratch
+	sep #$20
+	sta $0302|!addr,y
+	xba
+	tsb $04
+	rts
 warnpc $019E0D|!bank
 
 ; subsprgfx 2 optimization
@@ -137,8 +155,9 @@ sub_spr_gfx_2:
 	JSR.w getdrawinfo_generic_prefix|!bank
 org $019F27|!bank
 	; carry cleared at $019F1C, we get to save a (needed) byte
-	ADC.b !tile_off_scratch
-	STA.w $0302|!addr,y
+	jsr ssgfx2_tilestore_temp
+;	ADC.b !tile_off_scratch
+;	STA.w $0302|!addr,y
 	LDX.w $15E9|!addr
 	LDA.b $00
 	STA.w $0300|!addr,y

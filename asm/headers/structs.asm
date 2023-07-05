@@ -1,13 +1,13 @@
 includefrom "../main.asm"
-if not(defined("_ons_struct_h_"))
-!_ons_struct_h_ ?= 1
+includeonce
 
-;struct oam_entry $0200|!addr
-;	.x_pos: skip 1
-;	.y_pos: skip 1
-;	.tile:  skip 1
-;	.props: skip 1
-;endstruct align 4
+org $7E0200
+struct oam_entry
+	.x_pos: skip 1
+	.y_pos: skip 1
+	.tile:  skip 1
+	.props: skip 1
+endstruct align 4
 
 org !turnblock_status
 struct turnblock_status_d
@@ -23,8 +23,16 @@ struct skidsmoke_status_d
 	.timer: skip 2
 endstruct align 6
 
-!oam_lo = oam_entry[$0000]
-!oam_hi = oam_entry[$0100]
+
+;struct entity_pose_entry
+;	.x_off: skip 1
+;	.y_off: skip 1
+;	.tile_props: skip 2
+;	.next_ptr: skip 2
+;endstruct
+	
+
+;oam_lo = oam_entry[$0000]
+;oam_hi = oam_entry[$0100]
 
 !turnblocks = turnblock_status_d[!num_turnblock_slots]
-endif

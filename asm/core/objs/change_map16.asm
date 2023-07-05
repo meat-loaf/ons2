@@ -29,13 +29,13 @@ change_map16:
 	STY $0C
 	SEP #$30
 	LDA $5B
-	LDX $1933|!addr
+	LDX !current_layer_process
 	BEQ .Layer1
 	LSR A
 .Layer1:
 	STA $0A
-	LSR A
-	BCC .Horz
+;	LSR A
+;	BCC .Horz
 ;	LDA $9B
 ;	LDY $99
 ;	STY $9B

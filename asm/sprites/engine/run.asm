@@ -165,9 +165,10 @@ ambient_sprcaller:
 	; note: may not be necessary in the future if all beb0 calls are eliminated
 	stz !ambient_sprlocked_mirror
 
-	lda #$24
-	sta !next_oam_index
 	rep #$30
+	lda #$0024
+	sta !next_oam_index
+
 if !ambient_debug
 	stz !ambient_resident
 endif
@@ -318,6 +319,7 @@ oam_refresh:
 	beq +
 	ldy #$24
 +	sty !next_oam_index
+	stz !next_oam_index+1
 	jml oam_refresh_hijack_done2
 ; This table is automatically generated when sprite tables are created
 oam_tile_count:

@@ -25,8 +25,6 @@ mario_shoot_fireball:
 	sta !ambient_get_slot_yspd
 	ldy !player_dir
 	lda.w $00FE94,y
-;	eor #$30
-;	asl #2
 	sta !ambient_get_slot_xspd
 	lda !player_on_yoshi
 	beq .no_yoshi
@@ -59,6 +57,10 @@ warnpc $00FF07|!addr
 
 ; generic interaction - replace with stub
 org $01AB64|!bank
+	jsl spr_give_points
+
+; cape/bounce block hit rt - replace with stub
+org $029457|!bank
 	jsl spr_give_points
 
 ; this table is used as a 'bounce block id'.
@@ -98,32 +100,17 @@ bounce_ids:
 	skip 2
 warnpc $00F080|!bank
 
+; todo get rid of this, absolutely sickening
+;      we're shy a few bytes in the below routine.
+;      after this hijack though is the mario fireball
+;      shooting routine, so we can combine the hijacks
+;      and likely claim enough bytes to remove this
 freecode
 fuckme:
 	sta !skidsmoke_free_index
-
-;	lda !player_x_next
-;	adc #$0004
-;	sta $45
-;	lda !player_y_next
-;	adc #$001A
-;	ldy !player_on_yoshi
-;	beq .no_yoshi
-;	adc #$0010
-;.no_yoshi:
-;	sta $47
-;	lda #$0018
-;	sta $49
-;
-;	lda #$0000
-;	jsl ambient_get_slot
-	; axy width cleaned up here
 	sep #$30
 	rtl
 
-
-; this replaces old sprite types with ambient ones.
-; see 'bank2.asm' for the ambient sprite caller
 org $00FE56|!bank
 mario_turn_smoke_spawn_hijack:
 	bne .ret
@@ -157,6 +144,9 @@ org $028779|!bank
 
 org $028663|!bank
 shatter_block:
+	phb
+	phk
+	plb
 	phx
 ;	sta $00
 	ldy #$03
@@ -192,6 +182,7 @@ shatter_block:
 	bpl .spawn_loop
 .abort:
 	plx
+	plb
 	rtl
 .xoff:
 	db $00,$08,$00,$08
@@ -220,6 +211,9 @@ spawn_ambient_bounce_sprite:
 	lda $04
 	and #$00FF
 	jsl ambient_get_slot
+	bcs .done
+;	lda #$06
+;	sta !ambient_gen_timer,y
 
 	lda $05
 	beq .done

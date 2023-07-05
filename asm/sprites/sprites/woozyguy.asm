@@ -1,6 +1,6 @@
 !woozyguy_sprnum = $BA
 
-%alloc_sprite_dynamic_free(!woozyguy_sprnum, "woozyguy", woozyguy_init, woozyguy_main, 4, 0, \
+%alloc_sprite_dynamic_free(!woozyguy_sprnum, "woozyguy", woozyguy_init, woozyguy_main, 4, \
 	$30, $80, $01, $01, $00, $00)
 
 !woozy_phase         = !sprite_misc_c2
@@ -15,6 +15,8 @@
 
 %set_free_start("bank3_sprites")
 woozyguy_init:
+	lda #$C0
+	sta !spr_spriteset_off,x
 	lda #!jump_interval
 	sta !woozy_phase_counter,x
 

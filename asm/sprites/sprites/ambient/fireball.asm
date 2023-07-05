@@ -44,12 +44,15 @@ pfireball_set_clipping_b_8a8i:
 	sec
 	sbc #$0004
 	sta $01
+	; store high byte of y displacement to $09
 	sta $08
 	lda !ambient_x_pos,x
 	sec
 	sbc #$0002
+	; store high byte of x displacement to $07
 	sta $07
 	sep #$30
+	; store x low
 	sta $00
 	lda #$0C
 	sta $02

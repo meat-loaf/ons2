@@ -2,6 +2,8 @@ includeonce
 
 function pack_props(flip, priority, palette, page) = ((flip&03)<<$06)|((priority&03)<<$04)|((palette&$07)<<1)|(page&$01)
 
+function dma_pack_ctrl_dst_16(dest, ctrl) = ((dest<<8)&$FF00)|(ctrl&$FF)
+
 macro implement_timer(ram)
 	lda <ram>
 	beq ?no_dec

@@ -1,6 +1,6 @@
 !chomp_rock_sprid = $BE
 
-%alloc_sprite_dynamic_free(!chomp_rock_sprid, "chomp_rock", chomp_rock_init, chomp_rock_main, 4, 0, \
+%alloc_sprite_dynamic_free(!chomp_rock_sprid, "chomp_rock", chomp_rock_init, chomp_rock_main, 4, \
 	$80,$80,$35,$1b,$19,$c0)
 
 	!SPRITEKILLSND = $37
@@ -47,6 +47,8 @@
 ; todo reduce max speed when on slopes, prevent clipping
 %set_free_start("bank3_sprites")
 chomp_rock_init:
+	lda #$C0
+	sta !spr_spriteset_off,x
 	inc !sprite_misc_157c,x
 ;	LDA !extra_bits,x
 ;	AND #$04

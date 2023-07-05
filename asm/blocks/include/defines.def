@@ -1,1 +1,5 @@
-acts_like_00_to_3f_ptr = $06F63A
+!acts_like_00_to_3f_ptr = $06F624
+acts_like_00_to_3f_ptr = !acts_like_00_to_3f_ptr
+
+; don't change this.
+!highest_tile_id = $1FFF

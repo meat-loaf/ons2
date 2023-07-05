@@ -12,6 +12,8 @@ includefrom "list.def"
 
 %set_free_start("bank3_sprites")
 yi_pswitch_init:
+	lda #$C0
+	sta !spr_spriteset_off,x
 	lda !sprite_x_low,x
 	clc
 	adc #$08

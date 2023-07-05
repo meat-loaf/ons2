@@ -1,3 +1,5 @@
+!ambient_quake_sprite            = $00
+
 !turning_turn_block_ambient_id   = $03
 !item_turn_block_ambient_id      = $04
 !yoshi_g_block_ambient_id        = $05
@@ -9,6 +11,8 @@
 !item_brick_block_ambient_id     = $0B
 !break_brick_block_ambient_id    = $0C
 !onoff_switch_block_ambient_id   = $0D
+
+%alloc_ambient_sprite(!ambient_quake_sprite, "ambient_quake_sprite", ambient_quake_sprite, 0)
 
 ; turn blocks
 %alloc_ambient_sprite_grav(!turning_turn_block_ambient_id, "turning_turn_block_bounce", ambient_bounce_spr,\
@@ -58,9 +62,61 @@ ambient_spawn_block:
 	lda !ambient_x_pos,x
 	and #$FFF0
 	sta !block_xpos
-	; todo handle being on layer 2
 	tyx
 	jsl change_map16
+	ldx !current_ambient_process
+.exit
+	rts
+
+ambient_quake_sprite:
+	lda !ambient_gen_timer,x
+	bne ambient_bounce_interact
+.bad_ambient_default:
+	stz !ambient_rt_ptr,x
+	rts
+
+ambient_bounce_interact:
+	; set up clipping b
+	lda !ambient_y_pos,x
+	sec
+	sbc #$0004
+	sta $01
+	sta $08
+
+	; store hitbix width/height
+	lda #$1818
+	sta $02
+
+	lda !ambient_x_pos,x
+	sec
+	sbc #$0004
+	sta $07
+	sep #$30
+	sta $00
+
+	ldx.b #!num_sprites-1
+.interact_loop:
+	lda !sprite_status,x
+	cmp #$08
+	bcc ..next
+	cmp #$0b
+	beq ..next
+	lda !sprite_tweaker_166e,x
+	and #!spr_166e_prop_no_cape_kill
+	ora !sprite_misc_154c,x
+	ora !sprite_cape_disable_time,x
+	bne ..next
+	jsl get_spr_clipping_a
+	jsl check_for_contact
+	bcc ..next
+	; TODO probably port this, theres a lot of junk going on here
+	;      and unsure how much is actually needed. We could use Y instead too
+	; cape spr hit routine
+	jsr $9404
+..next:
+	dex
+	bpl .interact_loop
+	rep #$30
 	ldx !current_ambient_process
 	rts
 
@@ -77,7 +133,14 @@ ambient_bounce_spr:
 	jsr ambient_basic_gfx
 .nogfx:
 	lda !ambient_sprlocked_mirror
-	bne .phases_do_bounce_exit
+	bne ambient_spawn_block_exit
+	lda !ambient_gen_timer,x
+	cmp #$0005
+	bcs .no_interact
+	cmp #$0003
+	bcc .no_interact
+	jsr ambient_bounce_interact
+.no_interact:
 	lda !ambient_misc_1,x
 	and #$00FF
 	asl
@@ -95,9 +158,9 @@ ambient_bounce_spr:
 	; yoshi blocks
 	dw $0132,$0132,$0132,$0132
 	; question block
-	dw $0132
+	dw $0132,$0132
 	; brick blocks (todo breakable brick id)
-	dw $0132,$0300
+	dw $0132,$0201
 	; onoff switch
 	dw $0112
 .block_props:
@@ -106,7 +169,7 @@ ambient_bounce_spr:
 	; yoshi blocks
 	dw $0AC8,$04C8,$08C8,$06C8
 	; question block
-	dw $00C0
+	dw $00C0, $00C0
 	; brick blocks
 	dw $00C2,$00C2
 	; on/off switch
@@ -115,14 +178,12 @@ ambient_bounce_spr:
 	dw ..spawn_solid
 	dw ..do_bounce
 	dw ..write_block_die
-; in 9C format
-; todo use a different routine (port gps' or something), for other block
-;      kinds.
 ..spawn_solid:
-	; todo interact with sprites here
+
 	inc !ambient_misc_1,x
 	lda #!invis_solid_tile_id
 	jmp ambient_spawn_block
+
 ..do_bounce:
 	lda !ambient_gen_timer,x
 	bne ...exit
@@ -139,7 +200,7 @@ ambient_bounce_spr:
 	jsr ambient_alloc_turnblock
 .not_turn_block:
 	stz !ambient_rt_ptr,x
-	lda .block_draw_death-($3*2),y
+	lda .block_draw_death-(!turning_turn_block_ambient_id*2),y
 	jmp ambient_spawn_block
 
 ambient_bounce_done:

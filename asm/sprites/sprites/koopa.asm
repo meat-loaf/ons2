@@ -50,20 +50,21 @@ org $019E1C|!bank
 	$30, $00, $00, $00, $00, $00)
 %alloc_sprite_sharedgfx_entry_mirror(!paragoomba_sprnum, !goomba_sprnum)
 
-%alloc_sprite_sharedgfx_entry_3(!shelless_koopa_sprnum,$CE,$CC,$80)
+%alloc_sprite_sharedgfx_entry_3(!shelless_koopa_sprnum,$02,$00,$04)
 
-%alloc_sprite(!shelless_koopa_sprnum, "shelless_koopa", koopa_init, shelless_koopa_main, 2, \
+%alloc_sprite_spriteset_1(!shelless_koopa_sprnum, "shelless_koopa", koopa_init, shelless_koopa_main, 2, \
+	$104, \
 	$70, $00, $00, $00, $00, $00)
 
-%alloc_sprite(!koopa_sprnum, "koopas", koopa_init, koopa_main, 5, \
+%alloc_sprite_spriteset_1(!koopa_sprnum, "koopas", koopa_init, koopa_main, 5, $0100, \
 	$10, $40, $00, $00, $02, $A0)
-%alloc_sprite(!shell_sprnum, "koopa_shell", koopa_init_stun, koopa_main, 5, \
+%alloc_sprite_spriteset_1(!shell_sprnum, "koopa_shell", koopa_init_stun, koopa_main, 5, $0100,\
 	$10, $40, $00, $00, $02, $A0)
-%alloc_sprite(!lame_parakoopa_sprnum, "lame_parakoopa", koopa_init, koopa_main, 3, \
+%alloc_sprite_spriteset_1(!lame_parakoopa_sprnum, "lame_parakoopa", koopa_init, koopa_main, 3, $0100,\
 	$10, $40, $00, $00, $42, $B0)
-%alloc_sprite(!flyin_parakoopa_v_sprnum, "flyin_parakoopa_vert", koopa_init, flyin_parakoopa_main, 3, \
+%alloc_sprite_spriteset_1(!flyin_parakoopa_v_sprnum, "flyin_parakoopa_vert", koopa_init, flyin_parakoopa_main, 3, $0100,\
 	$10, $40, $00, $00, $52, $B0)
-%alloc_sprite(!flyin_parakoopa_h_sprnum, "flyin_parakoopa_horz", koopa_init, flyin_parakoopa_main, 3, \
+%alloc_sprite_spriteset_1(!flyin_parakoopa_h_sprnum, "flyin_parakoopa_horz", koopa_init, flyin_parakoopa_main, 3, $0100,\
 	$10, $40, $00, $00, $52, $B0)
 
 %alloc_sprite_sharedgfx_entry_9(!koopa_sprnum, $82,$A0,$82,$A2,$84,$A4,$8C,$8A,$8E)
@@ -100,6 +101,7 @@ koopa_init:
 	; green, yellow, blue, red
 	db $5*2,$2*2,$4*2,$3*2
 
+; TODO FIX WINGS
 koopa_gfx:
 	; used as 'is parakoopa' scratch throughout sprite
 	stz !koopa_is_winged_scr
@@ -109,10 +111,20 @@ koopa_gfx:
 	inc !koopa_is_winged_scr
 .fly_entry:
 	; todo port this routine, needs at least one fix
-	jsr $9E28
+;	jsr $9E28
 .no_wings:
 	; gfx
-	lda !koopa_ani_frame,x
+	lda !koopa_face_dir,x
+	eor #$01
+	sta $06
+	ldy !koopa_ani_frame,x
+	lda koopa_table_off_lo,y
+	sta $04
+	lda koopa_table_off_hi,y
+	sta $05
+	stz !sprite_off_screen_horz,x
+	jsl spr_gfx
+;	rts
 	lsr
 	lda !sprite_y_low,x
 	pha
@@ -128,7 +140,6 @@ koopa_gfx:
 	pla
 	sta !sprite_y_low,x
 	rts
-
 goomba_main:
 	lda !sprite_oam_properties,x
 	sta $00
@@ -421,5 +432,28 @@ flyin_parakoopa_main:
 .timer:
 	db $30,$30
 	db $18,$18
+; koopa gfx tables
+%start_sprite_table("koopa_walk_1", $08, $10)
+	%sprite_table_entry($FFFC, $0008, $00, $00, 1)
+	%sprite_table_entry($FFFC, $FFF8, $06, $00, 1)
+%finish_sprite_table()
+%start_sprite_table("koopa_walk_2", $08, $10)
+	%sprite_table_entry($FFFC, $0009, $02, $00, 1)
+	%sprite_table_entry($FFFC, $FFF9, $06, $00, 1)
+%finish_sprite_table()
+%start_sprite_table("koopa_walk_turn", $08, $10)
+	%sprite_table_entry($FFFC, $0008, $04, $00, 1)
+	%sprite_table_entry($FFFC, $FFF8, $08, $00, 1)
+%finish_sprite_table()
+koopa_table_off_lo:
+	db koopa_walk_1
+	db koopa_walk_2
+	db koopa_walk_turn
+koopa_table_off_hi:
+	db koopa_walk_1>>8
+	db koopa_walk_2>>8
+	db koopa_walk_turn>>8
+
+
 koopas_done:
 %set_free_finish("bank1_koopakids", koopas_done)

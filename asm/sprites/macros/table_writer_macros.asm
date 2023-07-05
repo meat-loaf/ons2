@@ -99,17 +99,17 @@ org sprite_size_table_ptr
 			error "Main routine for sprite id !ix not defined."
 		endif
 
-		org (!spr_tweaker_1656_tbl)+(!ix)
+		org spr_tweaker_1656_tbl+(!ix)
 		db !{sprite_!{ix}_1656}
-		org (!spr_tweaker_1662_tbl)+(!ix)
+		org spr_tweaker_1662_tbl+(!ix)
 		db !{sprite_!{ix}_1662}
-		org (!spr_tweaker_166E_tbl)+(!ix)
+		org spr_tweaker_166E_tbl+(!ix)
 		db !{sprite_!{ix}_166E}
-		org (!spr_tweaker_167A_tbl)+(!ix)
+		org spr_tweaker_167A_tbl+(!ix)
 		db !{sprite_!{ix}_167A}
-		org (!spr_tweaker_1686_tbl)+(!ix)
+		org spr_tweaker_1686_tbl+(!ix)
 		db !{sprite_!{ix}_1686}
-		org (!spr_tweaker_190F_tbl)+(!ix)
+		org spr_tweaker_190F_tbl+(!ix)
 		db !{sprite_!{ix}_190F}
 		!fmt = ""
 		if !ix < 16
@@ -172,4 +172,21 @@ macro write_ambient_tables(table_label, tsize_label, grv_tbl, default)
 	endif
 endmacro
 
-
+macro write_spriteset_table(table_label)
+;freedata
+org <table_label>
+	!ix #= 0
+	while !ix < $100
+		!jx #= 0
+		while !jx < 4
+			if defined("sprite_!{ix}_ss_file_!{jx}")
+				!ireel #= !ix*4*2
+				dw !{sprite_!{ix}_ss_file_!{jx}}
+			else
+				dw $8000
+			endif
+			!jx #= !jx+1
+		endif
+		!ix #= !ix+1
+	endif
+endmacro

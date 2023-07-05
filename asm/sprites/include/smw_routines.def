@@ -60,12 +60,5 @@ _suboffscr3_bank3    = $03B84F|!bank
 _sub_horz_pos_bank3  = $03B817|!bank
 _sub_vert_pos_bank3  = $03B829|!bank
 
-spr_tweaker_1656_tbl = $07F26C|!bank
-spr_tweaker_1662_tbl = $07F335|!bank
-spr_tweaker_166E_tbl = $07F3FE|!bank
-spr_tweaker_167A_tbl = $07F4C7|!bank
-spr_tweaker_1686_tbl = $07F590|!bank
-spr_tweaker_190F_tbl = $07F659|!bank
-
 _spr_inits_start     = $01817D|!bank
 _spr_mains_start     = $0185CC|!bank

@@ -19,6 +19,7 @@
 !bank1_powerups_free_start   = $01C313|!bank
 !bank1_powerups_free_end     = $01C74A|!bank
 
+; todo on second look there's way more than this...
 !bank1_boss_mode7_free_start = $01CC9D|!bank
 !bank1_boss_mode7_free_end   = $01CCF0|!bank
 
@@ -56,4 +57,5 @@
 !bank6_free_end              = $06F600|!bank
 
 !bank7_free_start            = $078003|!bank
-!bank7_free_end              = $07F0C8|!bank
+;!bank7_free_end              = $07F0C8|!bank
+!bank7_free_end              = $07F7DB|!bank
