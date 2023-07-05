@@ -124,7 +124,8 @@ koopa_gfx:
 	sta $05
 	stz !sprite_off_screen_horz,x
 	jsl spr_gfx
-;	rts
+	rts
+
 	lsr
 	lda !sprite_y_low,x
 	pha

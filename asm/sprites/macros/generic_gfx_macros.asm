@@ -9,7 +9,9 @@ macro start_sprite_table(name, hsize, vsize)
 	!n_poses #= 0
 <name>:
 	dw (<hsize>)/2
+	dw (~<hsize>+1)/2
 	dw (<vsize>)/2
+	dw (~<vsize>+1)/2
 	dw .pose_0
 endmacro
 

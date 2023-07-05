@@ -149,8 +149,7 @@ ambient_bounce_spr:
 	sta $00
 
 	; run physics after everything else
-	lda #ambient_physics-1
-	pha
+	pea ambient_physics-1
 	jmp ($0000)
 .block_draw_death:
 	; turn blocks
