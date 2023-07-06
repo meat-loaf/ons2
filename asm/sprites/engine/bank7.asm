@@ -99,65 +99,67 @@ load_sprite_tables:
 .exit:
 	rtl
 
-; input:
-; $04 pointer to 'head' tile data structure
-; $06 yx flip (------yx)
-!gfx_x_pos     = $00
-!gfx_y_pos     = $02
-!gfx_table_ptr = $04
-!yx_flip_inp   = $06
-!props         = $08
-!xy_pos        = $0a
-; 0c gets corrupted on y-pos store
-!oam_off       = $0d
-!x_flip        = $0e
-!y_flip        = $0f
+!gfx_x_pos         = $00
+!gfx_y_pos         = $01
 
-!gfx_tile_off  = $47
-!gfx_tile_res  = $49
-!x_high_tilesz = $4B
-!spr_props_tbl = $4D
+!tile_hitable      = $02
+!tile_off          = $03
+; two bytes
+!gfx_table_ptr     = $04
+!y_flip            = $06
+!x_flip            = $07
+!n_tiles           = $08
+!oam_off           = $09
+!spr_props_flip    = $0a
+!spr_props_no_flip = $0b
+; two bytes
+!gfx_tile_off      = $0c
+!gfx_tile_res      = $0e
+
+!tile_x_scr        = $50
+!tile_y_scr        = $51
 spr_gfx_abort:
 	sep #$20
 	rtl
+; put pointer to graphics table in a
 spr_gfx:
-	; memoize a bunch of shit
+	sta !gfx_table_ptr
+	xba
+	sta !gfx_table_ptr+1
+
 	lda !spr_spriteset_off,x
 	sta !gfx_tile_off
 	lda !spr_spriteset_off_hi,x
 	sta !gfx_tile_off+1
 
-	lda !sprite_oam_properties,x
-	; TODO make this not necessary
-	and #$FE
-	sta !spr_props_tbl+1
-	stz !spr_props_tbl
-
 	lda !sprite_oam_index,x
 	sta !oam_off
 
-	lda $64
-	sta !props+1
-	stz !props+1
+	lda !sprite_oam_properties,x
+	tay
+	; TODO can probably eliminate this table entirely by
+	;      just putting it in the props table on sprite load.
+	;      re-use this bit as 'is dynamic' maybe?
+	and #$3E
+	ora !spr_spriteset_off_hi,x
+	sta !spr_props_no_flip
+	tya
+	and #$C0
+	sta !spr_props_flip
 
-	rep #$20
+	bit #$80
 	ldy #$00
-	lda (!gfx_table_ptr),y
-	ldy !x_flip
-	beq .no_inv_x_base
-	eor #$ffff
-	inc
-.no_inv_x_base:
-	sta $00
-	ldy #$04
-	lda (!gfx_table_ptr),y
-	ldy !y_flip
-	beq .no_inv_y_base
-	eor #$ffff
-	inc
-.no_inv_y_base:
-	sta $02
-	sep #$20
+	beq .no_y_flip
+	dey
+.no_y_flip:
+	sty !y_flip
+
+	ldy #$00
+	bit #$40
+	beq .no_x_flip
+	dey
+.no_x_flip:
+	sty !x_flip
 
 	ldy #$00
 ; getdrawinfo equivalent
@@ -167,109 +169,130 @@ spr_gfx:
 	rep #$20
 	sec
 	sbc !layer_1_xpos_curr
-;	adc $00
-	adc (!gfx_table_ptr),y
-	sta $00
+	sbc (!gfx_table_ptr),y
+	sta !gfx_x_pos
 	; stolen from original suboffscreen...
 	; not much of a better way to do it i don't think
 	; since we still need to pack 8-bit tables. we need
 	; to drop to 8-bit a for y calcs anyway
 
+	ldy #$02
 	clc
 	adc #$0040
 	cmp #$0180
 	sep #$20
 	lda #$00
 	rol
-	;sta !sprite_off_screen,x
 	sta !sprite_off_screen_horz,x
 	bne .abort
 
-	ldy #$04
 	lda !sprite_y_high,x
 	xba
 	lda !sprite_y_low,x
 	rep #$20
 	sec
 	sbc !layer_1_ypos_curr
-;	sbc $02
-	
 	sbc (!gfx_table_ptr),y
 	cmp #$00f0
+	sep #$20
 	bcc .y_pos_ok
-	lda #$00f0
+	lda #$f0
 .y_pos_ok:
-	sta $02
-	ldy #$08
-	lda (!gfx_table_ptr),y
-	sta !gfx_table_ptr
+	sta !gfx_y_pos
 
-.loop:
-	ldy #$00
-	lda (!gfx_table_ptr),y
-	; todo handle flip
-	clc
-	adc !gfx_x_pos
-	sta !xy_pos
-	and #$FF00
-	beq .no_x_high
-	lda #$0001
-.no_x_high:
-	; TODO FIX, SUPPORT 8x8s
-	ora #$0002
-	sta !x_high_tilesz
-	ldy #$02
-	lda (!gfx_table_ptr),y
-
-	; todo handle flip
-	clc
-	adc !gfx_y_pos
-	sta !xy_pos+1
+; todo might be worth unpacking these. investigate
 	ldy #$04
+	; y = start of structure (number of tiles to draw)
 	lda (!gfx_table_ptr),y
-	and #$00FF
+	sta !n_tiles
+.loop:
+	iny
+	; y = start of pose, packed tile size/tile offset to center
+	lda (!gfx_table_ptr),y
+	tax
+	and #$F0
+	beq .tile_size_store
+	lda #$02
+.tile_size_store:
+	sta !tile_hitable
+	txa
+	and #$0F
+	eor #$ff
+	inc
+	sta !tile_off
+
+	iny
+	; y = tile x offset
+	lda (!gfx_table_ptr),y
+	ldx !x_flip
+	beq .x_flip_no_inv
+	eor #$ff
+	inc
+.x_flip_no_inv:
+	clc
+	adc $00
+	adc !tile_off
+
+	ldx !oam_off
+	sta $0300|!addr,x
+	; shift carry into x high position, then set it
+	lda #$00
+	asl
+	tsb !tile_hitable
+
+	iny
+	; y = tile y offset
+	lda (!gfx_table_ptr),y
+	ldx !y_flip
+	beq .y_flip_no_inv
+	eor #$ff
+	inc
+.y_flip_no_inv:
+	clc
+	adc $01
+	adc !tile_off
+	ldx !oam_off
+	sta $0301|!addr,x
+
+	iny
+	; y = low 8 bits of tile id
+	lda (!gfx_table_ptr),y
 	clc
 	adc !gfx_tile_off
-	sta !gfx_tile_res
-
-	lda (!gfx_table_ptr),y
-	and #$FF00
-	; high bit is 'use props' flag
-	asl
-	and #$CE00
-	bcs ..nopal
-	ora !spr_props_tbl
-..nopal:
-	ora !props
-	ora !gfx_tile_res
-
-	ldx !oam_off
 	sta $0302|!addr,x
-	lda !xy_pos
-	sta $0300|!addr,x
-	; todo use a lut maybe? doing it manually is already going to be much better than finishoamwrite
-	;      a large lookup table with long-addressing is one cycle faster than calculation, is it worth
-	;      the size? With enough tiles drawn via this method it almost adds up to a scanline...
+	lda #$00
+	asl
+	; props high bit
+	sta !gfx_tile_res+1
+
+	iny
+	; y = properties, right shifted with high bit as 'use prop ram table palette' flag
+	lda (!gfx_table_ptr),y
+	asl
+	ora $64
+	eor !spr_props_flip
+	ora !gfx_tile_res+1
+	bcs .no_oam_props
+	ora !spr_props_no_flip
+.no_oam_props:
+	sta $0303|!addr,x
+
 	txa
-	lsr
-	lsr
+	lsr #2
 	tax
-	lda !x_high_tilesz
-	;sta $0420|!addr,x
-	; note could overwrite size of next tile, fix
+	lda !tile_hitable
 	sta $0460|!addr,x
-	ldx !oam_off
-	inx #4
+	txa
+	asl #2
+	clc
+	adc #$04
+	tax
 	stx !oam_off
 	
-	ldy #$06
-	lda (!gfx_table_ptr),y
-	sta !gfx_table_ptr
+	dec !n_tiles
 	bne .loop
 
-	sep #$20
 	ldx !current_sprite_process
-.done
 	rtl
 bank7_stuff_done:
 %set_free_finish("bank7", bank7_stuff_done)

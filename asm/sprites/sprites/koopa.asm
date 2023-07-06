@@ -111,36 +111,27 @@ koopa_gfx:
 	inc !koopa_is_winged_scr
 .fly_entry:
 	; todo port this routine, needs at least one fix
-;	jsr $9E28
+	jsr $9E28
 .no_wings:
 	; gfx
+	ldy #$00
 	lda !koopa_face_dir,x
-	eor #$01
-	sta $06
+	bne .no_face
+	ldy #$40
+.no_face:
+	sty $00
+	lda !sprite_oam_properties,x
+	and #$3F
+	ora $00
+	sta !sprite_oam_properties,x
+
 	ldy !koopa_ani_frame,x
-	lda koopa_table_off_lo,y
-	sta $04
 	lda koopa_table_off_hi,y
-	sta $05
-	stz !sprite_off_screen_horz,x
+	xba
+	lda koopa_table_off_lo,y
 	jsl spr_gfx
 	rts
 
-	lsr
-	lda !sprite_y_low,x
-	pha
-	sbc #$0F
-	sta !sprite_y_low,x
-	lda !sprite_y_high,x
-	pha
-	sbc #$00
-	sta !sprite_y_high,x
-	jsr sub_spr_gfx_1
-	pla
-	sta !sprite_y_high,x
-	pla
-	sta !sprite_y_low,x
-	rts
 goomba_main:
 	lda !sprite_oam_properties,x
 	sta $00
@@ -434,26 +425,26 @@ flyin_parakoopa_main:
 	db $30,$30
 	db $18,$18
 ; koopa gfx tables
-%start_sprite_table("koopa_walk_1", $08, $10)
-	%sprite_table_entry($FFFC, $0008, $00, $00, 1)
-	%sprite_table_entry($FFFC, $FFF8, $06, $00, 1)
+%start_sprite_table("koopa_walk_1", 16, 32)
+	%sprite_table_entry($00, $F7, $00, $00, 1)
+	%sprite_table_entry($00, $E7, $06, $00, 1)
 %finish_sprite_table()
-%start_sprite_table("koopa_walk_2", $08, $10)
-	%sprite_table_entry($FFFC, $0009, $02, $00, 1)
-	%sprite_table_entry($FFFC, $FFF9, $06, $00, 1)
+%start_sprite_table("koopa_walk_2", 16, 32)
+	%sprite_table_entry($00, $F8, $02, $00, 1)
+	%sprite_table_entry($00, $E8, $06, $00, 1)
 %finish_sprite_table()
-%start_sprite_table("koopa_walk_turn", $08, $10)
-	%sprite_table_entry($FFFC, $0008, $04, $00, 1)
-	%sprite_table_entry($FFFC, $FFF8, $08, $00, 1)
-%finish_sprite_table()
+;%start_sprite_table("koopa_walk_turn", $08, $10)
+;	%sprite_table_entry($FFFC, $0008, $04, $00, 1)
+;	%sprite_table_entry($FFFC, $FFF8, $08, $00, 1)
+;%finish_sprite_table()
 koopa_table_off_lo:
 	db koopa_walk_1
 	db koopa_walk_2
-	db koopa_walk_turn
+;	db koopa_walk_turn
 koopa_table_off_hi:
 	db koopa_walk_1>>8
 	db koopa_walk_2>>8
-	db koopa_walk_turn>>8
+;	db koopa_walk_turn>>8
 
 
 koopas_done:

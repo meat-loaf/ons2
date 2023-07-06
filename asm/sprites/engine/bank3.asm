@@ -18,14 +18,22 @@
 !spr_horz_dir  = !sprite_misc_157c
 !spr_ani_frame = !sprite_misc_1602
 spr_gfx_32x32:
+	ldy #$00
 	lda !spr_horz_dir,x
-	eor #$01
-	sta $06
+	bne .no_face
+	ldy #$40
+.no_face:
+	sty $00
+	lda !sprite_oam_properties,x
+	and #$3F
+;	and #$BF
+	ora $00
+	sta !sprite_oam_properties,x
+
 	ldy !spr_ani_frame,x
-	lda basic_32_32_spr_tbls_lo,y
-	sta $04
 	lda basic_32_32_spr_tbls_hi,y
-	sta $05
+	xba
+	lda basic_32_32_spr_tbls_lo,y
 	jsl spr_gfx
 	rts
 ;spr_gfx_32x32:
@@ -258,16 +266,16 @@ spr_dyn_allocate_slot:
 !spr_dyn_gfx_tbl = spr_dyn_allocate_slot_gfx
 
 %start_sprite_table("basic_32_32_spr_f1", 32, 32)
-	%sprite_table_entry($FFF0,$0000,$00,$00, 1)
-	%sprite_table_entry($0000,$0000,$02,$00, 1)
-	%sprite_table_entry($FFF0,$0010,$04,$00, 1)
-	%sprite_table_entry($0000,$0010,$06,$00, 1)
+	%sprite_table_entry($FFF8,$E8,$00,$00, 1)
+	%sprite_table_entry($0008,$E8,$02,$00, 1)
+	%sprite_table_entry($FFF8,$F8,$04,$00, 1)
+	%sprite_table_entry($0008,$F8,$06,$00, 1)
 %finish_sprite_table()
 %start_sprite_table("basic_32_32_spr_f2", 32, 32)
-	%sprite_table_entry($FFF0,$0000,$08,$00, 1)
-	%sprite_table_entry($0000,$0000,$0A,$00, 1)
-	%sprite_table_entry($FFF0,$0010,$0C,$00, 1)
-	%sprite_table_entry($0000,$0010,$0E,$00, 1)
+	%sprite_table_entry($FFF8,$E8,$08,$00, 1)
+	%sprite_table_entry($0008,$E8,$0A,$00, 1)
+	%sprite_table_entry($FFF8,$F8,$0C,$00, 1)
+	%sprite_table_entry($0008,$F8,$0E,$00, 1)
 %finish_sprite_table()
 basic_32_32_spr_tbls_lo:
 	db basic_32_32_spr_f1

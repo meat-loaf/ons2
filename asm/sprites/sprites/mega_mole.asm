@@ -22,6 +22,9 @@ mega_mole_init:
 .exit:
 	rtl
 mega_mole_main:
+	lda !sprite_oam_properties,x
+	ora #$80
+	sta !sprite_oam_properties,x
 	jsr.w spr_gfx_32x32
 	lda !sprite_status,x
 	eor #$08

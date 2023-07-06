@@ -8,47 +8,35 @@ macro start_sprite_table(name, hsize, vsize)
 	!start_sprite_table = <name>
 	!n_poses #= 0
 <name>:
-	dw (<hsize>)/2
-	dw (~<hsize>+1)/2
-	dw (<vsize>)/2
-	dw (~<vsize>+1)/2
-	dw .pose_0
+.x_size:
+	dw (~(<hsize>/2)+1)
+.y_size:
+	dw (~(<vsize>/2)+1)
+.n_tiles:
+	skip 1
 endmacro
 
 macro sprite_table_entry(xoff, yoff, tile, props, use_mem_props)
-!last_pose #= !n_poses-1
-if and(not(equal(!{n_poses}, 0)), not(defined("pose_!{last_pose}_manual_next")))
-org .pose_!{last_pose}_next_ptr
-	dw .pose_!{n_poses}
-else
-	if defined("pose_!{last_pose}_manual_next")
-		error "A manual pose definition should be the last in a chain."
-	endif
-endif
 
 !use_props = 0
 if <use_mem_props> == 1
 	!use_props = 1
 endif
 .pose_!{n_poses}:
-	dw <xoff>
-..y_pos:
-	dw <yoff>
+; packed!
+..tilesz_off:
+; todo real size in args, calc off
+	db $28
+..x_off:
+	db <xoff>
+..y_off:
+	db <yoff>
 ..tile:
 	db <tile>
 ..props:
-	db (<props>>>1)|(!use_props<<8)
-..next_ptr:
-	skip 2
+	db ((<props>)>>1)|(!use_props<<8)
 !n_poses #= !n_poses+1
 undef "use_props"
-endmacro
-
-macro sprite_table_entry_manual(xoff, yoff, tile, props, use_mem_props, next_pose)
-	%sprite_table_entry(<xoff>,<yoff>,<tile>,<props>,<use_mem_props>)
-org .pose_!{last_pose}_next_ptr
-	dw <next_pose>
-	!pose_!{last_pose}_manual_next = 1
 endmacro
 
 macro finish_sprite_table()
@@ -56,17 +44,13 @@ if equal(!n_poses, 0)
 	error "Sprite table !sprite_table_name has no poses defined. Use the 'sprite_table_entry' macro."
 endif
 ; finish off the last table with nullptr
-!last_pose #= !n_poses-1
-org .pose_!{last_pose}_next_ptr
-	dw $0000
+	pushpc
+	org !{start_sprite_table}_n_tiles
+		db !n_poses
+	pullpc
 	undef "start_sprite_table"
 	undef "n_poses"
-	if defined("pose_!{last_pose}_manual_next")
-		undef "pose_!{last_pose}_manual_next"
-	endif
-	undef "last_pose"
 endmacro
-
 
 macro dynamic_gfx_rt_bank3(load_frame_code, dyn_name)
 	<load_frame_code>
