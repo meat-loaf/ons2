@@ -41,7 +41,7 @@ macro alloc_sprite(sprite_id, name, init_rt, main_rt, n_oam_tiles, spr_1656_val,
 	!{sprite_!{sid}_oamtiles} = <n_oam_tiles>*4
 	!{sprite_!{sid}_1656} = <spr_1656_val>
 	!{sprite_!{sid}_1662} = <spr_1662_val>
-	!{sprite_!{sid}_166E} = <spr_166E_val>
+	!{sprite_!{sid}_166E} = (<spr_166E_val>&$FE)
 	!{sprite_!{sid}_167A} = <spr_167A_val>
 	!{sprite_!{sid}_1686} = <spr_1686_val>
 	!{sprite_!{sid}_190F} = <spr_190F_val>

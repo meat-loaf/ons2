@@ -114,18 +114,6 @@ koopa_gfx:
 	jsr $9E28
 .no_wings:
 	; gfx
-	ldy #$00
-	lda !koopa_face_dir,x
-	bne .no_face
-	ldy #$40
-.no_face:
-	sty $00
-	lda !sprite_oam_properties,x
-	and #$3F
-	ora $00
-	ora #$80
-	sta !sprite_oam_properties,x
-
 	ldy !koopa_ani_frame,x
 	lda koopa_table_off_hi,y
 	xba

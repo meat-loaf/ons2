@@ -3,7 +3,7 @@ includefrom "list.def"
 !megamole_sprnum = $BF
 
 %alloc_sprite_spriteset_1(!megamole_sprnum, "mega_mole", mega_mole_init, mega_mole_main, 4, $101, \
-	$0E, $30, $11, $A1, $00, $20)
+	$0E, $30, $10, $A1, $00, $20)
 
 !mega_mole_falling_timer = !sprite_misc_1540
 !mega_mole_ride_timer    = !sprite_misc_154c
@@ -22,10 +22,22 @@ mega_mole_init:
 .exit:
 	rtl
 mega_mole_main:
-	lda !sprite_oam_properties,x
-	ora #$80
-	sta !sprite_oam_properties,x
-	jsr.w spr_gfx_32x32
+;	lda !sprite_oam_properties,x
+;	and #$3F
+;	sta !sprite_oam_properties,x
+;	lda !mega_mole_facing_dir,x
+;	beq .not_face
+;	lda #$40
+;.not_face:
+;	ora !sprite_oam_properties,x
+;	sta !sprite_oam_properties,x
+	ldy !mega_mole_ani_frame,x
+	lda basic_32_32_spr_tbls_hi,y
+	xba
+	lda basic_32_32_spr_tbls_lo,y
+	jsl spr_gfx
+
+;	jsr.w spr_gfx_32x32
 	lda !sprite_status,x
 	eor #$08
 	ora !sprites_locked

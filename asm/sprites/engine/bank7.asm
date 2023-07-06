@@ -80,6 +80,10 @@ load_sprite_tables:
 	sta !sprite_tweaker_1686,y
 	lda.l spr_tweaker_190F_tbl,x
 	sta !sprite_tweaker_190f,y
+	lda.l spr_tweaker_166E_tbl,x
+	lsr
+	sta !sprite_oam_properties,y
+
 	lda.l !level_ss_sprite_offs,x
 	cmp #$ff
 	bne .have_set
@@ -89,20 +93,16 @@ load_sprite_tables:
 	asl
 	sta !spr_spriteset_off,y
 
-	lda.l spr_tweaker_166E_tbl,x
-	and #$0F
-	sta !sprite_oam_properties,y
-
 	plx
 	ply
-	rol !spr_spriteset_off_hi,x
+	rol !sprite_oam_properties,x
 .exit:
 	rtl
 
 !gfx_x_pos         = $00
 !gfx_y_pos         = $02
 !gfx_table_ptr     = $04
-!y_flip            = $06
+!gfx_tile_high     = $06
 !x_flip            = $07
 !n_tiles           = $08
 !oam_off           = $09
@@ -110,11 +110,11 @@ load_sprite_tables:
 !spr_props_no_flip = $0b
 ; two bytes
 !gfx_tile_off      = $0c
+; two bytes
+!y_flip            = $0e
 
-!gfx_tile_high     = $0e
-
-!tile_off          = $50
-!tile_hitable      = $52
+!tile_off          = $48
+!tile_hitable      = $50
 spr_gfx_abort:
 	sep #$20
 	rtl
@@ -124,35 +124,30 @@ spr_gfx:
 	xba
 	sta !gfx_table_ptr+1
 
+	ldy #$00
+	lda !sprite_misc_157c,x
+	bne .no_x_flip
+	ldy #$40
+.no_x_flip:
+	sty $00
+
 	lda #$ff
 	sta !tile_off+1
-	inc
-	sta !gfx_x_pos+1
 
 	lda !spr_spriteset_off,x
 	sta !gfx_tile_off
-	lda !spr_spriteset_off_hi,x
-	sta !gfx_tile_off+1
-
-;	sta !oam_off
 
 	lda !sprite_oam_properties,x
-	tay
-	; TODO can probably eliminate this table entirely by
-	;      just putting it in the props table on sprite load.
-	;      re-use this bit as 'is dynamic' maybe?
-	and #$3E
-	ora !spr_spriteset_off_hi,x
+	and #$3F
 	sta !spr_props_no_flip
-	tya
 	and #$C0
+	eor $00
+	ora $64
 	sta !spr_props_flip
 
 	and #$80
 	sta !y_flip
-	tya
-	and #$40
-	sta !x_flip
+	stz !y_flip+1
 
 	ldy #$00
 ; getdrawinfo equivalent
@@ -186,7 +181,6 @@ spr_gfx:
 	sec
 	sbc !layer_1_ypos_curr
 	sbc (!gfx_table_ptr),y
-	;cmp #$0100
 	sta !gfx_y_pos
 	sep #$20
 
@@ -209,12 +203,13 @@ spr_gfx:
 	sta !tile_off
 
 	iny
-	lda !x_flip
-	cmp #$40
+	lda #$40
+	bit !spr_props_flip
 	rep #$20
 	; y = tile x offset
 	lda (!gfx_table_ptr),y
-	bcc .x_flip_no_inv
+	;bcc .x_flip_no_inv
+	bvc .x_flip_no_inv
 	eor #$ffff
 	inc
 .x_flip_no_inv:
@@ -223,28 +218,34 @@ spr_gfx:
 	adc !tile_off
 
 	cmp #$0100
-	sep #$20
 	sta $0300|!addr,x
 	; shift carry into x high position, then set it
-	lda #$00
-	rol
-	tsb !tile_hitable
+	lda #$0000
+	;rol
+	;tsb !tile_hitable
+	rol !tile_hitable
 
 	iny
 	iny
 	lda !y_flip
-	cmp #$80
+	cmp #$0080
 	; y = tile y offset
 	lda (!gfx_table_ptr),y
 	bcc .y_flip_no_inv
-	eor #$ff
+	eor #$ffff
 	inc
 .y_flip_no_inv:
 	clc
 	adc !gfx_y_pos
 	adc !tile_off
+	cmp #$00F0
+	bcc .y_onscr
+	lda #$00F0
+.y_onscr:
 	sta $0301|!addr,x
+	sep #$20
 
+	iny
 	iny
 	; y = low 8 bits of tile id
 	lda (!gfx_table_ptr),y
@@ -260,7 +261,6 @@ spr_gfx:
 	; y = properties, right shifted with high bit as 'use prop ram table palette' flag
 	lda (!gfx_table_ptr),y
 	asl
-	ora $64
 	eor !spr_props_flip
 	ora !gfx_tile_high
 	bcs .no_oam_props
@@ -275,10 +275,9 @@ spr_gfx:
 	sta $0460|!addr,x
 	txa
 	asl #2
-	clc
+;	clc
 	adc #$04
 	tax
-;	stx !oam_off
 	
 	dec !n_tiles
 	bne .loop

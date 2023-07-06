@@ -36,7 +36,7 @@ endif
 ; packed!
 ..tilesz:
 ; todo real size in args, calc off
-	db <size>
+	db (<size>)>>1
 ..tile_center_off:
 	db !off
 ..x_off:
@@ -49,6 +49,12 @@ endif
 	endif
 ..y_off:
 	db <yoff>
+	if (<yoff>&$80)
+		db $FF
+	else
+		db $00
+	endif
+
 ..tile:
 	db <tile>
 ..props:
