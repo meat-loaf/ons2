@@ -16,19 +16,37 @@ macro start_sprite_table(name, hsize, vsize)
 	skip 1
 endmacro
 
-macro sprite_table_entry(xoff, yoff, tile, props, use_mem_props)
+macro sprite_table_entry(xoff, yoff, tile, props, size, use_mem_props)
 
 !use_props = 0
 if <use_mem_props> == 1
 	!use_props = 1
 endif
+
+if not(or(equal(<size>,2), equal(<size>, 0)))
+	error "sprite_table_entry: size may only be 2 (big) or 0 (small). Is <size>."
+endif
+if <size> == 2
+	!off = $F8
+else
+	!off = $FC
+endif
+
 .pose_!{n_poses}:
 ; packed!
-..tilesz_off:
+..tilesz:
 ; todo real size in args, calc off
-	db $28
+	db <size>
+..tile_center_off:
+	db !off
 ..x_off:
 	db <xoff>
+	; handle sign because asar doesnt sign extend i guess
+	if (<xoff>&$80)
+		db $FF
+	else
+		db $00
+	endif
 ..y_off:
 	db <yoff>
 ..tile:
@@ -37,6 +55,7 @@ endif
 	db ((<props>)>>1)|(!use_props<<8)
 !n_poses #= !n_poses+1
 undef "use_props"
+undef "off"
 endmacro
 
 macro finish_sprite_table()

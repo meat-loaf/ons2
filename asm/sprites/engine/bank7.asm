@@ -100,11 +100,7 @@ load_sprite_tables:
 	rtl
 
 !gfx_x_pos         = $00
-!gfx_y_pos         = $01
-
-!tile_hitable      = $02
-!tile_off          = $03
-; two bytes
+!gfx_y_pos         = $02
 !gfx_table_ptr     = $04
 !y_flip            = $06
 !x_flip            = $07
@@ -114,10 +110,11 @@ load_sprite_tables:
 !spr_props_no_flip = $0b
 ; two bytes
 !gfx_tile_off      = $0c
-!gfx_tile_res      = $0e
 
-!tile_x_scr        = $50
-!tile_y_scr        = $51
+!gfx_tile_high     = $0e
+
+!tile_off          = $50
+!tile_hitable      = $52
 spr_gfx_abort:
 	sep #$20
 	rtl
@@ -127,13 +124,17 @@ spr_gfx:
 	xba
 	sta !gfx_table_ptr+1
 
+	lda #$ff
+	sta !tile_off+1
+	inc
+	sta !gfx_x_pos+1
+
 	lda !spr_spriteset_off,x
 	sta !gfx_tile_off
 	lda !spr_spriteset_off_hi,x
 	sta !gfx_tile_off+1
 
-	lda !sprite_oam_index,x
-	sta !oam_off
+;	sta !oam_off
 
 	lda !sprite_oam_properties,x
 	tay
@@ -147,19 +148,11 @@ spr_gfx:
 	and #$C0
 	sta !spr_props_flip
 
-	bit #$80
-	ldy #$00
-	beq .no_y_flip
-	dey
-.no_y_flip:
-	sty !y_flip
-
-	ldy #$00
-	bit #$40
-	beq .no_x_flip
-	dey
-.no_x_flip:
-	sty !x_flip
+	and #$80
+	sta !y_flip
+	tya
+	and #$40
+	sta !x_flip
 
 	ldy #$00
 ; getdrawinfo equivalent
@@ -193,65 +186,63 @@ spr_gfx:
 	sec
 	sbc !layer_1_ypos_curr
 	sbc (!gfx_table_ptr),y
-	cmp #$00f0
-	sep #$20
-	bcc .y_pos_ok
-	lda #$f0
-.y_pos_ok:
+	;cmp #$0100
 	sta !gfx_y_pos
+	sep #$20
 
 ; todo might be worth unpacking these. investigate
 	ldy #$04
 	; y = start of structure (number of tiles to draw)
 	lda (!gfx_table_ptr),y
 	sta !n_tiles
+
+	lda !sprite_oam_index,x
+	tax
 .loop:
 	iny
-	; y = start of pose, packed tile size/tile offset to center
+	; y = start of tile data, tile size
 	lda (!gfx_table_ptr),y
-	tax
-	and #$F0
-	beq .tile_size_store
-	lda #$02
-.tile_size_store:
 	sta !tile_hitable
-	txa
-	and #$0F
-	eor #$ff
-	inc
+	iny
+	; y = tile offset to center
+	lda (!gfx_table_ptr),y
 	sta !tile_off
 
 	iny
+	lda !x_flip
+	cmp #$40
+	rep #$20
 	; y = tile x offset
 	lda (!gfx_table_ptr),y
-	ldx !x_flip
-	beq .x_flip_no_inv
-	eor #$ff
+	bcc .x_flip_no_inv
+	eor #$ffff
 	inc
 .x_flip_no_inv:
 	clc
-	adc $00
+	adc !gfx_x_pos
 	adc !tile_off
 
-	ldx !oam_off
+	cmp #$0100
+	sep #$20
 	sta $0300|!addr,x
 	; shift carry into x high position, then set it
 	lda #$00
-	asl
+	rol
 	tsb !tile_hitable
 
 	iny
+	iny
+	lda !y_flip
+	cmp #$80
 	; y = tile y offset
 	lda (!gfx_table_ptr),y
-	ldx !y_flip
-	beq .y_flip_no_inv
+	bcc .y_flip_no_inv
 	eor #$ff
 	inc
 .y_flip_no_inv:
 	clc
-	adc $01
+	adc !gfx_y_pos
 	adc !tile_off
-	ldx !oam_off
 	sta $0301|!addr,x
 
 	iny
@@ -263,7 +254,7 @@ spr_gfx:
 	lda #$00
 	asl
 	; props high bit
-	sta !gfx_tile_res+1
+	sta !gfx_tile_high
 
 	iny
 	; y = properties, right shifted with high bit as 'use prop ram table palette' flag
@@ -271,7 +262,7 @@ spr_gfx:
 	asl
 	ora $64
 	eor !spr_props_flip
-	ora !gfx_tile_res+1
+	ora !gfx_tile_high
 	bcs .no_oam_props
 	ora !spr_props_no_flip
 .no_oam_props:
@@ -287,10 +278,11 @@ spr_gfx:
 	clc
 	adc #$04
 	tax
-	stx !oam_off
+;	stx !oam_off
 	
 	dec !n_tiles
 	bne .loop
+.done:
 
 	ldx !current_sprite_process
 	rtl

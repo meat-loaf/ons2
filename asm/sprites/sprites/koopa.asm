@@ -123,6 +123,7 @@ koopa_gfx:
 	lda !sprite_oam_properties,x
 	and #$3F
 	ora $00
+	ora #$80
 	sta !sprite_oam_properties,x
 
 	ldy !koopa_ani_frame,x
@@ -426,12 +427,12 @@ flyin_parakoopa_main:
 	db $18,$18
 ; koopa gfx tables
 %start_sprite_table("koopa_walk_1", 16, 32)
-	%sprite_table_entry($00, $F7, $00, $00, 1)
-	%sprite_table_entry($00, $E7, $06, $00, 1)
+	%sprite_table_entry($00, $F7, $00, $00, 2, 1)
+	%sprite_table_entry($00, $E7, $06, $00, 2, 1)
 %finish_sprite_table()
 %start_sprite_table("koopa_walk_2", 16, 32)
-	%sprite_table_entry($00, $F8, $02, $00, 1)
-	%sprite_table_entry($00, $E8, $06, $00, 1)
+	%sprite_table_entry($00, $F8, $02, $00, 2, 1)
+	%sprite_table_entry($00, $E8, $06, $00, 2, 1)
 %finish_sprite_table()
 ;%start_sprite_table("koopa_walk_turn", $08, $10)
 ;	%sprite_table_entry($FFFC, $0008, $04, $00, 1)
