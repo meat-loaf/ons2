@@ -429,16 +429,17 @@ spr_give_points:
 ; output:
 ;       carry set: failure, clear: success
 ;       y: ambient slot index
+; clobbers:
+;       $0E-$0F: used as a loop counter
 ambient_get_slot:
-;	sty $4d
 	rep #$30
 	and #$00FF
+.axy_prepped:
 	xba
 	pha
 	ldy.w !ambient_spr_ring_ix
-	lda !num_ambient_sprs
+	lda.w #!num_ambient_sprs
 	sta $0E
-;	lda.w #$0000
 .loop:
 	lda !ambient_rt_ptr,y
 	beq .found
@@ -448,11 +449,10 @@ ambient_get_slot:
 .y_ok:
 	dec $0E
 	bpl .loop
-	
+
 	; tidy the stack
 	pla
 	sep #$31
-;	sec
 	rtl
 .found:
 	tya
@@ -468,7 +468,7 @@ ambient_get_slot:
 	sta !ambient_misc_1,y
 	lda #ambient_initer
 	sta !ambient_rt_ptr,y
-	
+
 	lda !ambient_get_slot_xpos
 	sta !ambient_x_pos,y
 	lda !ambient_get_slot_ypos
@@ -487,7 +487,6 @@ ambient_get_slot:
 	lda !ambient_get_slot_yspd
 	sta !ambient_y_speed+1,y
 	clc
-;	ldy $4d
 	rtl
 .done
 %set_free_finish("bank2_altspr2", ambient_get_slot_done)
