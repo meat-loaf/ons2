@@ -8,6 +8,7 @@ incsrc "sprites/koopa.asm"
 ;incsrc "sprites/fishe.asm"
 ;; todo this could be a level script instead, when that gets implemented
 incsrc "sprites/19_levelmessage.asm"
+incsrc "sprites/banzai_bill.asm"
 ;
 ;;incsrc "sprites/growing_vine.asm"
 ;

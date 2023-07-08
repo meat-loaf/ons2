@@ -9,9 +9,11 @@ macro start_sprite_table(name, hsize, vsize)
 	!n_poses #= 0
 <name>:
 .x_size:
-	dw (~(<hsize>/2)+1)
+;	dw (~(<hsize>/2)+1)
+	dw <hsize>/2
 .y_size:
-	dw (~(<vsize>/2)+1)
+;	dw (~(<vsize>/2)+1)
+	dw <vsize>/2
 .n_tiles:
 	skip 1
 endmacro
@@ -27,15 +29,13 @@ if not(or(equal(<size>,2), equal(<size>, 0)))
 	error "sprite_table_entry: size may only be 2 (big) or 0 (small). Is <size>."
 endif
 if <size> == 2
-	!off = $F8
+	!off = $08
 else
-	!off = $FC
+	!off = $0C
 endif
 
 .pose_!{n_poses}:
-; packed!
 ..tilesz:
-; todo real size in args, calc off
 	db (<size>)>>1
 ..tile_center_off:
 	db !off

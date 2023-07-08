@@ -22,22 +22,12 @@ mega_mole_init:
 .exit:
 	rtl
 mega_mole_main:
-;	lda !sprite_oam_properties,x
-;	and #$3F
-;	sta !sprite_oam_properties,x
-;	lda !mega_mole_facing_dir,x
-;	beq .not_face
-;	lda #$40
-;.not_face:
-;	ora !sprite_oam_properties,x
-;	sta !sprite_oam_properties,x
 	ldy !mega_mole_ani_frame,x
 	lda basic_32_32_spr_tbls_hi,y
 	xba
 	lda basic_32_32_spr_tbls_lo,y
 	jsl spr_gfx
 
-;	jsr.w spr_gfx_32x32
 	lda !sprite_status,x
 	eor #$08
 	ora !sprites_locked

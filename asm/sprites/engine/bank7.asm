@@ -83,6 +83,9 @@ load_sprite_tables:
 	lda.l spr_tweaker_166E_tbl,x
 	lsr
 	sta !sprite_oam_properties,y
+	lda #$c0
+	sta !spr_spriteset_off,y
+	bcs .exit
 
 	lda.l !level_ss_sprite_offs,x
 	cmp #$ff
@@ -131,15 +134,16 @@ spr_gfx:
 .no_x_flip:
 	sty $00
 
-	lda #$ff
-	sta !tile_off+1
+	stz !tile_off+1
 
 	lda !spr_spriteset_off,x
 	sta !gfx_tile_off
 
 	lda !sprite_oam_properties,x
+	tay
 	and #$3F
 	sta !spr_props_no_flip
+	tya
 	and #$C0
 	eor $00
 	ora $64
@@ -157,7 +161,8 @@ spr_gfx:
 	rep #$20
 	sec
 	sbc !layer_1_xpos_curr
-	sbc (!gfx_table_ptr),y
+	clc
+	adc (!gfx_table_ptr),y
 	sta !gfx_x_pos
 	; stolen from original suboffscreen...
 	; not much of a better way to do it i don't think
@@ -180,11 +185,11 @@ spr_gfx:
 	rep #$20
 	sec
 	sbc !layer_1_ypos_curr
-	sbc (!gfx_table_ptr),y
+	clc
+	adc (!gfx_table_ptr),y
 	sta !gfx_y_pos
 	sep #$20
 
-; todo might be worth unpacking these. investigate
 	ldy #$04
 	; y = start of structure (number of tiles to draw)
 	lda (!gfx_table_ptr),y
@@ -194,11 +199,11 @@ spr_gfx:
 	tax
 .loop:
 	iny
-	; y = start of tile data, tile size
+	; y = start of data: tile size
 	lda (!gfx_table_ptr),y
 	sta !tile_hitable
 	iny
-	; y = tile offset to center
+	; y = tile offset from center
 	lda (!gfx_table_ptr),y
 	sta !tile_off
 
@@ -215,14 +220,13 @@ spr_gfx:
 .x_flip_no_inv:
 	clc
 	adc !gfx_x_pos
-	adc !tile_off
+	sec
+	sbc !tile_off
 
 	cmp #$0100
 	sta $0300|!addr,x
 	; shift carry into x high position, then set it
 	lda #$0000
-	;rol
-	;tsb !tile_hitable
 	rol !tile_hitable
 
 	iny
@@ -237,7 +241,9 @@ spr_gfx:
 .y_flip_no_inv:
 	clc
 	adc !gfx_y_pos
-	adc !tile_off
+	sec
+	sbc !tile_off
+
 	cmp #$00F0
 	bcc .y_onscr
 	lda #$00F0
@@ -253,7 +259,7 @@ spr_gfx:
 	adc !gfx_tile_off
 	sta $0302|!addr,x
 	lda #$00
-	asl
+	rol
 	; props high bit
 	sta !gfx_tile_high
 
@@ -263,9 +269,9 @@ spr_gfx:
 	asl
 	eor !spr_props_flip
 	ora !gfx_tile_high
-	bcs .no_oam_props
+	bcs .no_ram_props
 	ora !spr_props_no_flip
-.no_oam_props:
+.no_ram_props:
 	sta $0303|!addr,x
 
 	txa
@@ -275,7 +281,6 @@ spr_gfx:
 	sta $0460|!addr,x
 	txa
 	asl #2
-;	clc
 	adc #$04
 	tax
 	

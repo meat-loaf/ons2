@@ -73,6 +73,8 @@ level_setup_ram_special:
 !n_ss_data_files          = $49
 !ss_off_curr              = $4B
 !files_left               = $4D
+;!spr_off_allocated        = $4F
+
 
 !ss_tile_offset_start     = ($80>>1)
 !ss_tile_offset = ($20>>1)
@@ -94,6 +96,8 @@ ss_setup_spriteset:
 	stz !n_ss_data_files+1
 	stz !files_left
 	stz !files_left+1
+	;stz !spr_off_allocated
+	;stz !spr_off_allocated+1
 	lda #!ss_tile_offset_start
 	sta !ss_off_curr
 ;	stz !ss_off_curr
@@ -204,15 +208,21 @@ check_file_allocated:
 	lda $02
 	sta !level_load_spriteset_files,y
 	lda !level_ss_sprite_offs,x
+	and #$00FF
+	cmp #$00FF
+	bne .skip_set_sprite_offset
+	lda !level_ss_sprite_offs,x
 	and #$FF00
 	ora !ss_off_curr
 	sta !level_ss_sprite_offs,x
 
+.skip_set_sprite_offset:
 	lda !ss_off_curr
 	clc
 	adc.w #!ss_tile_offset
 	sta !ss_off_curr
 	rts
+
 .found:
 	lda !level_ss_sprite_offs,x
 	and #$FF00

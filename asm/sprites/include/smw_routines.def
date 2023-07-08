@@ -11,6 +11,7 @@ spr_carried          = $019F71|!bank
 
 ; LONG-CALLABLE ROUTINES
 ;hurt_mario           = $00F5B7|!bank
+; TODO DEPRECATE
 generate_block       = $00BEB0|!bank
 mario_spr_interact_l = $01A7DC|!bank
 update_sprite_pos    = $01802A|!bank
