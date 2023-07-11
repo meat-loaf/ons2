@@ -244,8 +244,14 @@ spr_gfx:
 	sec
 	sbc !tile_off
 
+	; this seems to fix offscreen issues
+	; but its too long ;3;
+	;  shorten somehow...
+	cmp #$FFF0
+	bcs .y_onscr
 	cmp #$00F0
 	bcc .y_onscr
+.y_offscr:
 	lda #$00F0
 .y_onscr:
 	sta $0301|!addr,x
@@ -285,7 +291,10 @@ spr_gfx:
 	tax
 	
 	dec !n_tiles
-	bne .loop
+;	bmi .done
+	beq .done
+	jmp .loop
+	;bne .loop
 .done:
 
 	ldx !current_sprite_process
