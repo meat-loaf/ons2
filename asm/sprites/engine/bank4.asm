@@ -168,6 +168,7 @@ sub_off_screen:
 	adc.l .offscr_x_off_hi,x
 	plp
 	sbc !sprite_x_high,y
+	sta $00
 	lsr $01
 	bcc .spr_l31
 	eor #$80

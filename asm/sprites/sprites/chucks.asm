@@ -49,7 +49,7 @@
 ;; RAM
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 !chuck_behavior      = !C2
-!chuck_alt_behaviors = !160E
+;!chuck_alt_behaviors = !160E
 !pitchin_chuck_balls = !187B
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -72,7 +72,7 @@
 %set_free_start("bank6")
 CHUCKS_INIT:
 	LDA !spr_extra_byte_2,x
-	STA !chuck_alt_behaviors,x
+;	STA !chuck_alt_behaviors,x
 	LDA !spr_extra_byte_1,x
 	AND #$0F
 	CMP #$0D
@@ -175,7 +175,9 @@ DATA_02C196:
 DATA_02C198:
 	db $08,$F8
 
+; TODO
 DigginChuckSpawnRock:
+	rts
 	JSL FindFreeSprSlot     ; \ Return if no free slots
 	BMI Return02C1F2          ; /
 	LDA #$08                ; \ Sprite status = Normal
@@ -1077,14 +1079,14 @@ ChuckHitOrigPhase:
 	BNE +
 	; use the second extra byte to determine what to turn into if
 	; we originally spawned in the 'hurt' state
-	LDA !spr_extra_byte_2,x
-	AND #$0F
-	CMP #$0D
-	BCC .next_phase_ok
+;	LDA !spr_extra_byte_2,x
+;	AND #$0F
+;	CMP #$0D
+;	BCC .next_phase_ok
 	LDA #$00
-.next_phase_ok:
+;.next_phase_ok:
 	STA !chuck_behavior,x
-	STZ !spr_extra_byte_2,x
+;	STZ !spr_extra_byte_2,x
 +
 	CMP #$0B
 	BNE +
@@ -1178,7 +1180,7 @@ chuck_gfx:
 	; head gfx
 	JSR ADDR_02C88C
 	; body gfx
-	JSR ADDR_02CA27
+	JSR chuck_body_gfx
 	; ancillary gfx (arms, really)
 	JSR ADDR_02CA9D
 	; diggin gfx
@@ -1225,6 +1227,7 @@ ADDR_02C88C:
 	CPY #$09
 	CLC
 	BNE ADDR_02C8AB
+	; stun timer
 	LDA !1540,x
 	SEC
 	SBC #$20
@@ -1244,11 +1247,14 @@ ADDR_02C8AB:
 	ADC #$00
 	STA $00
 	LDA !151C,x
+	; head ani frame
 	STA $02
 	LDA !157C,x
+	; face dir
 	STA $03
 	LDA !15F6,x
 	ORA $64
+	; oam props + prio
 	STA $08
 	LDA !15EA,x
 	STA $05
@@ -1364,16 +1370,20 @@ DATA_02CA0D:
 	db $04,$00,$08,$08,$00,$00,$00,$00
 	db $00,$00
 
-ADDR_02CA27:
+chuck_body_gfx:
 	STZ $06
+	; animation frame
 	LDA $04
+	; facing dir
 	LDY $03
 	BNE ADDR_02CA36
+	; if facing right, table frame += 1A
 	CLC
 	ADC #$1A
 	LDX #$40
 	STX $06
 ADDR_02CA36:
+	; x gets frame to data tables
 	TAX
 	LDY $04
 	LDA DATA_02CA0D,y
@@ -1446,7 +1456,9 @@ ADDR_02CA9D:
 	BCC ADDR_02CAA6
 	JMP chuck_draw_baseball
 
+; a = animation frame
 ADDR_02CAA6:
+	; running shoulder frames
 	CMP #$12
 	BEQ ADDR_02CAFC
 	CMP #$13
@@ -1456,6 +1468,7 @@ ADDR_02CAA6:
 	CMP #$02
 	BCS Return02CAF9
 	TAX
+	; oam index
 	LDY $05
 	LDA $00
 	CLC
@@ -1494,7 +1507,9 @@ ChuckShoulderGfxProp:
 	db $4B,$0B
 
 ADDR_02CAFC:
+	; oam index
 	LDY $05
+	; facing dir
 	LDA !157C,x
 	PHX
 	TAX
@@ -1664,7 +1679,8 @@ FaceMario:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	
+
+; sub horz pos
 ADDR_02D4FA:
 	LDY #$00
 	LDA $94
@@ -1678,6 +1694,7 @@ ADDR_02D4FA:
 Return02D50B:
 	RTS
 	
+; sub vert pos
 ADDR_02D50C:
 	LDY #$00
 	LDA $96

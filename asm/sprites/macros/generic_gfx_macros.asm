@@ -9,10 +9,8 @@ macro start_sprite_table(name, hsize, vsize)
 	!n_poses #= 0
 <name>:
 .x_size:
-;	dw (~(<hsize>/2)+1)
 	dw <hsize>/2
 .y_size:
-;	dw (~(<vsize>/2)+1)
 	dw <vsize>/2
 .n_tiles:
 	skip 1
@@ -31,7 +29,7 @@ endif
 if <size> == 2
 	!off = $08
 else
-	!off = $0C
+	!off = $04
 endif
 
 .pose_!{n_poses}:

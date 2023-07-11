@@ -4,6 +4,8 @@ function pack_props(flip, priority, palette, page) = ((flip&03)<<$06)|((priority
 
 function dma_pack_ctrl_dst_16(dest, ctrl) = ((dest<<8)&$FF00)|(ctrl&$FF)
 
+function invert(val) = (~val)+1
+
 macro implement_timer(ram)
 	lda <ram>
 	beq ?no_dec

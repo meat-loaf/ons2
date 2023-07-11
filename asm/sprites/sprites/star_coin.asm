@@ -13,6 +13,9 @@
 starcoin_init:
 	lda #$C0
 	sta !spr_spriteset_off,x
+	lda #$01
+	ora !sprite_oam_properties,x
+	sta !sprite_oam_properties,x
 	jsl sprite_read_item_memory
 	beq .nodie
 	stz !sprite_status,x

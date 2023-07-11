@@ -81,6 +81,7 @@ load_sprite_tables:
 	lda.l spr_tweaker_190F_tbl,x
 	sta !sprite_tweaker_190f,y
 	lda.l spr_tweaker_166E_tbl,x
+	and #$0f
 	lsr
 	sta !sprite_oam_properties,y
 	lda #$c0
@@ -90,7 +91,7 @@ load_sprite_tables:
 	lda.l !level_ss_sprite_offs,x
 	cmp #$ff
 	bne .have_set
-	lda #$00
+	inc
 	clc
 .have_set:
 	asl
@@ -213,7 +214,6 @@ spr_gfx:
 	rep #$20
 	; y = tile x offset
 	lda (!gfx_table_ptr),y
-	;bcc .x_flip_no_inv
 	bvc .x_flip_no_inv
 	eor #$ffff
 	inc
