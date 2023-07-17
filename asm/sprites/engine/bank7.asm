@@ -102,7 +102,6 @@ load_sprite_tables:
 	rol !sprite_oam_properties,x
 .exit:
 	rtl
-
 !gfx_x_pos         = $00
 !gfx_y_pos         = $02
 !gfx_table_ptr     = $04
@@ -290,6 +289,7 @@ spr_gfx:
 	adc #$04
 	tax
 	
+.next_tile:
 	dec !n_tiles
 ;	bmi .done
 	beq .done
@@ -299,5 +299,222 @@ spr_gfx:
 
 	ldx !current_sprite_process
 	rtl
+
+!gfx_x_pos         = $00
+!gfx_y_pos         = $02
+
+!spr_props_no_flip = $04
+
+; two bytes together (packed)
+!spr_tile_off      = $06
+
+!tile_flip_y_off   = $08
+!tile_flip_x_off   = $09
+
+; two bytes
+!spr_props_flip    = $0A
+
+!curr_pose_ptr     = $0c
+!curr_pose_ptr_off = $0e
+!oam_off           = $0f
+
+!tile_yx           = $45
+!tile_hitable      = $48
+!tile_off          = $49
+; enter a16i8
+; exit a8i8
+spr_gfx_2:
+	stz !spr_props_no_flip
+	stz !spr_props_flip
+
+	sep #$20
+	ldy #$00
+	lda !sprite_misc_157c,x
+	bne .no_x_flip_facedir
+	ldy #$40
+.no_x_flip_facedir:
+	sty $01
+	
+	stz !tile_off+1
+	stz !spr_tile_off+1
+	
+	lda !spr_spriteset_off,x
+	sta !spr_tile_off
+	lda !sprite_oam_properties,x
+	sta $00
+	and #$3F
+	sta !spr_props_no_flip+1
+	ldy #$02
+	lda $00
+	and #$C0
+	eor $01
+	ora $64
+	sta !spr_props_flip+1
+	bpl .no_y_flip
+	ldy #$04
+.no_y_flip:
+	sty !tile_flip_y_off
+	ldy #$06
+	; still has props
+	and #$40
+	beq .no_x_flip
+	ldy #$08
+.no_x_flip:
+	sty !tile_flip_x_off
+
+	lda !sprite_x_high,x
+	xba
+	lda !sprite_x_low,x
+	rep #$20
+	sec
+	sbc !layer_1_xpos_curr
+	clc
+	adc !gen_gfx_tile_offs+$0
+	sta !gfx_x_pos
+	; stolen from original suboffscreen...
+	; not much of a better way to do it i don't think
+	; since we still need to pack 8-bit tables. we need
+	; to drop to 8-bit a for y calcs anyway
+
+	clc
+	adc #$0040
+	cmp #$0180
+	sep #$20
+;	lda #$00
+	tdc
+	rol
+	sta !sprite_off_screen_horz,x
+	bne .abort
+
+	lda !sprite_y_high,x
+	xba
+	lda !sprite_y_low,x
+	rep #$20
+	sec
+	sbc !layer_1_ypos_curr
+	clc
+	adc !gen_gfx_tile_offs+$2
+	sta !gfx_y_pos
+
+	stz !curr_pose_ptr_off
+	lda !sprite_oam_index,x
+	tax
+
+	ldy #$00
+.pose_loop:
+	lda !gen_gfx_pose_list,y
+	beq .done
+	sta !curr_pose_ptr
+	jsr .handle_pose
+	ldy !curr_pose_ptr_off
+	iny #2
+	sty !curr_pose_ptr_off
+	bra .pose_loop
+.done:
+	sep #$20
+.abort:
+	ldx !current_sprite_process
+	rtl
+
+.handle_pose:
+	ldy #$00
+	lda (!curr_pose_ptr),y
+	sta !tile_hitable
+
+	ldy !tile_flip_y_off
+	lda (!curr_pose_ptr),y
+	clc
+	adc !gfx_y_pos
+	sec
+	sbc !tile_off
+
+	cmp #$FFF0
+	bcs ..y_onscr
+	cmp #$00F0
+	bcc ..y_onscr
+..y_offscr:
+	lda #$00F0
+..y_onscr:
+	sta !tile_yx
+
+	ldy !tile_flip_x_off
+	lda (!curr_pose_ptr),y
+	clc
+	adc !gfx_x_pos
+	sec
+	sbc !tile_off
+
+	cmp #$0100
+	sta !tile_yx+1
+	; corrupts tile offset, but it's not needed now
+	rol !tile_hitable
+
+	ldy #$0a
+	lda (!curr_pose_ptr),y
+	bit #$0100
+	beq ..no_ram_props
+	and #(~$0100)
+	ora !spr_props_no_flip
+	clc
+..no_ram_props:
+	adc !spr_tile_off
+	eor !spr_props_flip
+	sta $0302|!addr,x
+	lda !tile_yx
+	xba
+	sta $0300|!addr,x
+	txa
+	lsr #2
+	tax
+	lda !tile_hitable
+	sta $0460|!addr,x
+	lda.l oam_small_to_next_big,x
+	tax
+	ldy #$0c
+	lda (!curr_pose_ptr),y
+	beq ..done
+	sta !curr_pose_ptr
+	bra .handle_pose
+..done:
+	rts
+; carry clear if successful: buffer index in y
+; carry set if no slots left; y will be negative
+get_dyn_pose:
+	txy
+	ldx !dyn_pose_buffer_avail
+	lda.l .free_indices,x
+	bmi .none
+	tsb !dyn_pose_buffer_avail
+	tax
+	lda.l .buff_index_to_offset,x
+.none:
+	tyx
+	tay
+	rtl
+
+.free_indices:
+	db $00, $01, $00, $02, $00, $01, $00, $03
+	db $00, $01, $00, $02, $00, $01, $00, $04
+	db $00, $01, $00, $02, $00, $01, $00, $03
+	db $00, $01, $00, $02, $00, $01, $00, $05
+	db $00, $01, $00, $02, $00, $01, $00, $03
+	db $00, $01, $00, $02, $00, $01, $00, $04
+	db $00, $01, $00, $02, $00, $01, $00, $03
+	db $00, $01, $00, $02, $00, $01, $00, $86
+.buff_index_to_offset:
+	db !gen_gfx_tile_tblsz*0
+	db !gen_gfx_tile_tblsz*1
+	db !gen_gfx_tile_tblsz*2
+	db !gen_gfx_tile_tblsz*3
+	db !gen_gfx_tile_tblsz*4
+	db !gen_gfx_tile_tblsz*5
+
+oam_small_to_next_big:
+!ix #= 1
+while !ix <= $64
+	db !ix*4
+	!ix #= !ix+1
+endif
+
 bank7_stuff_done:
 %set_free_finish("bank7", bank7_stuff_done)

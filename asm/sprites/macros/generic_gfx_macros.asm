@@ -1,5 +1,130 @@
 includefrom "macros.asm"
 
+; 4 bytes - scratch
+!gen_gfx_tile_offs          = $4B
+macro sprite_pose_pack_offs(hsize, vsize)
+	lda.w #(<hsize>/2)
+	sta !gen_gfx_tile_offs+0
+if <hsize> != <vsize>
+	lda.w #(<vsize>/2)
+endif
+	sta !gen_gfx_tile_offs+2
+endmacro
+
+macro start_sprite_pose_entry_list(name)
+	if defined("sprite_pose_entry_list_name")
+		error "use 'finish_sprite_pose_entry_list' macro before starting another. Currently defined as `!sprite_pose_entry_list_name'"
+	endif
+	!sprite_pose_entry_list_name = <name>
+	!n_poses #= 0
+endmacro
+
+macro start_sprite_pose_entry(name, a, b)
+	if defined("sprite_pose_entry_name_!{n_poses}")
+		error "use 'finish_sprite_pose_entry' macro before starting another. Currently defined as: `!{sprite_pose_entry_name_!{n_poses}}'"
+	endif
+
+	!{sprite_pose_entry_name_!{n_poses}} = <name>
+	!n_tiles #= 0
+<name>:
+endmacro
+
+macro sprite_pose_entry_mirror(name)
+	!{sprite_pose_entry_name_!{n_poses}} = <name>
+	!n_poses #= !n_poses+1
+endmacro
+
+!gen_gfx_tile_tblsz = 14
+macro sprite_pose_tile_entry(xoff, yoff, tile, props, size, use_mem_props)
+
+if !{n_tiles} != 0
+pushpc
+!p #= !{n_tiles}-1
+org .tile_!{p}_next
+	dw .tile_!{n_tiles}
+undef "p"
+pullpc
+endif
+
+!use_props = 0
+if <use_mem_props> == 1
+	!use_props = 1
+endif
+
+if not(or(equal(<size>,2), equal(<size>, 0)))
+	error "sprite_table_entry: size may only be 2 (big) or 0 (small). Is <size>."
+endif
+if <size> == 2
+	!off = $08
+else
+	!off = $04
+endif
+
+if <yoff>&$80 != 0
+	!yoff #= <yoff>|($FF00)
+else
+	!yoff #= <yoff>|($0000)
+endif
+
+if <xoff>&$80 != 0
+	!xoff #= <xoff>|($FF00)
+else
+	!xoff #= <xoff>|($0000)
+endif
+
+.tile_!{n_tiles}:
+..tilesz:
+	; high bit shifted in via rol
+	db (<size>)>>1
+..tile_center_off:
+	db !off
+..y_off:
+	dw !yoff
+...inv:
+	dw invert(!yoff)
+..x_off:
+	dw !xoff
+...inv:
+	dw invert(!xoff)
+..tile:
+	db (<tile>)
+..props:
+	db (<props>)|(!use_props)
+..next:
+	skip 2
+undef "use_props"
+!n_tiles #= !n_tiles+1
+endmacro
+
+macro finish_sprite_pose_entry()
+	if equal(!n_tiles, 0)
+	error "Sprite table !sprite_pose_entry_name_!{n_poses} has no poses defined. Use the 'sprite_pose_entry' macro."
+endif
+	!p #= !{n_tiles}-1
+; finish off the last table with nullptr
+	pushpc
+	org .tile_!{p}_next
+		dw $0000
+	pullpc
+
+	!n_poses #= !n_poses+1
+
+	undef "n_tiles"
+endmacro
+
+macro finish_sprite_pose_entry_list()
+!p #= 0
+!{sprite_pose_entry_list_name}_pose_ptrs:
+while !p < !n_poses
+	dw !{sprite_pose_entry_name_!{p}}
+	undef "sprite_pose_entry_name_!{p}"
+	!p #= !p+1
+endif
+undef "n_poses"
+undef "sprite_pose_entry_list_name"
+endmacro
+
+;; old ;;
 
 macro start_sprite_table(name, hsize, vsize)
 	if defined("start_sprite_table")
@@ -34,6 +159,7 @@ endif
 
 .pose_!{n_poses}:
 ..tilesz:
+	; high bit shifted in via rol
 	db (<size>)>>1
 ..tile_center_off:
 	db !off

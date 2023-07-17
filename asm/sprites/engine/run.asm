@@ -123,7 +123,7 @@ spr_handle_init:
 	sta !sprite_status,x
 	lda !sprite_num,x
 	tax
-	lda.l sprite_init_table_bk,x
+	lda sprite_init_table_bk,x
 	pha
 	pha
 	plb
@@ -137,7 +137,7 @@ spr_handle_init:
 spr_handle_main:
 	lda !sprite_num,x
 	tax
-	lda.l sprite_main_table_bk,x
+	lda sprite_main_table_bk,x
 	pha
 	pha
 	plb

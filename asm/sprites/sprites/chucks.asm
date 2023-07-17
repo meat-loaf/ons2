@@ -80,14 +80,19 @@
 !chuck_hits            = !sprite_misc_1528
 !chuck_disable_contact = !sprite_misc_1564
 !chuck_start_run_timer = !sprite_misc_15ac
-!chuck_jump_kind_flag = !sprite_misc_160e
-!chuck_head_phase = !sprite_misc_1594
+!chuck_jump_kind_flag  = !sprite_misc_160e
+!chuck_head_phase      = !sprite_misc_1594
+
+!chuck_head_pose_buff_ix = !sprite_misc_1504
 
 !chuck_diggin_head_turn_ani_timer = !sprite_misc_1558
 
 ; TODO clean this up
 %set_free_start("bank7")
 CHUCKS_INIT:
+	jsl get_dyn_pose
+	tya
+	sta !chuck_head_pose_buff_ix,x
 ;	LDA !spr_extra_byte_2,x
 ;	STA !chuck_alt_behaviors,x
 	LDA !spr_extra_byte_1,x
@@ -308,7 +313,8 @@ ADDR_02C25B:
 	jsl sub_off_screen
 	JSR chuck_check_contact
 	JSL SprSprInteract
-	JSL $019138|!bank
+;	JSL $019138|!bank
+	jsl spr_obj_interact
 	LDA !sprite_blocked_status,x
 	AND #$08
 	BEQ ADDR_02C274
@@ -318,9 +324,9 @@ ADDR_02C274:
 	LDA !sprite_blocked_status,x             ; \ Branch if not touching object
 	AND #$03                ;  |
 	BEQ ADDR_02C2F4           ; /
-	LDA !sprite_off_screen_horz,x
-	ORA !sprite_off_screen_vert,x
-	BNE ADDR_02C2E4
+;	LDA !sprite_off_screen_horz,x
+;	ORA !sprite_off_screen_vert,x
+;	BNE ADDR_02C2E4
 	LDA !sprite_misc_187b,x
 	BEQ ADDR_02C2E4
 	LDA !sprite_x_low,x
@@ -1186,141 +1192,89 @@ Return02C819:
 
 ; TODO DRAW HEAD
 chuck_gfx:
-	ldy !chuck_ani_frame,x
-	lda chuck_frame_table_ptr_hi,y
-	xba
-	lda chuck_frame_table_ptr_lo,y
-	jsl spr_gfx
+	lda !chuck_ani_frame,x
+	rep #$20
+	asl
+	tay
+	lda chuck_body_pose_ptrs,y
+	sta !gen_gfx_pose_list
+	stz !gen_gfx_pose_list+2
+	%sprite_pose_pack_offs(16, 16)
+	jsl spr_gfx_2
 	rts
 
-; frame 0 unused?
-; frames 1, 2 unused
-%start_sprite_table("chuck_unused", 16,16)
-	%sprite_table_entry($00,$00,$00,$00,$02, 1)
-%finish_sprite_table()
-
-; frame 3
-%start_sprite_table("chuck_sitting", 16, 16)
-	%sprite_table_entry($FC,$00,$0E,$00,$02, 1)
-	%sprite_table_entry($04,$00,$0E,$40,$02, 1)
-%finish_sprite_table()
-; frame 4
-%start_sprite_table("chuck_crouching", 16, 16)
-	%sprite_table_entry($FC,$00,$26,$00,$02, 1)
-	%sprite_table_entry($04,$00,$26,$40,$02, 1)
-%finish_sprite_table()
-; frame 5
-%start_sprite_table("chuck_sitting_lr", 16, 16)
-	%sprite_table_entry($FC,$00,$2D,$00,$02, 1)
-	%sprite_table_entry($04,$00,$2E,$00,$02, 1)
-%finish_sprite_table()
-; frame 6
-%start_sprite_table("chuck_jumpin", 16, 16)
-	%sprite_table_entry($FC,        $00,$20,$00,$02, 1)
-	%sprite_table_entry($04,        $00,$20,$40,$02, 1)
-	%sprite_table_entry($0A,        $F4,$28,$40,$00, 1)
-	%sprite_table_entry(invert($0A),$F4,$28,$00,$00, 1)
-%finish_sprite_table()
-; frame 7
-; note ugg this is gonna be a pain because the hands need to be above the head...
-;      probably need to go back to linked list type system for this? or just skip it
-;      maybe just draw an 8x8?
-%start_sprite_table("chuck_clappin", 16, 16)
-	%sprite_table_entry($00,$F0,$24,$00,$02, 1)
-	%sprite_table_entry($08,$00,$22,$40,$02, 1)
-	%sprite_table_entry($F8,$00,$22,$00,$02, 1)
-%finish_sprite_table()
-; frame 8 unused
-; frame a-d
-%start_sprite_table("chuck_hurt", 16, 16)
-	%sprite_table_entry($FC,$00,$0C,$00,$02, 1)
-	%sprite_table_entry($04,$00,$0C,$40,$02, 1)
-%finish_sprite_table()
-
-; frame 12
-%start_sprite_table("chuck_run_1", 16, 16)
-	%sprite_table_entry($FC,$00,$09,$00,$02, 1)
-	%sprite_table_entry($04,$00,$0A,$00,$02, 1)
-	%sprite_table_entry($08,$F4,$39,$00,$00, 1)
-	%sprite_table_entry($00,$F4,$38,$00,$00, 1)
-%finish_sprite_table()
-; frame 13
-%start_sprite_table("chuck_run_2", 16, 16)
-	%sprite_table_entry($FC,$00,$06,$00,$02, 1)
-	%sprite_table_entry($04,$00,$07,$00,$02, 1)
-	%sprite_table_entry($08,$F4,$39,$00,$00, 1)
-	%sprite_table_entry($00,$F4,$38,$00,$00, 1)
-%finish_sprite_table()
-
-chuck_frame_table_ptr_lo:
-	db chuck_sitting
-	db chuck_unused
-	db chuck_unused
-	db chuck_sitting
-	db chuck_crouching
-	db chuck_sitting_lr
-	db chuck_jumpin
-	db chuck_clappin
-	; 8
-	db chuck_unused
-	; 9 TODO
-	db chuck_unused
-	; a
-	db chuck_hurt
-	; b
-	db chuck_hurt
-	; c
-	db chuck_hurt
-	; d
-	db chuck_hurt
-	; e - diggin (TODO)
-	db chuck_unused
-	; f - diggin (TODO)
-	db chuck_unused
-	; 10 - diggin (TODO)
-	db chuck_unused
-	; 11 - kickin (TODO)
-	db chuck_unused
-	; 12
-	db chuck_run_1
-	; 13
-	db chuck_run_2
-	; 14+ baseball related TODO
-
-chuck_frame_table_ptr_hi:
-	db chuck_sitting>>8
-	db chuck_unused>>8
-	db chuck_unused>>8
-	db chuck_sitting>>8
-	db chuck_crouching>>8
-	db chuck_sitting_lr>>8
-	db chuck_jumpin>>8
-	db chuck_clappin>>8
-	; 8
-	db chuck_unused>>8
-	; 9 TODO
-	db chuck_unused>>8
-	; a
-	db chuck_hurt>>8
-	; b
-	db chuck_hurt>>8
-	; c
-	db chuck_hurt>>8
-	; d
-	db chuck_hurt>>8
-	; e - diggin (TODO)
-	db chuck_unused>>8
-	; f - diggin (TODO)
-	db chuck_unused>>8
-	; 10 - diggin (TODO)
-	db chuck_unused>>8
-	; 11 - kickin (TODO)
-	db chuck_unused>>8
-	; 12
-	db chuck_run_1>>8
-	; 13
-	db chuck_run_2>>8
-	; 14+ baseball related TODO
+%start_sprite_pose_entry_list("chuck_body")
+	; frame 0 unused?
+	%start_sprite_pose_entry("chuck_unused", 16,16)
+		%sprite_pose_tile_entry($00,$00,$00,$00,$02, 1)
+	%finish_sprite_pose_entry()
+	; frames 1, 2 unused
+	%sprite_pose_entry_mirror("chuck_unused")
+	%sprite_pose_entry_mirror("chuck_unused")
+	; frame 3
+	%start_sprite_pose_entry("chuck_sitting", 16, 16)
+		%sprite_pose_tile_entry($FC,$00,$0E,$00,$02, 1)
+		%sprite_pose_tile_entry($04,$00,$0E,$40,$02, 1)
+	%finish_sprite_pose_entry()
+	; frame 4
+	%start_sprite_pose_entry("chuck_crouching", 16, 16)
+		%sprite_pose_tile_entry($FC,$00,$26,$00,$02, 1)
+		%sprite_pose_tile_entry($04,$00,$26,$40,$02, 1)
+	%finish_sprite_pose_entry()
+	; frame 5
+	%start_sprite_pose_entry("chuck_sitting_lr", 16, 16)
+		%sprite_pose_tile_entry($FC,$00,$2D,$00,$02, 1)
+		%sprite_pose_tile_entry($04,$00,$2E,$00,$02, 1)
+	%finish_sprite_pose_entry()
+	; frame 6
+	%start_sprite_pose_entry("chuck_jumpin", 16, 16)
+		%sprite_pose_tile_entry($FC,        $00,$20,$00,$02, 1)
+		%sprite_pose_tile_entry($04,        $00,$20,$40,$02, 1)
+		%sprite_pose_tile_entry($0A,        $F4,$28,$40,$00, 1)
+		%sprite_pose_tile_entry(invert($0A),$F4,$28,$00,$00, 1)
+	%finish_sprite_pose_entry()
+	; frame 7
+	; note ugg this is gonna be a pain because the hands need to be above the head...
+	;      probably need to go back to linked list type system for this? or just skip it
+	;      maybe just draw an 8x8?
+	%start_sprite_pose_entry("chuck_clappin", 16, 16)
+		%sprite_pose_tile_entry($00,$F0,$24,$00,$02, 1)
+		%sprite_pose_tile_entry($08,$00,$22,$40,$02, 1)
+		%sprite_pose_tile_entry($F8,$00,$22,$00,$02, 1)
+	%finish_sprite_pose_entry()
+	; frame 8 unused
+	%sprite_pose_entry_mirror("chuck_unused")
+	; crouching???
+	%sprite_pose_entry_mirror("chuck_unused")
+	; frame a-d
+	%start_sprite_pose_entry("chuck_hurt", 16, 16)
+		%sprite_pose_tile_entry($FC,$00,$0C,$00,$02, 1)
+		%sprite_pose_tile_entry($04,$00,$0C,$40,$02, 1)
+	%finish_sprite_pose_entry()
+	%sprite_pose_entry_mirror("chuck_hurt")
+	%sprite_pose_entry_mirror("chuck_hurt")
+	%sprite_pose_entry_mirror("chuck_hurt")
+	; todo diggin e,f, 10
+	%sprite_pose_entry_mirror("chuck_unused")
+	%sprite_pose_entry_mirror("chuck_unused")
+	%sprite_pose_entry_mirror("chuck_unused")
+	; todo kickin
+	%sprite_pose_entry_mirror("chuck_unused")
+	; frame 12
+	%start_sprite_pose_entry("chuck_run_1", 16, 16)
+		%sprite_pose_tile_entry($FC,$00,$09,$00,$02, 1)
+		%sprite_pose_tile_entry($04,$00,$0A,$00,$02, 1)
+		%sprite_pose_tile_entry($08,$F4,$39,$00,$00, 1)
+		%sprite_pose_tile_entry($00,$F4,$38,$00,$00, 1)
+	%finish_sprite_pose_entry()
+	; frame 13
+	%start_sprite_pose_entry("chuck_run_2", 16, 16)
+		%sprite_pose_tile_entry($FC,$00,$06,$00,$02, 1)
+		%sprite_pose_tile_entry($04,$00,$07,$00,$02, 1)
+		%sprite_pose_tile_entry($08,$F4,$39,$00,$00, 1)
+		%sprite_pose_tile_entry($00,$F4,$38,$00,$00, 1)
+	%finish_sprite_pose_entry()
+%finish_sprite_pose_entry_list()
 
 FaceMario:
 	jsl sub_horz_pos

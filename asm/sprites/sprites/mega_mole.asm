@@ -115,7 +115,7 @@ mega_mole_main:
 	;sta !player_y_next+1
 
 	ldy #$00
-	lda !sprite_x_movement
+	lda !sprite_movement
 	bpl .move_x_pos
 	dey
 .move_x_pos:

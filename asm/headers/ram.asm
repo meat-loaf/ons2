@@ -110,6 +110,7 @@ includeonce
 !map16_data_hi            = $6E
 !player_ani_trigger_state = $71
 !player_dir               = $76
+!player_blocked_status    = $77
 !player_x_spd_spx         = $7A
 !player_x_spd             = $7B
 !player_y_spd_spx         = $7C
@@ -211,21 +212,27 @@ includeonce
 ;      is reloaded on overworld load, so this ram is available for use
 ;      elsewhere (0ddf through 0ef4 inclusive)
 
+; scratch used by spriteset code during level load:
+; holds graphics files to be decompressed to vram
+; only needed during load time
 !level_load_spriteset_files = $0DDF
+; reuse this after load time. room for 5 pointers. last must be 0000!!
+; todo: probably use a counter instead, thats a dumb requirement
+!gen_gfx_pose_list          = $0DDF
+; room for 6 14-byte tile info structs for the graphics routine. used for
+; tiles that would be unwieldy in size simply due to minor x/y offsetting.
+; claimed by sprites on their init, one at a time.
+!gfx_dyn_pose_buffer        = !gen_gfx_pose_list+(2*6)
 ; camera ram is all 2 bytes each
-;!camera_control_x_pos     = $0DDF|!addr
-!camera_control_x_pos     = !level_load_spriteset_files+(10*2)
+!camera_control_x_pos     = !gfx_dyn_pose_buffer+(14*6)
 !camera_control_y_pos     = !camera_control_x_pos+$2
 !camera_bound_left_delta  = !camera_control_y_pos+$2
 !camera_bound_right_delta = !camera_bound_left_delta+$2
-;; scratch
+;;; scratch
 !camera_state             = !camera_bound_right_delta+$2
 
 ; 4 bytes
 ;!camera_scratch          = !camera_target_x_pos+2
-; scratch used by spriteset code during level load:
-; holds graphics files to be decompressed to vram
-;!level_load_spriteset_files = $0EF4-(12*2)
 
 !status_bar_tilemap     = $0EF9|!addr
 
@@ -240,14 +247,13 @@ includeonce
 
 ; !! no |!addr
 !ambient_gen_timer      = $0F4A
-; 20 bytes free here
+; 36 bytes free here, 'till $0FBE (note that by default 0fae through 0fb1 are not cleared. look to fix?)
 !turnblock_run_index    = !ambient_gen_timer+!ambient_tblsz  ; $0F9A
 !turnblock_free_index   = !turnblock_run_index+2
 !skidsmoke_run_index    = !turnblock_free_index+2
 !skidsmoke_free_index   = !skidsmoke_run_index+2
-; 12 bytes, gfx file numbers to load during sprite gfx decompression
-; free during levels
-;!level_spriteset_gfx_files = !turnblock_free_index+2
+!dyn_pose_buffer_avail  = !skidsmoke_free_index+2
+assert !dyn_pose_buffer_avail+1 <= $0FBE, "ambient sprite ram exceeded bounds"
 
 !main_level_num         = $13BF|!addr
 
@@ -288,7 +294,7 @@ includeonce
 !random_number_output   = $148D|!addr
 !player_carrying_item   = $148F|!addr
 !invincibility_timer    = $1490|!addr
-!sprite_x_movement      = $1491|!addr
+!sprite_movement        = $1491|!addr
 ; for end of level
 !player_peace_timer     = $1492|!addr
 !end_level_timer        = $1493|!addr
@@ -379,6 +385,7 @@ assert (!ambient_y_speed)+(!num_ambient_sprs*2) <= $185C, "ambient sprite ram ex
 !player_on_yoshi    = $187A|!addr
 !screen_shake_timer = $1887|!addr
 !screen_shake_player_yoff = $188B|!addr
+!tile_map16_lo_bak        = $18A7|!addr
 ; 1 byte
 ; Toggles the use of item memory.
 ; ------r- : Disable reading (everything will always respawn).

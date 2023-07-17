@@ -23,7 +23,6 @@ freecode
 ss_data_table:
 	skip $100*2*4
 level_setup_ram_special:
-;	; restore hijacked code
 	stz !ambient_playerfireballs
 	stz !ambient_playerfireballs+1
 	stz !camera_control_resident
@@ -72,8 +71,6 @@ level_setup_ram_special:
 ; 2 bytes
 !n_ss_data_files          = $49
 !ss_off_curr              = $4B
-!files_left               = $4D
-;!spr_off_allocated        = $4F
 
 
 !ss_tile_offset_start     = ($80>>1)
@@ -94,13 +91,8 @@ ss_setup_spriteset:
 .begin_table_parse:
 	stz !n_ss_data_files
 	stz !n_ss_data_files+1
-	stz !files_left
-	stz !files_left+1
-	;stz !spr_off_allocated
-	;stz !spr_off_allocated+1
 	lda #!ss_tile_offset_start
 	sta !ss_off_curr
-;	stz !ss_off_curr
 	stz !ss_off_curr+1
 
 	lda !level_sprite_data_ptr
@@ -147,17 +139,21 @@ ss_setup_spriteset:
 	; load exgfx file num
 	lda ss_data_table,y
 	bmi ...ss_already_set
-	phy
+	cmp #$007F
+	beq ...skip_slot
+	;phy
+	sty $06
 	sta $02
 	lda !n_ss_data_files
 	cmp.w #!max_ss_data_files
-	bcc ...num_files_ok
-	inc !files_left
+	bcs ss_no_available_abort
 ...num_files_ok:
 	asl
 	tay
 	jsr check_file_allocated
-	ply
+	;ply
+	ldy $06
+...skip_slot:
 	iny #2
 	dec $00
 	bpl ...set_files_loop
@@ -182,8 +178,9 @@ ss_setup_spriteset:
 ss_no_available_abort:
 	;stp
 	;brk #$AA
+;	pla
 	pla
-	sep #$20
+	sep #$30
 	bra ss_setup_spriteset_parse_sprite_table_done
 
 ; $02 has file
@@ -200,8 +197,6 @@ check_file_allocated:
 	dey
 	bpl .loop
 
-	lda !files_left
-	bne ss_no_available_abort
 	inc !n_ss_data_files
 	ldy $04
 
@@ -296,6 +291,6 @@ spriteset_extract_gfx_hijack:
 	plp : pla : ply : plx
 	rtl
 .table_offsets:
-	dw $000C,$0008,$0000
+	dw $0010,$0008,$0000
 .nfiles:
 	dw $0002-1,$0004-1,$0004-1
