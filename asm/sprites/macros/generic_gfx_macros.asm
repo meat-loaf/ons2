@@ -11,6 +11,40 @@ endif
 	sta !gen_gfx_tile_offs+2
 endmacro
 
+; expects two arguments per table: the table containing
+; the animation pose in ram, and the table in rom to index from.
+; this macro is dumb, so if you're doing anything fancy, pack it
+; properly yourself.
+macro call_spr_gfx(hoff, voff, ...)
+	!i #= 0
+	if sizeof(...)&1
+		error "Number of arguments to call spr_gfx should be even: need ram pose index and rom pose table."
+	else
+		rep #$20
+		while !i < sizeof(...)
+			!ip #= !i+1
+			lda <!i>,x
+			asl : tay
+			lda <!ip>,y
+			sta !gen_gfx_pose_list+!i
+			!i #= !i+2
+		endif
+		stz !gen_gfx_pose_list+!i
+		%sprite_pose_pack_offs(<hoff>, <voff>)
+		jsl spr_gfx_2
+	endif
+endmacro
+
+; for large sprites with a single animation frame
+macro call_spr_gfx_single(hoff, voff, table)
+	rep #$20
+	lda.w #<table>
+	sta !gen_gfx_pose_list
+	stz !gen_gfx_pose_list+2
+	%sprite_pose_pack_offs(<hoff>, <voff>)
+	jsl spr_gfx_2
+endmacro
+
 macro start_sprite_pose_entry_list(name)
 	if defined("sprite_pose_entry_list_name")
 		error "use 'finish_sprite_pose_entry_list' macro before starting another. Currently defined as `!sprite_pose_entry_list_name'"
@@ -113,13 +147,18 @@ endif
 endmacro
 
 macro finish_sprite_pose_entry_list()
-!p #= 0
-!{sprite_pose_entry_list_name}_pose_ptrs:
-while !p < !n_poses
-	dw !{sprite_pose_entry_name_!{p}}
-	undef "sprite_pose_entry_name_!{p}"
-	!p #= !p+1
+if !n_poses != 1
+	!p #= 0
+	!{sprite_pose_entry_list_name}_pose_ptrs:
+	while !p < !n_poses
+		dw !{sprite_pose_entry_name_!{p}}
+		undef "sprite_pose_entry_name_!{p}"
+		!p #= !p+1
+	endif
+else
+	undef "sprite_pose_entry_name_0"
 endif
+
 undef "n_poses"
 undef "sprite_pose_entry_list_name"
 endmacro

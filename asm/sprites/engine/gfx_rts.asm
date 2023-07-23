@@ -132,8 +132,8 @@ sub_spr_gfx_1:
 getdrawinfo_generic_prefix:
 	LDA   !spr_spriteset_off,x
 	STA.b !tile_off_scratch
-	LDA   !spr_spriteset_off_hi,x
-	STA.b !tile_off_scratch+1
+	;LDA   !spr_spriteset_off_hi,x
+	;STA.b !tile_off_scratch+1
 	JMP.w $01A365|!bank
 
 ; todo mark free space here to be usable

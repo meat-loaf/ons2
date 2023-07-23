@@ -1,5 +1,6 @@
 ; some temporary shims for long-calling original rts routines
 incsrc "jslshims.asm"
+; TODO deprecated, remove
 incsrc "gfx_rts.asm"
 incsrc "spritesets.asm"
 

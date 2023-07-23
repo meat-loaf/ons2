@@ -19,9 +19,9 @@
 !parabeetle_sprnum = $12
 !parabeetle_tile_off_loc = $09
 
-%alloc_sprite(!parabeetle_sprnum, "smb3_parabeetle", parabeetle_init, parabeetle_main, 1, 1, \
+%alloc_sprite_spriteset_1(!parabeetle_sprnum, "smb3_parabeetle", parabeetle_init, parabeetle_main, 1, \
+	$10E, \
 	$10, $95, $11, $B9, $90, $01)
-%alloc_sprite_sharedgfx_entry_2(!parabeetle_sprnum, $08, $0A)
 
 !para_pal_index       = !sprite_misc_151c
 !para_ani_timer       = !sprite_misc_1570
@@ -38,41 +38,38 @@ parabeetle_init:
 	and #$07
 	sta !para_pal_index,x
 	asl
-	sta $01
-	
-	lda !sprite_oam_properties,x
-	and #$F1
-	ora $01
+	ora !sprite_oam_properties,x
 	sta !sprite_oam_properties,x
-
-.Direction
+.handle_dir:
 	lda $94
 	cmp !sprite_x_low,x
 	lda $95
 	sbc !sprite_x_high,x
-	bpl .EndInit
+	bpl .facing_right
 	inc !para_facing_dir,x
-.EndInit
+.facing_right:
 	lda !spr_extra_byte_1,x
 	and #$30
-	beq .Return
+	beq .exit
 	cmp #$30
-	beq .FaceAway
+	beq .face_away
 	lsr #4
 	dec
 	eor #$01
 	sta !para_facing_dir,x
-.Return
+.exit
 	rtl
 
-.FaceAway
+.face_away:
 	lda !para_facing_dir,x
 	eor #$01
 	sta !para_facing_dir,x
 	rtl
 
 parabeetle_main:
-	jsr.w sub_spr_gfx_2
+	ldy !para_ani_frame,x
+	lda gfx_tiles,y
+	jsl spr_gfx_single
 	lda !sprites_locked
 	bne .done
 	lda !sprite_status,x
@@ -118,22 +115,22 @@ parabeetle_main:
 .speed_update
 	jsr.w _spr_upd_y_no_grav
 	jsr.w _spr_upd_x_no_grav
-	lda $1491|!addr
+	lda !sprite_movement
 	sta !sprite_misc_1528,x
-	ldy #$B9
-	lda $1490|!addr
+	lda #$B9
+	ldy !invincibility_timer
 	beq .no_default_interact
-	ldy #$39
+	lda #$39
 .no_default_interact:
-	tya
 	sta !sprite_tweaker_167a,x
 	lda !sprite_being_eaten,x
 	bne Return2_ret
 	
 	jsr.w _sprspr_mario_spr_rt
 	bcc Return2
-Continue:
-	jsr.w _spr_invis_solid_rt
+
+;	jsr.w _spr_invis_solid_rt
+	jsr.w _spr_invis_solid_rt_c
 	bcc .SpriteWins
 	lda !para_fast_ani_speed,x
 	bne .PlayerWins000
@@ -154,12 +151,14 @@ Continue:
 .SpriteWins
 	lda !para_contact_disable,x
 	bne Return2
-	jsl $00F5B7|!bank
+	jsl hurt_mario
 Return2:
 	lda !para_contact_disable,x
 	bne .ret
 	stz !para_fast_ani_speed,x
 .ret:
 	rtl
+gfx_tiles:
+	db $00, $02
 parabeetle_done:
 %set_free_finish("bank1_thwomp", parabeetle_done)

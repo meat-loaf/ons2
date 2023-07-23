@@ -1213,6 +1213,7 @@ chuck_gfx:
 	%sprite_pose_entry_mirror("chuck_unused")
 	; frame 3
 	%start_sprite_pose_entry("chuck_sitting", 16, 16)
+		%sprite_pose_tile_entry($00,$F8,$00|$80,$00,$02, 1)
 		%sprite_pose_tile_entry($FC,$00,$0E,$00,$02, 1)
 		%sprite_pose_tile_entry($04,$00,$0E,$40,$02, 1)
 	%finish_sprite_pose_entry()

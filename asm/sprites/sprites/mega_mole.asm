@@ -26,7 +26,7 @@ mega_mole_main:
 	lda basic_32_32_spr_tbls_hi,y
 	xba
 	lda basic_32_32_spr_tbls_lo,y
-	jsl spr_gfx
+;	jsl spr_gfx
 
 	lda !sprite_status,x
 	eor #$08

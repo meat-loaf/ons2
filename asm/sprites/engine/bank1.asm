@@ -72,8 +72,9 @@ org $01A667|!bank
 org $01A619|!bank
 	jsl spr_give_points_y
 
-org $01B149|!bank
-	jsl spr_give_points
+; kick kill - needs fix as fish data tables overwrite some code currently
+;org $01B149|!bank
+;	jsl spr_give_points
 
 ; todo i don't feel like relocating these...
 org $01AB75|!bank

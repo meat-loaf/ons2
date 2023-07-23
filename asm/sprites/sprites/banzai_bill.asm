@@ -57,10 +57,8 @@ banzai_bill_accel_vals:
 	db $02, invert($02)
 
 banzai_bill_main:
-	lda.b #banzai_bill>>8
-	xba
-	lda.b #banzai_bill
-	jsl spr_gfx
+	%call_spr_gfx_single(64, 64, banzai_bill_gfx)
+
 	lda !sprite_status,x
 	eor #$08
 	ora !sprites_locked
@@ -164,27 +162,30 @@ banzai_bill_main:
 .smoke_face_offset:
 	dw $FFFC, $003C
 
-%start_sprite_table("banzai_bill", 64, 64)
-	; row 1
-	%sprite_table_entry($E8, $E8, $08, $00, 2, 1)
-	%sprite_table_entry($F8, $E8, $0A, $00, 2, 1)
-	%sprite_table_entry($08, $E8, $0C, $00, 2, 1)
-	%sprite_table_entry($18, $E8, $0E, $00, 2, 1)
-	; row 2
-	%sprite_table_entry($E8, $F8, $20, $00, 2, 1)
-	%sprite_table_entry($F8, $F8, $22, $00, 2, 1)
-	%sprite_table_entry($08, $F8, $2C, $00, 2, 1)
-	%sprite_table_entry($18, $F8, $2E, $00, 2, 1)
-	; row 3
-	%sprite_table_entry($E8, $08, $24, $00, 2, 1)
-	%sprite_table_entry($F8, $08, $26, $00, 2, 1)
-	%sprite_table_entry($08, $08, $2C, $00, 2, 1)
-	%sprite_table_entry($18, $08, $2E, $00, 2, 1)
-	; row 4
-	%sprite_table_entry($E8, $18, $28, $00, 2, 1)
-	%sprite_table_entry($F8, $18, $2A, $00, 2, 1)
-	%sprite_table_entry($08, $18, $0C, $80, 2, 1)
-	%sprite_table_entry($18, $18, $0E, $80, 2, 1)
-%finish_sprite_table()
+banzai_bill:
+%start_sprite_pose_entry_list("banzai_bill")
+	%start_sprite_pose_entry("banzai_bill_gfx", 64, 64)
+		; row 1
+		%sprite_pose_tile_entry($E8, $E8, $08, $00, 2, 1)
+		%sprite_pose_tile_entry($F8, $E8, $0A, $00, 2, 1)
+		%sprite_pose_tile_entry($08, $E8, $0C, $00, 2, 1)
+		%sprite_pose_tile_entry($18, $E8, $0E, $00, 2, 1)
+		; row 2
+		%sprite_pose_tile_entry($E8, $F8, $20, $00, 2, 1)
+		%sprite_pose_tile_entry($F8, $F8, $22, $00, 2, 1)
+		%sprite_pose_tile_entry($08, $F8, $2C, $00, 2, 1)
+		%sprite_pose_tile_entry($18, $F8, $2E, $00, 2, 1)
+		; row 3
+		%sprite_pose_tile_entry($E8, $08, $24, $00, 2, 1)
+		%sprite_pose_tile_entry($F8, $08, $26, $00, 2, 1)
+		%sprite_pose_tile_entry($08, $08, $2C, $00, 2, 1)
+		%sprite_pose_tile_entry($18, $08, $2E, $00, 2, 1)
+		; row 4
+		%sprite_pose_tile_entry($E8, $18, $28, $00, 2, 1)
+		%sprite_pose_tile_entry($F8, $18, $2A, $00, 2, 1)
+		%sprite_pose_tile_entry($08, $18, $0C, $80, 2, 1)
+		%sprite_pose_tile_entry($18, $18, $0E, $80, 2, 1)
+	%finish_sprite_pose_entry()
+%finish_sprite_pose_entry_list()
 banzai_bill_done:
 %set_free_finish("bank1_koopakids", banzai_bill_done)

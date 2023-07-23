@@ -1,32 +1,39 @@
 includefrom "list.def"
 
 !fish_sprnum = $15
-%alloc_sprite(!fish_sprnum, "cheep-cheep", fish_init, fish_main, 1, 0, \
+%alloc_sprite_spriteset_1(!fish_sprnum, "cheep-cheep", fish_init, fish_main, 1, \
+	$10F, \
 	$00, $00, $45, $99, $10, $00)
 
-%alloc_sprite_sharedgfx_entry_4(!fish_sprnum,$04,$06,$00,$02)
+;%alloc_sprite_sharedgfx_entry_4(!fish_sprnum,$04,$06,$00,$02)
 
-; 0: normal horiz (left-to-right)
-; 1: normal vert (top-to-bottom)
-; 2: angled to the left, from bottom
-; 3: angled to the left, from top
-;   an odd x-position inverts the starting direction
-!fish_move_kind  = !spr_extra_bits
+; extra byte 1 bitfield:
+;  -----idd
+; d: direction
+;  0: normal horiz (left-to-right)
+;  1: normal vert (top-to-bottom)
+;  2: angled to the left, from bottom
+;  3: angled to the left, from top
+; i: invert
+;  invert the starting direction
 !fish_move_dir   = !sprite_misc_c2
+!fish_move_kind  = !sprite_misc_151c
 !fish_turn_timer = !sprite_misc_1540
 !fish_face_dir   = !sprite_misc_157c
 !fish_ani_frame  = !sprite_misc_1602
 
 %set_free_start("bank1_fish")
 fish_init:
-	lda !fish_move_kind,x
+	lda !spr_extra_byte_1,x
+	and #$03
+	sta !fish_move_kind,x
 	cmp #$01
-	bcc .exit
+	bcc .noface
 	jsr.w _spr_face_mario_rt
-.exit
+.noface:
 	lda !sprite_x_low,x
-	and #$F0
-	lsr #4
+	and #$04
+	asl #2
 	sta !fish_move_dir,x
 	rtl
 
@@ -52,7 +59,8 @@ fish_main:
 	beq ..not_grounded
 	lda !sprite_buoyancy
 	beq ..no_splash
-	jsl $0284BC|!bank
+	; TODO implement water splash as ambient sprite
+	;jsl $0284BC|!bank
 ..no_splash:
 	jsl get_rand
 	lda !random_number_output+1
@@ -132,14 +140,19 @@ fish_main:
 	jsl hurt_mario
 	bra .gfx
 .kick_and_gfx:
-	; todo kicking breaks sprites at the moment
+	; todo kicking breaks sprites at the moment - we overwrote some of the code here...
 	stz !sprite_status,x
 	rtl
 	;jsr.w _spr_kick
 .gfx:
-	jsr.w sub_spr_gfx_2
+	ldy !fish_ani_frame,x
+	lda .ani_tiles,y
+	jsl spr_gfx_single
+;	jsr.w sub_spr_gfx_2
 	jsr.w _suboffscr0_bank1
 	rtl
+.ani_tiles:
+	db $04,$06,$00,$02
 .flop_speeds_y:
 	db $E0,$E8,$D0,$D8
 .flop_speeds_x:

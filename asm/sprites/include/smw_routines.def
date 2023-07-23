@@ -52,6 +52,7 @@ _suboffscr2_bank1    = $01AC27|!bank
 _suboffscr3_bank1    = $01AC21|!bank
 _spr_kick            = $01B12A|!bank
 _spr_invis_solid_rt  = $01B457|!bank
+_spr_invis_solid_rt_c = $01B45A|!bank
 
 _load_spr_from_lvl   = $02A7FC|!bank
 

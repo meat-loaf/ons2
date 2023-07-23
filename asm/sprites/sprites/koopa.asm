@@ -113,12 +113,7 @@ koopa_gfx:
 	; todo port this routine, needs at least one fix
 	jsr $9E28
 .no_wings:
-	; gfx
-	ldy !koopa_ani_frame,x
-	lda koopa_table_off_hi,y
-	xba
-	lda koopa_table_off_lo,y
-	jsl spr_gfx
+	%call_spr_gfx(16, 32, !koopa_ani_frame, koopa_pose_ptrs)
 	rts
 
 goomba_main:
@@ -413,28 +408,21 @@ flyin_parakoopa_main:
 .timer:
 	db $30,$30
 	db $18,$18
-; koopa gfx tables
-%start_sprite_table("koopa_walk_1", 16, 32)
-	%sprite_table_entry($00, $F7, $00, $00, 2, 1)
-	%sprite_table_entry($00, $E7, $06, $00, 2, 1)
-%finish_sprite_table()
-%start_sprite_table("koopa_walk_2", 16, 32)
-	%sprite_table_entry($00, $F8, $02, $00, 2, 1)
-	%sprite_table_entry($00, $E8, $06, $00, 2, 1)
-%finish_sprite_table()
-;%start_sprite_table("koopa_walk_turn", $08, $10)
-;	%sprite_table_entry($FFFC, $0008, $04, $00, 1)
-;	%sprite_table_entry($FFFC, $FFF8, $08, $00, 1)
-;%finish_sprite_table()
-koopa_table_off_lo:
-	db koopa_walk_1
-	db koopa_walk_2
-;	db koopa_walk_turn
-koopa_table_off_hi:
-	db koopa_walk_1>>8
-	db koopa_walk_2>>8
-;	db koopa_walk_turn>>8
 
+%start_sprite_pose_entry_list("koopa")
+	%start_sprite_pose_entry("walk_1", 16,16)
+		%sprite_pose_tile_entry($00, $F7, $00, $00, 2, 1)
+		%sprite_pose_tile_entry($00, $E7, $06, $00, 2, 1)
+	%finish_sprite_pose_entry()
+	%start_sprite_pose_entry("walk_2", 16,16)
+		%sprite_pose_tile_entry($00, $F8, $02, $00, 2, 1)
+		%sprite_pose_tile_entry($00, $E8, $06, $00, 2, 1)
+	%finish_sprite_pose_entry()
+	%start_sprite_pose_entry("turn", 16,16)
+		%sprite_pose_tile_entry($00, $F8, $04, $00, 2, 1)
+		%sprite_pose_tile_entry($00, $E8, $08, $00, 2, 1)
+	%finish_sprite_pose_entry()
+%finish_sprite_pose_entry_list()
 
 koopas_done:
 %set_free_finish("bank1_koopakids", koopas_done)

@@ -1,6 +1,6 @@
 
 if read1($0FF8C6|!bank) != $22
-	error "LM Super GFX hijack not installed, or this code has changed. Install this hijack first before patching with LM hijacks."
+	error "LM Super GFX hijack not installed, or this code has changed. Install this hijack first by installing ExGFX."
 else
 	!exgfx_table #= read3($0FF7FF)
 endif
@@ -141,7 +141,6 @@ ss_setup_spriteset:
 	bmi ...ss_already_set
 	cmp #$007F
 	beq ...skip_slot
-	;phy
 	sty $06
 	sta $02
 	lda !n_ss_data_files
@@ -151,7 +150,6 @@ ss_setup_spriteset:
 	asl
 	tay
 	jsr check_file_allocated
-	;ply
 	ldy $06
 ...skip_slot:
 	iny #2

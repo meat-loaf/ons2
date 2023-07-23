@@ -7,6 +7,7 @@ CLEAN_ROM_NAME=smw.smc
 ROM_BASE_PATH=rom_src
 CLEAN_ROM_FULL=${ROM_BASE_PATH}/${CLEAN_ROM_NAME}
 ASM_TS=.asm.ts
+GFX_TS=.gfx.ts
 
 ROM_NAME_BASE=ons
 ROM_NAME=${ROM_NAME_BASE}.smc
@@ -15,6 +16,11 @@ ROM_RAW_BASE_SRC=rom_src/smw_1m_lmfastrom.smc
 ROM_RAW_BASE_SRC_P=rom_src/fastrom_lm333.bps
 ASAR+=--symbols-path=${SYM_NAME}
 asm_dir=asm
+
+GFX= \
+	$(wildcard gfx/*.bin) \
+	$(wildcard Graphics/*.bin) \
+	$(wildcard ExGraphics/*.bin)
 
 ASM_HEADERS=$(wildcard ${asm_dir}/headers/*.asm) $(wildcard ${asm_dir}/headers/**/*.asm)
 
@@ -64,7 +70,7 @@ ALL_ASM_DEPS= \
 
 .PHONY: ons test debug
 
-ons: ${CLEAN_ROM_FULL} ${ROM_NAME} ${CORE_BUILD_RULES} ${ASM_TS}
+ons: ${CLEAN_ROM_FULL} ${ROM_NAME} ${CORE_BUILD_RULES} ${ASM_TS} ${GFX_TS}
 
 test: ons
 	${TEST_EMU} ${ROM_NAME} >/dev/null 2>&1 &
@@ -72,8 +78,12 @@ test: ons
 debug: ons
 	${DBG_EMU} ${ROM_NAME} &
 
-${ASM_TS}: ${ROM_NAME} ${ALL_ASM_DEPS}
+${ASM_TS}: ${ROM_NAME} ${ALL_ASM_DEPS} ${GFX_TS}
 	${ASAR} asm/asm.asm ${ROM_NAME}
+	touch $@
+
+${GFX_TS}: ${GFX}
+	${LUNAR_MAGIC} -ImportAllGraphics ${ROM_NAME}
 	touch $@
 
 ${ROM_NAME}: ${ROM_RAW_BASE_SRC}

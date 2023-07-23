@@ -4,9 +4,9 @@ incsrc "ambient_list.def"
 
 ;incsrc "sprites/originals_unconverted.asm"
 incsrc "sprites/koopa.asm"
-;incsrc "sprites/parabeetle.asm"
-;incsrc "sprites/fishe.asm"
-;; todo this could be a level script instead, when that gets implemented
+incsrc "sprites/parabeetle.asm"
+incsrc "sprites/fishe.asm"
+; todo this should be a level script instead
 incsrc "sprites/19_levelmessage.asm"
 incsrc "sprites/banzai_bill.asm"
 ;
