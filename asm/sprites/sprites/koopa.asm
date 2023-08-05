@@ -1,3 +1,6 @@
+; TODO unstunning koopa hardlocks generic sprite gfx routine by invalid ani frame.
+;      really need to implement a custom sprite state 9
+
 !goomba_sprnum = $00
 ; todo - not really much to do, just proper configs/update std interaction
 !galoomba_sprnum = $01
@@ -11,6 +14,7 @@
 !lame_parakoopa_sprnum = $06
 !flyin_parakoopa_v_sprnum = $07
 !flyin_parakoopa_h_sprnum = $08
+!giant_koopa_sprnum       = $09
 
 !koopa_is_winged_scr    = $45
 
@@ -32,33 +36,27 @@
 !parakoopa_accel_dir       = !sprite_misc_151c
 !parakoopa_accel_wait      = !sprite_misc_1540
 
-!wing_out_tile = $EC
-!wing_in_tile  = $FE
+;!wing_out_tile = $EC
+;!wing_in_tile  = $FE
 
 ; todo reimplement the koopa wing gfx routine
+;      can use the new changes to generic gfx to do it, need to free 151c
 ; note - new sprites have walking parakoopas that stay on ledges,
 ;        the new version should account for this and not flare the wing
 ;        out for a frame in this case
 ; koopa wings
-org $019E1C|!bank
-	db !wing_in_tile, !wing_out_tile
-	db !wing_in_tile, !wing_out_tile
-
-%alloc_sprite_sharedgfx_entry_3(!goomba_sprnum,$AE,$AE,$AE)
+;org $019E1C|!bank
+;	db !wing_in_tile, !wing_out_tile
+;	db !wing_in_tile, !wing_out_tile
 
 %alloc_sprite(!goomba_sprnum, "goomba", koopa_init_goomba, goomba_main, 2, \
 	$30, $00, $00, $00, $00, $00)
-%alloc_sprite_sharedgfx_entry_mirror(!paragoomba_sprnum, !goomba_sprnum)
-
-%alloc_sprite_sharedgfx_entry_3(!shelless_koopa_sprnum,$02,$00,$04)
 
 %alloc_sprite_spriteset_1(!shelless_koopa_sprnum, "shelless_koopa", koopa_init, shelless_koopa_main, 2, \
 	$104, \
 	$70, $00, $00, $00, $00, $00)
 
 %alloc_sprite_spriteset_1(!koopa_sprnum, "koopas", koopa_init, koopa_main, 5, $0100, \
-	$10, $40, $00, $00, $02, $A0)
-%alloc_sprite_spriteset_1(!shell_sprnum, "koopa_shell", koopa_init_stun, koopa_main, 5, $0100,\
 	$10, $40, $00, $00, $02, $A0)
 %alloc_sprite_spriteset_1(!lame_parakoopa_sprnum, "lame_parakoopa", koopa_init, koopa_main, 3, $0100,\
 	$10, $40, $00, $00, $42, $B0)
@@ -67,16 +65,16 @@ org $019E1C|!bank
 %alloc_sprite_spriteset_1(!flyin_parakoopa_h_sprnum, "flyin_parakoopa_horz", koopa_init, flyin_parakoopa_main, 3, $0100,\
 	$10, $40, $00, $00, $52, $B0)
 
-%alloc_sprite_sharedgfx_entry_9(!koopa_sprnum, $82,$A0,$82,$A2,$84,$A4,$8C,$8A,$8E)
-%alloc_sprite_sharedgfx_entry_mirror(!shell_sprnum, !koopa_sprnum)
-%alloc_sprite_sharedgfx_entry_mirror(!lame_parakoopa_sprnum, !koopa_sprnum)
-%alloc_sprite_sharedgfx_entry_mirror(!flyin_parakoopa_v_sprnum, !koopa_sprnum)
-%alloc_sprite_sharedgfx_entry_mirror(!flyin_parakoopa_h_sprnum, !koopa_sprnum)
+%alloc_sprite_spriteset_1(!giant_koopa_sprnum, "koopas", koopa_init, koopa_main, 5, $0110, \
+	$10, $40, $00, $00, $02, $A0)
 
-%set_free_start("bank1_koopakids")
-koopa_init_stun:
-	; sprite init caller sets state to 08 before calling
-	inc !sprite_status,x
+;%alloc_sprite_sharedgfx_entry_9(!koopa_sprnum, $82,$A0,$82,$A2,$84,$A4,$8C,$8A,$8E)
+;%alloc_sprite_sharedgfx_entry_mirror(!shell_sprnum, !koopa_sprnum)
+;%alloc_sprite_sharedgfx_entry_mirror(!lame_parakoopa_sprnum, !koopa_sprnum)
+;%alloc_sprite_sharedgfx_entry_mirror(!flyin_parakoopa_v_sprnum, !koopa_sprnum)
+;%alloc_sprite_sharedgfx_entry_mirror(!flyin_parakoopa_h_sprnum, !koopa_sprnum)
+
+%set_free_start("bank1_spr0to13")
 koopa_init:
 	; flag to not turn in place when falling
 	; needs to be set for flying parakoopas, and
@@ -84,7 +82,10 @@ koopa_init:
 	; turn in the air
 	inc !koopa_jumping_over_shell,x
 .goomba:
-	ldy !spr_extra_bits,x
+	;ldy !spr_extra_bits,x
+	lda !spr_extra_byte_1,x
+	and #$03
+	tay
 	lda .pals,y
 	ora !sprite_oam_properties,x
 	sta !sprite_oam_properties,x
@@ -95,6 +96,9 @@ koopa_init:
 	jsr _spr_face_mario_rt
 	jsl get_rand
 	sta !koopa_ani_timer,x
+	lda !spr_extra_byte_1,x
+	bpl .exit
+	inc !sprite_status,x
 .exit:
 	rtl
 .pals:
@@ -113,7 +117,22 @@ koopa_gfx:
 	; todo port this routine, needs at least one fix
 	jsr $9E28
 .no_wings:
-	%call_spr_gfx(16, 32, !koopa_ani_frame, koopa_pose_ptrs)
+	ldy !koopa_ani_frame,x
+	lda !sprite_num,x
+	cmp #!giant_koopa_sprnum
+	bcs .giant
+	lda koopa_pose_ptrs_lo,y
+	sta !spr_gfx_lo,x
+	lda koopa_pose_ptrs_hi,y
+	sta !spr_gfx_hi,x
+	jsl spr_gfx_2
+	rts
+.giant:
+	lda giant_koopa_pose_ptrs_lo,y
+	sta !spr_gfx_lo,x
+	lda giant_koopa_pose_ptrs_hi,y
+	sta !spr_gfx_hi,x
+	jsl spr_gfx_2
 	rts
 
 goomba_main:
@@ -141,7 +160,6 @@ shelless_koopa_main:
 	jsr _suboffscr0_bank1
 	lda !koopa_post_kick_frz_timer,x
 	beq .not_finish_kick
-;	jmp .mario_ixn
 	jmp koopa_main_interact
 
 .not_finish_kick:
@@ -151,8 +169,6 @@ shelless_koopa_main:
 	lda !sprite_status,y
 	cmp #$09
 	bcs .do_catch_slide
-;	cmp #$0a
-;	beq .do_catch_slide
 	jmp koopa_main_interact
 
 .do_catch_slide:
@@ -162,7 +178,7 @@ shelless_koopa_main:
 	bit #$04
 	beq ..falling
 	; todo original code accounted for 'is level slippery'
-	lda !sprite_speed_x,y
+	lda.w !sprite_speed_x,y
 	cmp #$02
 	bcc ..prep_shell_kick
 	bpl ..subtract_speed
@@ -174,16 +190,15 @@ shelless_koopa_main:
 	sec
 	sbc #$02
 	sta !sprite_speed_x,x
-	sta !sprite_speed_x,y
+	sta.w !sprite_speed_x,y
 	; todo: dust particles
 ..falling:
 	stz !koopa_ani_frame,x
 	jmp koopa_main_interact
-;	bra .mario_ixn
 
 ..prep_shell_kick:
 	lda #$00
-	sta !sprite_speed_x,y
+	sta.w !sprite_speed_x,y
 	sta !sprite_speed_x,x
 	stz !koopa_pushed_by_kickable,x
 	lda #$09
@@ -202,7 +217,6 @@ shelless_koopa_main:
 	cmp #$08
 	bcs .cont
 	stz !koopa_kicking_shell_timer,x
-;	bra .mario_ixn
 	jmp koopa_main_interact
 .cont:
 	lda !koopa_kicking_shell_timer,x
@@ -210,7 +224,6 @@ shelless_koopa_main:
 	beq .do_kick
 	lda #$00
 	sta !koopa_ani_frame,x
-;	bra .mario_ixn
 .abort_kick:
 	jmp koopa_main_interact
 
@@ -231,7 +244,7 @@ shelless_koopa_main:
 	ldy !koopa_face_dir,x
 	lda .kick_speeds,y
 	ldy !koopa_kick_shell_slot,x
-	sta !sprite_speed_x,y
+	sta.w !sprite_speed_x,y
 	lda #$0a
 	sta !sprite_status,y
 
@@ -246,8 +259,6 @@ shelless_koopa_main:
 .mario_ixn:
 	jmp koopa_main_interact
 
-;	jsr _mario_spr_interact
-;	jsr _spr_upd_pos
 .exit:
 	rtl
 
@@ -368,7 +379,8 @@ flyin_parakoopa_main:
 	jsr _spr_upd_y_no_grav
 .vert_cont:
 	; set carry - fast speed
-	lda !spr_extra_bits,x
+;	lda !spr_extra_bits,x
+	lda !spr_extra_byte_1,x
 	lsr
 
 	lda !parakoopa_accel_wait,x
@@ -410,19 +422,33 @@ flyin_parakoopa_main:
 	db $18,$18
 
 %start_sprite_pose_entry_list("koopa")
-	%start_sprite_pose_entry("walk_1", 16,16)
+	%start_sprite_pose_entry("k_walk_1", 16, 32)
 		%sprite_pose_tile_entry($00, $F7, $00, $00, 2, 1)
 		%sprite_pose_tile_entry($00, $E7, $06, $00, 2, 1)
 	%finish_sprite_pose_entry()
-	%start_sprite_pose_entry("walk_2", 16,16)
+	%start_sprite_pose_entry("k_walk_2", 16, 32)
 		%sprite_pose_tile_entry($00, $F8, $02, $00, 2, 1)
 		%sprite_pose_tile_entry($00, $E8, $06, $00, 2, 1)
 	%finish_sprite_pose_entry()
-	%start_sprite_pose_entry("turn", 16,16)
+	%start_sprite_pose_entry("k_turn", 16, 32)
 		%sprite_pose_tile_entry($00, $F8, $04, $00, 2, 1)
 		%sprite_pose_tile_entry($00, $E8, $08, $00, 2, 1)
 	%finish_sprite_pose_entry()
 %finish_sprite_pose_entry_list()
 
+%start_sprite_pose_entry_list("giant_koopa")
+	%start_sprite_pose_entry("g_walk_1", 24, 32)
+		%sprite_pose_tile_entry($FC, $F8, $00, $00, 2, 1)
+		%sprite_pose_tile_entry($04, $F8, $01, $00, 2, 1)
+		%sprite_pose_tile_entry($FC, $08, $03, $00, 2, 1)
+		%sprite_pose_tile_entry($04, $08, $04, $00, 2, 1)
+	%finish_sprite_pose_entry()
+	%start_sprite_pose_entry("g_walk_2", 24, 32)
+		%sprite_pose_tile_entry($FC, $F8, $06, $00, 2, 1)
+		%sprite_pose_tile_entry($04, $F8, $01, $00, 2, 1)
+		%sprite_pose_tile_entry($FC, $08, $08, $00, 2, 1)
+		%sprite_pose_tile_entry($04, $08, $09, $00, 2, 1)
+	%finish_sprite_pose_entry()
+%finish_sprite_pose_entry_list()
 koopas_done:
-%set_free_finish("bank1_koopakids", koopas_done)
+%set_free_finish("bank1_spr0to13", koopas_done)

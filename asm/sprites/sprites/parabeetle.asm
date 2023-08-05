@@ -69,6 +69,7 @@ parabeetle_init:
 parabeetle_main:
 	ldy !para_ani_frame,x
 	lda gfx_tiles,y
+	sta !spr_gfx_lo,x
 	jsl spr_gfx_single
 	lda !sprites_locked
 	bne .done

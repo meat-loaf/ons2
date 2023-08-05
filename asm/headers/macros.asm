@@ -4,6 +4,9 @@ function pack_props(flip, priority, palette, page) = ((flip&03)<<$06)|((priority
 
 function dma_pack_ctrl_dst_16(dest, ctrl) = ((dest<<8)&$FF00)|(ctrl&$FF)
 
+macro pack(...)
+endmacro
+
 function invert(val) = (~val)+1
 
 macro implement_timer(ram)
@@ -11,6 +14,15 @@ macro implement_timer(ram)
 	beq ?no_dec
 	dec <ram>
 ?no_dec:
+endmacro
+
+macro write_sfx(name)
+	if or(not(defined("sfx_<name>_id")), not(defined("sfx_<name>_port")))
+		error "Sound effect `<name>' not defined."
+	else
+		lda.b #!sfx_<name>_id
+		sta.w !sfx_<name>_port
+	endif
 endmacro
 
 ; abuse open bus and unused dma register behavior to quickly duplicate the

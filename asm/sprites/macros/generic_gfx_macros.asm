@@ -11,40 +11,6 @@ endif
 	sta !gen_gfx_tile_offs+2
 endmacro
 
-; expects two arguments per table: the table containing
-; the animation pose in ram, and the table in rom to index from.
-; this macro is dumb, so if you're doing anything fancy, pack it
-; properly yourself.
-macro call_spr_gfx(hoff, voff, ...)
-	!i #= 0
-	if sizeof(...)&1
-		error "Number of arguments to call spr_gfx should be even: need ram pose index and rom pose table."
-	else
-		rep #$20
-		while !i < sizeof(...)
-			!ip #= !i+1
-			lda <!i>,x
-			asl : tay
-			lda <!ip>,y
-			sta !gen_gfx_pose_list+!i
-			!i #= !i+2
-		endif
-		stz !gen_gfx_pose_list+!i
-		%sprite_pose_pack_offs(<hoff>, <voff>)
-		jsl spr_gfx_2
-	endif
-endmacro
-
-; for large sprites with a single animation frame
-macro call_spr_gfx_single(hoff, voff, table)
-	rep #$20
-	lda.w #<table>
-	sta !gen_gfx_pose_list
-	stz !gen_gfx_pose_list+2
-	%sprite_pose_pack_offs(<hoff>, <voff>)
-	jsl spr_gfx_2
-endmacro
-
 macro start_sprite_pose_entry_list(name)
 	if defined("sprite_pose_entry_list_name")
 		error "use 'finish_sprite_pose_entry_list' macro before starting another. Currently defined as `!sprite_pose_entry_list_name'"
@@ -53,7 +19,7 @@ macro start_sprite_pose_entry_list(name)
 	!n_poses #= 0
 endmacro
 
-macro start_sprite_pose_entry(name, a, b)
+macro start_sprite_pose_entry(name, hoff, voff)
 	if defined("sprite_pose_entry_name_!{n_poses}")
 		error "use 'finish_sprite_pose_entry' macro before starting another. Currently defined as: `!{sprite_pose_entry_name_!{n_poses}}'"
 	endif
@@ -61,6 +27,12 @@ macro start_sprite_pose_entry(name, a, b)
 	!{sprite_pose_entry_name_!{n_poses}} = <name>
 	!n_tiles #= 0
 <name>:
+.hsz:
+	db <hoff>/2
+.vsz:
+	db <voff>/2
+.start:
+	skip 2
 endmacro
 
 macro sprite_pose_entry_mirror(name)
@@ -127,7 +99,26 @@ endif
 ..next:
 	skip 2
 undef "use_props"
+if !n_tiles == 0
+pushpc
+org .start
+	dw .tile_!{n_tiles}
+pullpc
+endif
 !n_tiles #= !n_tiles+1
+endmacro
+
+macro sprite_pose_tile_entry_withnext(xoff, yoff, tile, props, size, use_mem_props, next_tile)
+	%sprite_pose_tile_entry(<xoff>, <yoff>, <tile>, <props>, <size>, <use_mem_props>)
+	; sprite_pose_tile_entry adds 1 to n_tiles as part of finalization
+	!p #= !n_tiles-1
+	pushpc
+	org .tile_!{p}_next
+		dw <next_tile>
+	pullpc
+	undef "p"
+	; todo we really should have a way to enforce that no poses are defined after this
+	;      but whatever i guess
 endmacro
 
 macro finish_sprite_pose_entry()
@@ -149,12 +140,21 @@ endmacro
 macro finish_sprite_pose_entry_list()
 if !n_poses != 1
 	!p #= 0
-	!{sprite_pose_entry_list_name}_pose_ptrs:
+	!{sprite_pose_entry_list_name}_pose_ptrs_lo:
+		skip !n_poses
+	!{sprite_pose_entry_list_name}_pose_ptrs_hi:
+		skip !n_poses
+pushpc
 	while !p < !n_poses
-		dw !{sprite_pose_entry_name_!{p}}
+	;	dw !{sprite_pose_entry_name_!{p}}
+		org !{sprite_pose_entry_list_name}_pose_ptrs_lo+!{p}
+			db !{sprite_pose_entry_name_!{p}}
+		org !{sprite_pose_entry_list_name}_pose_ptrs_hi+!{p}
+			db (!{sprite_pose_entry_name_!{p}})>>8
 		undef "sprite_pose_entry_name_!{p}"
 		!p #= !p+1
 	endif
+pullpc
 else
 	undef "sprite_pose_entry_name_0"
 endif
@@ -163,7 +163,7 @@ undef "n_poses"
 undef "sprite_pose_entry_list_name"
 endmacro
 
-;; old ;;
+;; old (todo deprecated) ;;
 
 macro start_sprite_table(name, hsize, vsize)
 	if defined("start_sprite_table")
@@ -240,6 +240,7 @@ endif
 	undef "n_poses"
 endmacro
 
+; todo deprecated, remove all below
 macro dynamic_gfx_rt_bank3(load_frame_code, dyn_name)
 	<load_frame_code>
 	sta !spr_dyn_alloc_slot_arg_frame_num
@@ -266,6 +267,7 @@ macro __alloc_sprite_sharedgfx_begin(sprite_id)
 	!{sharedgfx_tilemap_off_sprite_!{id_f}} #= !sharedgfx_tilemap_currentoff
 	undef "id_f"
 endmacro
+
 macro alloc_sprite_sharedgfx_entry_1(sprite_id, frame_1)
 	%__alloc_sprite_sharedgfx_begin(<sprite_id>)
 	org sprite_tilemaps+!sharedgfx_tilemap_currentoff

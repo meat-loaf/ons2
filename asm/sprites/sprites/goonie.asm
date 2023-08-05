@@ -1,7 +1,6 @@
 !sprnum_goonie_run = $a0
 !sprnum_goonie_fly = $a1
 
-; TODO really only needs exgfx 10C, investigate slot allocation
 %alloc_sprite_spriteset_2(!sprnum_goonie_run, "runnin_goonie", goonie_init, goonie_run_main, 3, \
 	$10C, $10D, \
 	$90, $80, $03, $19, $10, $80)
@@ -43,15 +42,13 @@ goonie_init:
 	rtl
 
 goonie_run_main:
-	lda !goonie_ani_frame,x
-	rep #$20
-	asl
-	tay
-	lda goonie_body_pose_ptrs,y
-	sta !gen_gfx_pose_list
-	stz !gen_gfx_pose_list+2
-	%sprite_pose_pack_offs(16, 16)
-	jsl spr_gfx_2
+	ldy !goonie_ani_frame,x
+	lda goonie_body_pose_ptrs_lo,y
+	sta !spr_gfx_lo,x
+	lda goonie_body_pose_ptrs_hi,y
+	sta !spr_gfx_hi,x
+;	jsl spr_gfx_2
+	jsl spr_gfx_2_generic
 
 	lda !sprite_status,x
 	eor #$08
@@ -107,16 +104,12 @@ goonie_run_main:
 	db $01, $02, $03, $04, $05, $00
 
 goonie_fly_main:
-	; TODO real gfx code
-	rep #$20
+;	ldy !goonie_ani_frame,x
 	ldy #$00
-	lda goonie_wing_r_pose_ptrs,y
-	sta !gen_gfx_pose_list
-	ldy #$00
-	lda goonie_body_pose_ptrs,y
-	sta !gen_gfx_pose_list+2
-	stz !gen_gfx_pose_list+4
-	%sprite_pose_pack_offs(16, 16)
+	lda goonie_wing_r_pose_ptrs_lo,y
+	sta !spr_gfx_lo,x
+	lda goonie_wing_r_pose_ptrs_hi,y
+	sta !spr_gfx_hi,x
 	jsl spr_gfx_2
 
 	lda !sprite_status,x
@@ -257,19 +250,19 @@ fly_goonie_upd_ani_frames:
 	rts
 
 %start_sprite_pose_entry_list("goonie_body")
-	%start_sprite_pose_entry("goonie_body_1", 0, 0)
+	%start_sprite_pose_entry("goonie_body_1", 16, 16)
 		%sprite_pose_tile_entry($F8,$FF,$06,$00,$02, 1)
 		%sprite_pose_tile_entry($03,$07,$00,$00,$02, 1)
 		%sprite_pose_tile_entry($04,$FB,$08,$00,$00, 1)
 	%finish_sprite_pose_entry()
 	%sprite_pose_entry_mirror("goonie_body_1")
-	%start_sprite_pose_entry("goonie_body_2", 0, 0)
+	%start_sprite_pose_entry("goonie_body_2", 16, 16)
 		%sprite_pose_tile_entry($F8,$00,$06,$00,$02, 1)
 		%sprite_pose_tile_entry($03,$08,$02,$00,$02, 1)
 		%sprite_pose_tile_entry($04,$FC,$0A,$00,$00, 1)
 	%finish_sprite_pose_entry()
 	%sprite_pose_entry_mirror("goonie_body_2")
-	%start_sprite_pose_entry("goonie_body_3", 0, 0)
+	%start_sprite_pose_entry("goonie_body_3", 16, 16)
 		%sprite_pose_tile_entry($F8,$00,$06,$00,$02, 1)
 		%sprite_pose_tile_entry($03,$08,$04,$00,$02, 1)
 		%sprite_pose_tile_entry($04,$FC,$0C,$00,$00, 1)

@@ -35,14 +35,14 @@ org $019AA8|!bank
 springshim:
 	jsl $01E6F0|!bank
 	rts
-spr_spinkill_shim:
-	%jsl2rts(!bank01_jsl2rts_rtl, spr_spinkill)
+;spr_spinkill_shim:
+;	%jsl2rts(!bank01_jsl2rts_rtl, spr_spinkill)
 spr_lavadie_shim:
 	%jsl2rts(!bank01_jsl2rts_rtl, spr_lavadie)
 spr_smushed_shim:
 	%jsl2rts(!bank01_jsl2rts_rtl, spr_smushed)
-spr_killed_shim:
-	%jsl2rts(!bank01_jsl2rts_rtl, spr_killed)
+;spr_killed_shim:
+;	%jsl2rts(!bank01_jsl2rts_rtl, spr_killed)
 spr_stunned_shim:
 	%jsl2rts(!bank01_jsl2rts_rtl, spr_stunned)
 spr_kicked_shim:

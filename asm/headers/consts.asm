@@ -1,3 +1,8 @@
+macro decl_sfx_id(name, id, port)
+	!sfx_<name>_id = <id>
+	!sfx_<name>_port = <port>
+endmacro
+
 includeonce
 if read1($00FFD5) == $23
 	if read1($00FFD7) == $0D ; full 6/8 mb sa-1 rom
@@ -129,6 +134,13 @@ _spr_face_mario_bank1 = $01857C|!bank
 !slip_block_slipperyness = $FF
 
 ;; sprite props ;;
+; tweaker 1656
+!spr_1656_prop_die_as_smoke_cloud          = %10000000
+!spr_1656_prop_hop_in_or_kick_shells       = %01000000
+!spr_1656_prop_dies_when_jumped_on         = %00100000
+!spr_1656_prop_can_be_jumped_on            = %00010000
+!spr_1656_obj_clipping_mask                = %00001111
+
 ; tweaker 166e ;
 !spr_166e_prop_gfx_tile_highbit            = %00000001
 !spr_166e_prop_gfx_palette                 = %00001110
@@ -167,6 +179,11 @@ _spr_face_mario_bank1 = $01857C|!bank
 !sprite_blocked_below         = %00000100
 !sprite_blocked_left          = %00000010
 !sprite_blocked_right         = %00000001
+
+
+;sfx ids
+;!sfx_kick = $03
+%decl_sfx_id("kick", 3, $1DF9)
 
 
 ;;; screen scrolling pipe stuff ;;;
@@ -267,5 +284,6 @@ if !Setting_SSP_FuSoYaSpd == 0
   !SSP_PipeTimer_Exit_Downwards_OnYoshi_SmallMario	= $07
   !SSP_PipeTimer_Exit_Downwards_OnYoshi_BigMario	= $08
 endif
+
 
 ;;; end screen scrolling pipe stuff ;;;

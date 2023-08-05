@@ -1,5 +1,6 @@
 incsrc "macros/macros.asm"
 
+incsrc "include/sprnums.def"
 incsrc "include/config.def"
 incsrc "include/smw_routines.def"
 

@@ -143,6 +143,8 @@ ss_setup_spriteset:
 	beq ...skip_slot
 	sty $06
 	sta $02
+	; this is probably a bug, we could have a sprite that allocates
+	; the final slot, we should check allocated first and then do this
 	lda !n_ss_data_files
 	cmp.w #!max_ss_data_files
 	bcs ss_no_available_abort
@@ -223,8 +225,9 @@ check_file_allocated:
 	sta !level_ss_sprite_offs,x
 	ldy $04
 	rts
+
 ..offs:
-	db $0000,$0020,$0040,$0060,$0080,$00A0
+	dw $0000,$0020,$0040,$0060,$0080,$00A0
 
 ; AXY are 16 bit here. $8A contains a pointer to the level's ExGFX list, and Y
 ; is the index to the current file to be uploaded. We will use the lower 8 bits

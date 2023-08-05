@@ -123,13 +123,37 @@ load_sprite_tables:
 !tile_off          = $49
 
 !spr_tile_off_2    = $8A
-; enter a16i8
-; exit a8i8
+; 'default' entry point, mainly intended for sprite states outside of 8
 spr_gfx_2:
-	stz !spr_props_no_flip
-	stz !spr_props_flip
+	lda !spr_gfx_hi,x
+	bmi .do_generic
+	jmp spr_gfx_single
 
-	sep #$20
+.generic:
+	lda !spr_gfx_hi,x
+.do_generic:
+	sta !curr_pose_ptr+1
+	lda !spr_gfx_lo,x
+	sta !curr_pose_ptr
+
+	; table header - offset to center + pointer
+	; to first tile
+	lda (!curr_pose_ptr)
+	sta $45
+	stz $46
+	ldy #$01
+	lda (!curr_pose_ptr),y
+	sta $47
+	stz $48
+	iny
+	lda (!curr_pose_ptr),y
+	xba
+	iny
+	lda (!curr_pose_ptr),y
+	sta !curr_pose_ptr+1
+	xba
+	sta !curr_pose_ptr
+
 	ldy #$00
 	lda !sprite_misc_157c,x
 	bne .no_x_flip_facedir
@@ -140,7 +164,9 @@ spr_gfx_2:
 	stz !tile_off+1
 	stz !spr_tile_off+1
 	stz !spr_tile_off_2+1
-	
+	stz !spr_props_no_flip
+	stz !spr_props_flip
+
 	lda !spr_spriteset_off,x
 	sta !spr_tile_off
 	lda !sprite_misc_151c,x
@@ -175,7 +201,8 @@ spr_gfx_2:
 	sec
 	sbc !layer_1_xpos_curr
 	clc
-	adc !gen_gfx_tile_offs+$0
+	adc $45
+;	adc !gen_gfx_tile_offs+$0
 	sta !gfx_x_pos
 	; stolen from original suboffscreen...
 	; not much of a better way to do it i don't think
@@ -190,37 +217,25 @@ spr_gfx_2:
 	tdc
 	rol
 	sta !sprite_off_screen_horz,x
-	bne .abort
+	beq .continue
+	rtl
+.continue:
 
 	lda !sprite_y_high,x
 	xba
 	lda !sprite_y_low,x
-	rep #$20
+	; carry is always clear here anywhay from rol above from rol above  but whatever
+	rep #$21
+	adc #$0010
 	sec
 	sbc !layer_1_ypos_curr
 	clc
-	adc !gen_gfx_tile_offs+$2
+;	adc !gen_gfx_tile_offs+$2
+	adc $47
 	sta !gfx_y_pos
 
-	stz !curr_pose_ptr_off
 	lda !sprite_oam_index,x
 	tax
-
-	ldy #$00
-.pose_loop:
-	lda !gen_gfx_pose_list,y
-	beq .done
-	sta !curr_pose_ptr
-	jsr .handle_pose
-	ldy !curr_pose_ptr_off
-	iny #2
-	sty !curr_pose_ptr_off
-	bra .pose_loop
-.done:
-	sep #$20
-.abort:
-	ldx !current_sprite_process
-	rtl
 
 .handle_pose:
 	ldy #$00
@@ -232,10 +247,9 @@ spr_gfx_2:
 	clc
 	adc !gfx_y_pos
 	sec
+	sbc #$0010
 	sbc !tile_off
 
-	cmp #$FFF0
-	bcs ..y_onscr
 	cmp #$00F0
 	bcc ..y_onscr
 ..y_offscr:
@@ -278,16 +292,26 @@ spr_gfx_2:
 	lsr #2
 	tax
 	lda !tile_hitable
+	; turns out this is necessary. no sty addr,x to make it cheaper
+	sep #$20
 	sta $0460|!addr,x
+	; since we drop to 8 bit mode we can save a cycle here
+	; not loading the otherwise unneded high byte
 	lda.l oam_small_to_next_big,x
+	rep #$20
 	tax
 	ldy #$0c
 	lda (!curr_pose_ptr),y
 	beq ..done
 	sta !curr_pose_ptr
 	bra .handle_pose
+
 ..done:
-	rts
+	sep #$20
+	ldx !current_sprite_process
+.exit:
+	rtl
+
 ; carry clear if successful: buffer index in y
 ; carry set if no slots left; y will be negative
 get_dyn_pose:
@@ -301,6 +325,7 @@ get_dyn_pose:
 .none:
 	tyx
 	tay
+
 	rtl
 
 .free_indices:
@@ -329,9 +354,11 @@ endif
 
 ; draw a single sprite tile at the sprite's position.
 ; inputs:
-; A: the base tile to draw.
-; the tile is always 16x16
+; spr_gfx_lo: the base tile to draw.
+; the tile is always 16x16 (can potentially use spr_gfx_hi table for this)
 spr_gfx_single:
+	lda !spr_gfx_lo,x
+.have_tile:
 	clc
 	adc !spr_spriteset_off,x
 	sta $03
@@ -378,6 +405,8 @@ spr_gfx_single:
 	rep #$20
 	sec
 	sbc !layer_1_ypos_curr
+	; the generic routine offsets y-pos to skip this comparison,
+	; but this is faster for a single tile
 	cmp #$FFF0
 	bcs .y_ok
 	cmp #$00F0

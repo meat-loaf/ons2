@@ -2,13 +2,12 @@
 org $02ABF3|!bank
 	db $7F
 
-; basic init routine for carryable sprites
-org $018435|!bank
-generic_carryable_init:
-	lda #$09
-	sta !sprite_status,x
-	rtl
-warnpc $01843B|!bank
+org $00986C|!bank
+	jsl run_sprites
+org $009947|!bank
+	jsl run_sprites
+org $00A2E2|!bank
+	jsl run_sprites
 
 org $01808C|!bank
 run_sprites:
@@ -98,11 +97,12 @@ handle_sprite:
 	; 1
 	dw spr_handle_init-1
 	; 2
-	dw spr_killed_shim-1
+	;dw spr_killed_shim-1
+	dw spr_killed-1
 	; 3
 	dw spr_smushed_shim-1
 	; 4
-	dw spr_spinkill_shim-1
+	dw spr_spinkill-1
 	; 5
 	dw spr_lavadie_shim-1
 	; 6 - todo (code overwritten at the moment)

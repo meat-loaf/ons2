@@ -1,6 +1,5 @@
 includefrom "list.def"
 
-!fish_sprnum = $15
 %alloc_sprite_spriteset_1(!fish_sprnum, "cheep-cheep", fish_init, fish_main, 1, \
 	$10F, \
 	$00, $00, $45, $99, $10, $00)
@@ -140,15 +139,12 @@ fish_main:
 	jsl hurt_mario
 	bra .gfx
 .kick_and_gfx:
-	; todo kicking breaks sprites at the moment - we overwrote some of the code here...
-	stz !sprite_status,x
-	rtl
-	;jsr.w _spr_kick
+	jsr.w _spr_kick
 .gfx:
 	ldy !fish_ani_frame,x
 	lda .ani_tiles,y
 	jsl spr_gfx_single
-;	jsr.w sub_spr_gfx_2
+
 	jsr.w _suboffscr0_bank1
 	rtl
 .ani_tiles:
@@ -168,8 +164,3 @@ kick_speeds:
 	db $F0,$10
 fish_done:
 %set_free_finish("bank1_fish", fish_done)
-
-; patch the data table for the 'kicking sprite' routine, which is stuck
-; in with the fish's data (this routine is used by a handful of other sprites)
-org $01B137|!bank
-	lda kick_speeds,y

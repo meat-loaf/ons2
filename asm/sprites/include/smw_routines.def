@@ -1,7 +1,7 @@
 
-spr_killed           = $019AA2|!bank
+;spr_killed           = $019AA2|!bank
 spr_smushed          = $019AE4|!bank
-spr_spinkill         = $019A52|!bank
+;spr_spinkill         = $019A52|!bank
 spr_lavadie          = $019A7B|!bank
 spr_levelend         = $01816D|!bank
 spr_stunned          = $01953C|!bank
@@ -33,7 +33,7 @@ _spr_jump_over_shell = $018898|!bank
 _spr_face_mario_rt   = $01857C|!bank
 _set_some_y_spd      = $019A04|!bank
 _spr_set_ani_frame   = $018E5F|!bank
-_sprspr_mario_spr_rt = $018FC1|!bank
+;_sprspr_mario_spr_rt = $018FC1|!bank
 _spr_upd_pos         = $019032|!bank
 _flip_if_side_blocked = $019089|!bank
 _flip_sprite_dir     = $019098|!bank
@@ -50,7 +50,7 @@ _suboffscr0_bank1    = $01AC31|!bank
 _suboffscr1_bank1    = $01AC2B|!bank
 _suboffscr2_bank1    = $01AC27|!bank
 _suboffscr3_bank1    = $01AC21|!bank
-_spr_kick            = $01B12A|!bank
+;_spr_kick            = $01B12A|!bank
 _spr_invis_solid_rt  = $01B457|!bank
 _spr_invis_solid_rt_c = $01B45A|!bank
 
@@ -65,5 +65,5 @@ _suboffscr3_bank3    = $03B84F|!bank
 _sub_horz_pos_bank3  = $03B817|!bank
 _sub_vert_pos_bank3  = $03B829|!bank
 
-_spr_inits_start     = $01817D|!bank
+;_spr_inits_start     = $01817D|!bank
 _spr_mains_start     = $0185CC|!bank

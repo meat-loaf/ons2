@@ -1,32 +1,44 @@
+!bank1_early_free_start      = $018042|!bank
+!bank1_early_free_end        = $01808C|!bank
+
+;!bank1_gfx_stuff_free_start  = $01|!bank
+;!bank1_gfx_stuff_free_end  = $01|!bank
+
 !bank1_fish_free_start       = $01B00B|!bank
 !bank1_fish_free_end         = $01B192|!bank
 
 !bank1_sprcall_inits_free_start = $0180D2|!bank
 !bank1_sprcall_inits_free_end   = $018898|!bank
 
+; todo validate range - overwrites more than just spr0to13
+!bank1_spr0to13_free_start        = $0188EC|!bank
+!bank1_spr0to13_free_end          = $019032|!bank
+
 !bank1_thwomp_free_start     = $01AE96|!bank
 !bank1_thwomp_free_end       = $01AF9F|!bank
 
 !bank1_plats_free_start      = $01B268|!bank
+; stops at invis solid block rt
+; note: rewrite it
 !bank1_plats_free_end        = $01B44F|!bank
 
-!bank1_growvine_free_start   = $01C183|!bank
-!bank1_growvine_free_end     = $01C1EE|!bank
+;!bank1_growvine_free_start   = $01C183|!bank
+;!bank1_growvine_free_end     = $01C1EE|!bank
 
-; TODO validate this range. this is a lot of code and i only
-;      skimmed through it. some of it is used by the moving coin
-;      as well, which is yet to be implemented at the time of writing
-!bank1_powerups_free_start   = $01C313|!bank
+; starts just before turn block bridge stuff
+!bank1_powerups_free_start   = $01B93C|!bank
+; ends at rotating chain platform
 !bank1_powerups_free_end     = $01C74A|!bank
 
-; todo on second look there's way more than this...
-!bank1_boss_mode7_free_start = $01CC9D|!bank
-!bank1_boss_mode7_free_end   = $01CCF0|!bank
+; starts at koopakids sprite code (before this is the brown swinging platform code
+!bank1_bossfire_free_start   = $01CD2A|!bank
+;!bank1_bossfire_free_start   = $01D442|!bank
+; overwrite a bunch of sprites, up to smushed gfx rt (slated for removal)
+!bank1_bossfire_free_end     = $01E6FD|!bank
+;!bank1_bossfire_free_end     = $01D4E4|!bank
 
-!bank1_bossfire_free_start   = $01D442|!bank
-!bank1_bossfire_free_end     = $01D4E4|!bank
-
-!bank1_koopakids_free_start  = $01FA4C|!bank
+; starts at yoshi egg code, really most of the mode7 handling code
+!bank1_koopakids_free_start  = $01F75C|!bank
 !bank1_koopakids_free_end    = $020000|!bank
 
 !bank2_d51e_free_start       = $02D51E|!bank

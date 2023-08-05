@@ -40,6 +40,11 @@ banzai_bill_init:
 	sta !banzai_bill_face_dir,x
 	lda banzai_bill_speeds,y
 	sta !sprite_speed_x,x
+.set_gfx:
+	lda.b #banzai_bill_gfx
+	sta !spr_gfx_lo,x
+	lda.b #banzai_bill_gfx>>8
+	sta !spr_gfx_hi,x
 .exit:
 	rtl
 .face:
@@ -57,7 +62,7 @@ banzai_bill_accel_vals:
 	db $02, invert($02)
 
 banzai_bill_main:
-	%call_spr_gfx_single(64, 64, banzai_bill_gfx)
+	jsl spr_gfx_2
 
 	lda !sprite_status,x
 	eor #$08

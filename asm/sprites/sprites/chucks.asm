@@ -1192,14 +1192,11 @@ Return02C819:
 
 ; TODO DRAW HEAD
 chuck_gfx:
-	lda !chuck_ani_frame,x
-	rep #$20
-	asl
-	tay
-	lda chuck_body_pose_ptrs,y
-	sta !gen_gfx_pose_list
-	stz !gen_gfx_pose_list+2
-	%sprite_pose_pack_offs(16, 16)
+	ldy !chuck_ani_frame,x
+	lda chuck_body_pose_ptrs_lo,y
+	sta !spr_gfx_lo,x
+	lda chuck_body_pose_ptrs_hi,y
+	sta !spr_gfx_hi,x
 	jsl spr_gfx_2
 	rts
 

@@ -1,10 +1,8 @@
 includefrom "list.def"
 
-!wiggler_sprnum = $86
-
 %alloc_sprite_spriteset_1(!wiggler_sprnum, "wiggler", wiggler_init, wiggler_main, 6,
 	$107,
-	$00, $00, $F4, $80, $00, $00)
+	$00, $00, $F4, $81, $00, $00)
 
 !wiggler_segment_face_bit      = !sprite_misc_c2
 !wiggler_angry                 = !sprite_misc_151c
@@ -60,7 +58,6 @@ segment_buff_ptr_init:
 	rts
 
 segbuffer_spr_suboffscreen_bookeeping:
-	lda #$00
 	jsl sub_off_screen
 	lda !sprite_status,x
 	bne .nodespawn
@@ -162,6 +159,7 @@ wiggler_main:
 	jmp .call_gfx
 .not_stunned:
 	jsl spr_upd_yx_no_grav_l
+	lda #$00
 	jsr segbuffer_spr_suboffscreen_bookeeping
 	inc !wiggler_ani_counter,x
 	lda !wiggler_angry,x

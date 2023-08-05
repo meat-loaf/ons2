@@ -218,10 +218,12 @@ includeonce
 !level_load_spriteset_files = $0DDF
 ; reuse this after load time. room for 5 pointers. last must be 0000!!
 ; todo: probably use a counter instead, thats a dumb requirement
+; todo remove, deprecated
 !gen_gfx_pose_list          = $0DDF
 ; room for 6 14-byte tile info structs for the graphics routine. used for
 ; tiles that would be unwieldy in size simply due to minor x/y offsetting.
 ; claimed by sprites on their init, one at a time.
+; todo remove, deprecated
 !gfx_dyn_pose_buffer        = !gen_gfx_pose_list+(2*6)
 ; camera ram is all 2 bytes each
 !camera_control_x_pos     = !gfx_dyn_pose_buffer+(14*6)
@@ -302,6 +304,7 @@ assert !dyn_pose_buffer_avail+1 <= $0FBE, "ambient sprite ram exceeded bounds"
 !player_invuln_timer    = $1497|!addr
 
 !player_face_screen_timer   = $1499|!addr
+!player_kicking_timer       = $149A|!addr
 !player_palette_cycle_timer = $149B|!addr
 !player_shoot_fireball_timer = $149C|!addr
 
