@@ -2,7 +2,8 @@ includefrom "list.def"
 
 %alloc_sprite_spriteset_1(!wiggler_sprnum, "wiggler", wiggler_init, wiggler_main, 6,
 	$107,
-	$00, $00, $F4, $81, $00, $00)
+	$00, $00, $F4, $81, $00, $00,
+	$0000)
 
 !wiggler_segment_face_bit      = !sprite_misc_c2
 !wiggler_angry                 = !sprite_misc_151c
@@ -291,8 +292,7 @@ wiggler_main:
 ..no_y_check:
 	lda #!wiggler_bonk_sfx
 	sta !wiggler_bonk_sfx_port
-	; todo: label (boost mario speed)
-	jsl $01AA33|!bank
+	jsl boost_mario_speed_l|!bank
 	lda !wiggler_angry,x
 	ora !wiggler_bloomer,x
 	ora !sprite_being_eaten,x

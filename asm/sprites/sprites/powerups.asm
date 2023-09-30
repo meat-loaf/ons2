@@ -11,17 +11,18 @@
 !roulette_change_frames = $20
 
 %alloc_sprite(!roulette_sprnum, "item_roulette", powerup_init, roulette_main, 1, \
-	$00, $00, $00, $C2, $28, $40)
+	$00, $00, $00, $C2, $28, $40, $0000)
+; TODO use exbyte
 %alloc_sprite(!mushroom_sprnum, "mushroom", powerup_init, powerup_main, 1, \
-	$00, $00, $08, $C2, $28, $40)
+	$00, $00, $08, $C2, $28, $40, $0000)
 %alloc_sprite(!feather_sprnum, "cape_feather", powerup_init, feather_main, 1, \
-	$00, $00, $24, $C2, $28, $40)
+	$00, $00, $24, $C2, $28, $40, $0000)
 %alloc_sprite(!fireflower_sprnum, "fire_flower", fire_flower_init, fire_flower_main, 1, \
-	$00, $00, $0A, $C2, $28, $40)
+	$00, $00, $0A, $C2, $28, $40, $0000)
 %alloc_sprite(!poison_sprnum, "poison_mushroom", powerup_init, powerup_main, 1, \
-	$00, $00, $08, $C2, $28, $40)
+	$00, $00, $08, $C2, $28, $40, $0000)
 %alloc_sprite(!star_sprnum, "starman", powerup_init, powerup_main, 1, \
-	$00, $00, $04, $C2, $08, $40)
+	$00, $00, $04, $C2, $08, $40, $0000)
 
 %alloc_sprite_sharedgfx_entry_1(!mushroom_sprnum, $24)
 %alloc_sprite_sharedgfx_entry_1(!feather_sprnum, $22)

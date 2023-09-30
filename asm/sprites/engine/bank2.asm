@@ -465,6 +465,7 @@ ambient_get_slot:
 	pla
 	; note: ambinet id stored in high byte
 	; low byte for common use as e.g. phase pointer
+	; TODO use dedicated table
 	sta !ambient_misc_1,y
 	lda #ambient_initer
 	sta !ambient_rt_ptr,y

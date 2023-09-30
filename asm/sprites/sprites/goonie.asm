@@ -3,11 +3,15 @@
 
 %alloc_sprite_spriteset_2(!sprnum_goonie_run, "runnin_goonie", goonie_init, goonie_run_main, 3, \
 	$10C, $10D, \
-	$90, $80, $03, $19, $10, $80)
+	$90, $80, $03, $19, $10, $80,
+	goonie_body_gfx_ptrs,
+	!gen_spr_gfx)
 
 %alloc_sprite_spriteset_2(!sprnum_goonie_fly, "flyin_goonie", goonie_fly_init, goonie_fly_main, 6, \
 	$10C, $10D, \
-	$90&$E0, $8C, $03, $99, $90, $81)
+	$90&$E0, $8C, $03, $99, $90, $81,
+	goonie_body_gfx_ptrs,
+	!gen_spr_gfx)
 
 !glide_time = $63
 !fly_time = $FF
@@ -42,13 +46,13 @@ goonie_init:
 	rtl
 
 goonie_run_main:
-	ldy !goonie_ani_frame,x
-	lda goonie_body_pose_ptrs_lo,y
-	sta !spr_gfx_lo,x
-	lda goonie_body_pose_ptrs_hi,y
-	sta !spr_gfx_hi,x
+;	ldy !goonie_ani_frame,x
+;	lda goonie_body_pose_ptrs_lo,y
+;	sta !spr_gfx_lo,x
+;	lda goonie_body_pose_ptrs_hi,y
+;	sta !spr_gfx_hi,x
 ;	jsl spr_gfx_2
-	jsl spr_gfx_2_generic
+;	jsl spr_gfx_2_generic
 
 	lda !sprite_status,x
 	eor #$08
@@ -104,14 +108,6 @@ goonie_run_main:
 	db $01, $02, $03, $04, $05, $00
 
 goonie_fly_main:
-;	ldy !goonie_ani_frame,x
-	ldy #$00
-	lda goonie_wing_r_pose_ptrs_lo,y
-	sta !spr_gfx_lo,x
-	lda goonie_wing_r_pose_ptrs_hi,y
-	sta !spr_gfx_hi,x
-	jsl spr_gfx_2
-
 	lda !sprite_status,x
 	eor #$08
 	ora !sprites_locked
@@ -270,21 +266,21 @@ fly_goonie_upd_ani_frames:
 	%sprite_pose_entry_mirror("goonie_body_3")
 %finish_sprite_pose_entry_list()
 
-%start_sprite_pose_entry_list("goonie_wing_r")
-	%start_sprite_pose_entry("goonie_wing_r_glide", 0, 0)
-		%sprite_pose_tile_entry($0B,$FF,$34,$00,$00, 1)
-		%sprite_pose_tile_entry($16,$FF,$22,$00,$02, 1)
+;%start_sprite_pose_entry_list("goonie_wing_r")
+;	%start_sprite_pose_entry("goonie_wing_r_glide", 0, 0)
+;		%sprite_pose_tile_entry($0B,$FF,$34,$00,$00, 1)
+;		%sprite_pose_tile_entry($16,$FF,$22,$00,$02, 1)
+;;		%sprite_pose_tile_entry($0C,$0F,$2E,$00,$02, 1)
+;	%finish_sprite_pose_entry()
+;	%start_sprite_pose_entry("goonie_wing_r_1", 0, 0)
+;		%sprite_pose_tile_entry($08,$03,$37,$00,$00, 1)
 ;		%sprite_pose_tile_entry($0C,$0F,$2E,$00,$02, 1)
-	%finish_sprite_pose_entry()
-	%start_sprite_pose_entry("goonie_wing_r_1", 0, 0)
-		%sprite_pose_tile_entry($08,$03,$37,$00,$00, 1)
-		%sprite_pose_tile_entry($0C,$0F,$2E,$00,$02, 1)
-	%finish_sprite_pose_entry()
-	%start_sprite_pose_entry("goonie_wing_r_2", 0, 0)
-		%sprite_pose_tile_entry($0C,$09,$28,$80,$02, 1)
-		%sprite_pose_tile_entry($0D,$12,$2D,$80,$00, 1)
-	%finish_sprite_pose_entry()
-%finish_sprite_pose_entry_list()
+;	%finish_sprite_pose_entry()
+;	%start_sprite_pose_entry("goonie_wing_r_2", 0, 0)
+;		%sprite_pose_tile_entry($0C,$09,$28,$80,$02, 1)
+;		%sprite_pose_tile_entry($0D,$12,$2D,$80,$00, 1)
+;	%finish_sprite_pose_entry()
+;%finish_sprite_pose_entry_list()
 
 goonies_done:
 %set_free_finish("bank7", goonies_done)

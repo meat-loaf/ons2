@@ -8,6 +8,7 @@ ROM_BASE_PATH=rom_src
 CLEAN_ROM_FULL=${ROM_BASE_PATH}/${CLEAN_ROM_NAME}
 ASM_TS=.asm.ts
 GFX_TS=.gfx.ts
+MWL_FAKE_TS=.mwl.ts
 
 ROM_NAME_BASE=ons
 ROM_NAME=${ROM_NAME_BASE}.smc
@@ -68,9 +69,13 @@ ALL_ASM_DEPS= \
 	${core_asm_sources} \
 	${headers_asm_sources} \
 
+
+MWL_DIR=lvl
+MWL_FNAME_BASE=l
+
 .PHONY: ons test debug
 
-ons: ${CLEAN_ROM_FULL} ${ROM_NAME} ${CORE_BUILD_RULES} ${ASM_TS} ${GFX_TS}
+ons: ${CLEAN_ROM_FULL} ${ROM_NAME} ${CORE_BUILD_RULES} ${ASM_TS} ${GFX_TS} ${MWL_FAKE_TS}
 
 test: ons
 	${TEST_EMU} ${ROM_NAME} >/dev/null 2>&1 &
@@ -92,6 +97,10 @@ ${ROM_NAME}: ${ROM_RAW_BASE_SRC}
 
 ${ROM_RAW_BASE_SRC}: ${ROM_RAW_BASE_SRC_P}
 	flips --apply ${ROM_RAW_BASE_SRC_P} ${CLEAN_ROM_FULL} ${ROM_RAW_BASE_SRC}
+
+${MWL_FAKE_TS}: ${MWL_DIR}/${MWL_FNAME_BASE}\ *.mwl
+	${LUNAR_MAGIC} -ImportMultLevels ${ROM_NAME} ./${MWL_DIR}
+	touch $@
 
 clean:
 	rm -f ${ROM_NAME} ${SYM_NAME} .*.ts

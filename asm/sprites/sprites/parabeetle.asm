@@ -21,7 +21,9 @@
 
 %alloc_sprite_spriteset_1(!parabeetle_sprnum, "smb3_parabeetle", parabeetle_init, parabeetle_main, 1, \
 	$10E, \
-	$10, $95, $11, $B9, $90, $01)
+	$10, $95, $11, $B9, $90, $01,
+	parabeetle_gfx_tiles,
+	spr_gfx_single)
 
 !para_pal_index       = !sprite_misc_151c
 !para_ani_timer       = !sprite_misc_1570
@@ -30,7 +32,8 @@
 !para_fast_ani_speed  = !sprite_misc_160e
 !para_contact_disable = !sprite_misc_154c
 
-%set_free_start("bank1_thwomp")
+;%set_free_start("bank1_thwomp")
+%set_free_start("bank1_koopakids")
 x_speed:
 	db $0C,$0C,$06,$1A,$0C,$14,$0C,$0C        ; normal speeds. order is sequential with the palette (first = palette 8, last = palette F)
 parabeetle_init:
@@ -67,12 +70,9 @@ parabeetle_init:
 	rtl
 
 parabeetle_main:
-	ldy !para_ani_frame,x
-	lda gfx_tiles,y
-	sta !spr_gfx_lo,x
-	jsl spr_gfx_single
-	lda !sprites_locked
-	bne .done
+	;jsl spr_gfx_single
+	;lda !sprites_locked
+	;bne .done
 	lda !sprite_status,x
 	cmp #$08
 	bcs .cont
@@ -82,6 +82,7 @@ parabeetle_main:
 	sta !sprite_oam_properties,x
 .done:
 	rtl
+
 .cont:
 	jsr.w _suboffscr2_bank1
 
@@ -159,7 +160,8 @@ Return2:
 	stz !para_fast_ani_speed,x
 .ret:
 	rtl
-gfx_tiles:
+parabeetle_gfx_tiles:
 	db $00, $02
 parabeetle_done:
-%set_free_finish("bank1_thwomp", parabeetle_done)
+;%set_free_finish("bank1_thwomp", parabeetle_done)
+%set_free_finish("bank1_koopakids", parabeetle_done)

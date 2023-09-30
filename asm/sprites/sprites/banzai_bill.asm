@@ -3,7 +3,9 @@
 
 %alloc_sprite_spriteset_2(!banzai_bill_sprnum, "banzai_bill", banzai_bill_init, banzai_bill_main, 16, \
 	$105, $106, \
-	$10, $B6, $32, $01, $19, $04)
+	$10, $B6, $32, $01, $19, $04,
+	banzai_bill_gfx_ptrs,
+	!gen_spr_gfx)
 
 !banzai_bill_rot         = !sprite_misc_151c
 !banzai_behavior_chase   = !sprite_misc_1528
@@ -40,11 +42,6 @@ banzai_bill_init:
 	sta !banzai_bill_face_dir,x
 	lda banzai_bill_speeds,y
 	sta !sprite_speed_x,x
-.set_gfx:
-	lda.b #banzai_bill_gfx
-	sta !spr_gfx_lo,x
-	lda.b #banzai_bill_gfx>>8
-	sta !spr_gfx_hi,x
 .exit:
 	rtl
 .face:
@@ -62,8 +59,6 @@ banzai_bill_accel_vals:
 	db $02, invert($02)
 
 banzai_bill_main:
-	jsl spr_gfx_2
-
 	lda !sprite_status,x
 	eor #$08
 	ora !sprites_locked
@@ -167,7 +162,6 @@ banzai_bill_main:
 .smoke_face_offset:
 	dw $FFFC, $003C
 
-banzai_bill:
 %start_sprite_pose_entry_list("banzai_bill")
 	%start_sprite_pose_entry("banzai_bill_gfx", 64, 64)
 		; row 1

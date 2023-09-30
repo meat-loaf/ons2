@@ -5,7 +5,9 @@
 
 %alloc_sprite_spriteset_2(!sprnum_chucks, "chucks", CHUCKS_INIT, CHUCKS_MAIN, 5, \
 	$108, $109, \
-	$00,$0D,$0B,$F9,$11,$48)
+	$00,$0D,$0B,$F9,$11,$48,
+	chuck_body_gfx_ptrs,
+	!gen_spr_gfx)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; USES EXTRA BIT: YES
@@ -83,18 +85,11 @@
 !chuck_jump_kind_flag  = !sprite_misc_160e
 !chuck_head_phase      = !sprite_misc_1594
 
-!chuck_head_pose_buff_ix = !sprite_misc_1504
-
 !chuck_diggin_head_turn_ani_timer = !sprite_misc_1558
 
 ; TODO clean this up
 %set_free_start("bank7")
 CHUCKS_INIT:
-	jsl get_dyn_pose
-	tya
-	sta !chuck_head_pose_buff_ix,x
-;	LDA !spr_extra_byte_2,x
-;	STA !chuck_alt_behaviors,x
 	LDA !spr_extra_byte_1,x
 	AND #$0F
 	CMP #$0D
@@ -1192,12 +1187,12 @@ Return02C819:
 
 ; TODO DRAW HEAD
 chuck_gfx:
-	ldy !chuck_ani_frame,x
-	lda chuck_body_pose_ptrs_lo,y
-	sta !spr_gfx_lo,x
-	lda chuck_body_pose_ptrs_hi,y
-	sta !spr_gfx_hi,x
-	jsl spr_gfx_2
+;	ldy !chuck_ani_frame,x
+;	lda chuck_body_pose_ptrs_lo,y
+;	sta !spr_gfx_lo,x
+;	lda chuck_body_pose_ptrs_hi,y
+;	sta !spr_gfx_hi,x
+;	jsl spr_gfx_2
 	rts
 
 %start_sprite_pose_entry_list("chuck_body")

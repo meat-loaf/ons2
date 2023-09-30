@@ -138,26 +138,28 @@ endif
 endmacro
 
 macro finish_sprite_pose_entry_list()
-if !n_poses != 1
-	!p #= 0
-	!{sprite_pose_entry_list_name}_pose_ptrs_lo:
-		skip !n_poses
-	!{sprite_pose_entry_list_name}_pose_ptrs_hi:
-		skip !n_poses
-pushpc
+!p #= 0
+;if !n_poses != 1
+;	!p #= 0
+;	!{sprite_pose_entry_list_name}_pose_ptrs_lo:
+;		skip !n_poses
+;	!{sprite_pose_entry_list_name}_pose_ptrs_hi:
+;		skip !n_poses
+;pushpc
+!{sprite_pose_entry_list_name}_gfx_ptrs:
 	while !p < !n_poses
-	;	dw !{sprite_pose_entry_name_!{p}}
-		org !{sprite_pose_entry_list_name}_pose_ptrs_lo+!{p}
-			db !{sprite_pose_entry_name_!{p}}
-		org !{sprite_pose_entry_list_name}_pose_ptrs_hi+!{p}
-			db (!{sprite_pose_entry_name_!{p}})>>8
+		dw !{sprite_pose_entry_name_!{p}}
+;		org !{sprite_pose_entry_list_name}_pose_ptrs_lo+!{p}
+;			db !{sprite_pose_entry_name_!{p}}
+;		org !{sprite_pose_entry_list_name}_pose_ptrs_hi+!{p}
+;			db (!{sprite_pose_entry_name_!{p}})>>8
 		undef "sprite_pose_entry_name_!{p}"
 		!p #= !p+1
 	endif
-pullpc
-else
-	undef "sprite_pose_entry_name_0"
-endif
+;pullpc
+;else
+;	undef "sprite_pose_entry_name_0"
+;endif
 
 undef "n_poses"
 undef "sprite_pose_entry_list_name"

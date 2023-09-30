@@ -8,7 +8,8 @@ includefrom "list.def"
 
 %alloc_sprite_spriteset_2(!cloud_drop_sprnum, "yi_cloud_drop", cloud_drop_init, cloud_drop_main, 2, \
 	$102, $103, \
-	$80, $80, $37, $19, $91, $44)
+	$80, $80, $37, $19, $91, $44,
+	$0000)
 
 !cloud_drop_orient  = !spr_extra_bits
 !cloud_drop_turning = !sprite_misc_1570

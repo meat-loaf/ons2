@@ -2,7 +2,8 @@ includefrom "list.def"
 
 %alloc_sprite_spriteset_1(!fish_sprnum, "cheep-cheep", fish_init, fish_main, 1, \
 	$10F, \
-	$00, $00, $45, $99, $10, $00)
+	$00, $00, $45, $99, $10, $00,
+	fish_main_ani_tiles&$7FFF)
 
 ;%alloc_sprite_sharedgfx_entry_4(!fish_sprnum,$04,$06,$00,$02)
 
@@ -141,8 +142,8 @@ fish_main:
 .kick_and_gfx:
 	jsr.w _spr_kick
 .gfx:
-	ldy !fish_ani_frame,x
-	lda .ani_tiles,y
+;	ldy !fish_ani_frame,x
+;	lda .ani_tiles,y
 	jsl spr_gfx_single
 
 	jsr.w _suboffscr0_bank1

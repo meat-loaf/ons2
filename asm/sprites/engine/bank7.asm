@@ -20,6 +20,16 @@ spr_tweaker_1686_tbl:
 	skip $100
 spr_tweaker_190F_tbl:
 	skip $100
+spr_gfxptr_lo_tbl:
+	skip $100
+spr_gfxptr_hi_tbl:
+	skip $100
+spr_gfx_lo_tbl:
+	skip $100
+spr_gfx_hi_tbl:
+	skip $100
+;spr_gfx_bk_tbl:
+;	skip $100
 
 zero_sprite_tables:
 	stz.w !sprite_in_water,x
@@ -65,6 +75,17 @@ load_sprite_tables:
 	lda !sprite_num,x
 	txy
 	tax
+	lda.l spr_gfxptr_lo_tbl,x
+	sta !spr_gfx_lo,y
+	lda.l spr_gfxptr_hi_tbl,x
+	sta !spr_gfx_hi,y
+	lda.l spr_gfx_lo_tbl,x
+	sta !spr_gfx_tbl_lo,y
+	lda.l spr_gfx_hi_tbl,x
+	sta !spr_gfx_tbl_hi,y
+;	lda.l spr_gfx_bk_tbl,x
+	lda.l !sprite_main_table_bk,x
+	sta !spr_gfx_tbl_bk,y
 	lda.l spr_tweaker_1656_tbl,x
 	sta !sprite_tweaker_1656,y
 	lda.l spr_tweaker_1662_tbl,x
@@ -124,17 +145,25 @@ load_sprite_tables:
 
 !spr_tile_off_2    = $8A
 ; 'default' entry point, mainly intended for sprite states outside of 8
+!gen_spr_gfx = spr_gfx_2_generic
 spr_gfx_2:
 	lda !spr_gfx_hi,x
 	bmi .do_generic
 	jmp spr_gfx_single
 
 .generic:
-	lda !spr_gfx_hi,x
+	lda !spr_gfx_tbl_hi,x
 .do_generic:
 	sta !curr_pose_ptr+1
-	lda !spr_gfx_lo,x
+	lda !spr_gfx_tbl_lo,x
 	sta !curr_pose_ptr
+	lda !sprite_misc_1602,x
+	asl
+	tay
+	rep #$20
+	lda (!curr_pose_ptr),y
+	sta !curr_pose_ptr
+	sep #$20
 
 	; table header - offset to center + pointer
 	; to first tile
@@ -312,39 +341,6 @@ spr_gfx_2:
 .exit:
 	rtl
 
-; carry clear if successful: buffer index in y
-; carry set if no slots left; y will be negative
-get_dyn_pose:
-	txy
-	ldx !dyn_pose_buffer_avail
-	lda.l .free_indices,x
-	bmi .none
-	tsb !dyn_pose_buffer_avail
-	tax
-	lda.l .buff_index_to_offset,x
-.none:
-	tyx
-	tay
-
-	rtl
-
-.free_indices:
-	db $00, $01, $00, $02, $00, $01, $00, $03
-	db $00, $01, $00, $02, $00, $01, $00, $04
-	db $00, $01, $00, $02, $00, $01, $00, $03
-	db $00, $01, $00, $02, $00, $01, $00, $05
-	db $00, $01, $00, $02, $00, $01, $00, $03
-	db $00, $01, $00, $02, $00, $01, $00, $04
-	db $00, $01, $00, $02, $00, $01, $00, $03
-	db $00, $01, $00, $02, $00, $01, $00, $86
-.buff_index_to_offset:
-	db !gen_gfx_tile_tblsz*0
-	db !gen_gfx_tile_tblsz*1
-	db !gen_gfx_tile_tblsz*2
-	db !gen_gfx_tile_tblsz*3
-	db !gen_gfx_tile_tblsz*4
-	db !gen_gfx_tile_tblsz*5
-
 oam_small_to_next_big:
 !ix #= 1
 while !ix <= $64
@@ -352,12 +348,54 @@ while !ix <= $64
 	!ix #= !ix+1
 endif
 
+
+
+; carry clear if successful: buffer index in y
+; carry set if no slots left; y will be negative
+;get_dyn_pose:
+;	txy
+;	ldx !dyn_pose_buffer_avail
+;	lda.l .free_indices,x
+;	bmi .none
+;	tsb !dyn_pose_buffer_avail
+;	tax
+;	lda.l .buff_index_to_offset,x
+;.none:
+;	tyx
+;	tay
+;
+;	rtl
+;
+;.free_indices:
+;	db $00, $01, $00, $02, $00, $01, $00, $03
+;	db $00, $01, $00, $02, $00, $01, $00, $04
+;	db $00, $01, $00, $02, $00, $01, $00, $03
+;	db $00, $01, $00, $02, $00, $01, $00, $05
+;	db $00, $01, $00, $02, $00, $01, $00, $03
+;	db $00, $01, $00, $02, $00, $01, $00, $04
+;	db $00, $01, $00, $02, $00, $01, $00, $03
+;	db $00, $01, $00, $02, $00, $01, $00, $06|$80
+;.buff_index_to_offset:
+;	db !gen_gfx_tile_tblsz*0
+;	db !gen_gfx_tile_tblsz*1
+;	db !gen_gfx_tile_tblsz*2
+;	db !gen_gfx_tile_tblsz*3
+;	db !gen_gfx_tile_tblsz*4
+;	db !gen_gfx_tile_tblsz*5
+;
+
 ; draw a single sprite tile at the sprite's position.
 ; inputs:
-; spr_gfx_lo: the base tile to draw.
-; the tile is always 16x16 (can potentially use spr_gfx_hi table for this)
+; the tile is always 16x16 (TODO flag?)
 spr_gfx_single:
-	lda !spr_gfx_lo,x
+	; pull the tile to draw
+	lda !spr_gfx_tbl_lo,x
+	sta $0A
+	lda !spr_gfx_tbl_hi,x
+	sta $0B
+	ldy !sprite_misc_1602,x
+	lda ($0A),y
+	
 .have_tile:
 	clc
 	adc !spr_spriteset_off,x

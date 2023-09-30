@@ -111,6 +111,16 @@ org sprite_size_table_ptr
 		db !{sprite_!{ix}_1686}
 		org spr_tweaker_190F_tbl+(!ix)
 		db !{sprite_!{ix}_190F}
+		org spr_gfxptr_lo_tbl+(!ix)
+		db (!{sprite_!{ix}_gfxptr})&$FF
+		org spr_gfxptr_hi_tbl+(!ix)
+		db ((!{sprite_!{ix}_gfxptr})>>8)&$FF
+		org spr_gfx_lo_tbl+(!ix)
+		db (!{sprite_!{ix}_pose_tbl})&$FF
+		org spr_gfx_hi_tbl+(!ix)
+		db ((!{sprite_!{ix}_pose_tbl})>>8)
+		;org spr_gfx_bk_tbl+(!ix)
+		;db bank(!{sprite_!{ix}_main_tbl})
 		!fmt = ""
 		if !ix < 16
 			!fmt = 0

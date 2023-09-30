@@ -64,23 +64,29 @@ sprite_die_no_smoke:
 	jmp spr_handle_main
 
 .no_call_main:
-	; yeah i guess this is fine
-	jml spr_gfx_2
+	rtl
 
 spr_spinkill:
 	lda !sprite_misc_1540,x
 	beq .die
 	lsr #3
 	and #$03
-	tay
+	sta !sprite_misc_1602,x
 	; clean up tile offset to draw properly
-	;  TODO might be better as part of the code that sets sprite state to 4
+	;  TODO might be better as part of the code that sets sprite state to 4?
 	stz !spr_spriteset_off,x
 	lda !sprite_oam_properties,x
 	and #(~$01)
 	sta !sprite_oam_properties,x
-	lda .smoke_tiles,y
-	jml spr_gfx_single_have_tile
+	; setup table
+	%set_spr_gfx_rt(spr_gfx_single)
+	lda.b #.smoke_tiles
+	sta !spr_gfx_tbl_lo,x
+	lda.b #.smoke_tiles>>8
+	sta !spr_gfx_tbl_hi,x
+	lda.b #bank(.smoke_tiles)
+	sta !spr_gfx_tbl_bk,x
+	rtl
 
 .die:
 	; TODO originally was a call to the 'erase sprite' part of suboffscreen.
@@ -91,15 +97,22 @@ spr_spinkill:
 .smoke_tiles:
 	db $64,$62,$60,$62
 
+; TODO handle springboard, pballoon turning to normal state here? what's up with that
+;      springboard probably wants to go from 0b->08 immediately
+_spr_stunned:
+	rtl
+;	jsl spr_gfx_2
+;	lda !sprites_locked
+;	beq .cont
+;	rtl
+;.cont:
+;	rtl
+
 _sprspr_mario_spr_rt:
 	jsr.w _spr_spr_interact
 	jmp.w _mario_spr_interact
 .done:
 %set_free_finish("bank1_spr0to13", _sprspr_mario_spr_rt_done)
-
-; remap sprite spinjump smoke tiles
-;org $019A4E|!bank
-;	db $E4,$E2,$E0,$E2
 
 ; 'sprite to spawn' table...
 org $01A7C9|!bank

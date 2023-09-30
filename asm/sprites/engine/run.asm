@@ -28,6 +28,8 @@ run_sprites:
 	jsl handle_sprite
 	dex
 	bpl .loop
+.do_gfx:
+	jsr handle_sprite_gfx
 	lda !current_yoshi_slot
 	bne .on_yoshi
 	stz !player_on_yoshi
@@ -76,6 +78,11 @@ allocate_oam_dec_timers:
 .done:
 	rts
 handle_sprite:
+	lda !sprites_locked
+	beq .unlocked
+	rtl
+
+.unlocked:
 	lda !sprite_status,x
 	bne .cont
 	dec
@@ -147,6 +154,36 @@ spr_handle_main:
 	pha
 	ldx !current_sprite_process
 	rtl
+
+handle_sprite_gfx:
+	ldx #!num_sprites-1
+.loop
+	stx !current_sprite_process
+	; TODO this is a shim, remove
+	lda #!RTL_OPCODE
+	sta $00
+	lda !sprite_status,x
+	cmp #$01
+	bcc .next
+	jsl .call
+.next:
+	dex
+	bpl .loop
+	rts
+.call:
+	lda !spr_gfx_tbl_bk,x
+	pha
+	plb
+
+	lda #$07
+	pha
+	lda !spr_gfx_hi,x
+	pha
+	lda !spr_gfx_lo,x
+	pha
+	rtl
+
+
 spr_callers_done:
 %set_free_finish("bank1_sprcall_inits", spr_callers_done)
 

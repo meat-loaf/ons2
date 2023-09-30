@@ -50,23 +50,30 @@
 ;	db !wing_in_tile, !wing_out_tile
 
 %alloc_sprite(!goomba_sprnum, "goomba", koopa_init_goomba, goomba_main, 2, \
-	$30, $00, $00, $00, $00, $00)
+	$30, $00, $00, $00, $00, $00,
+	$0000)
 
 %alloc_sprite_spriteset_1(!shelless_koopa_sprnum, "shelless_koopa", koopa_init, shelless_koopa_main, 2, \
 	$104, \
-	$70, $00, $00, $00, $00, $00)
+	$70, $00, $00, $00, $00, $00,
+	$0000)
 
 %alloc_sprite_spriteset_1(!koopa_sprnum, "koopas", koopa_init, koopa_main, 5, $0100, \
-	$10, $40, $00, $00, $02, $A0)
+	$10, $40, $00, $00, $02, $A0,
+	koopa_pose_tbl)
 %alloc_sprite_spriteset_1(!lame_parakoopa_sprnum, "lame_parakoopa", koopa_init, koopa_main, 3, $0100,\
-	$10, $40, $00, $00, $42, $B0)
+	$10, $40, $00, $00, $42, $B0,
+	koopa_pose_tbl)
 %alloc_sprite_spriteset_1(!flyin_parakoopa_v_sprnum, "flyin_parakoopa_vert", koopa_init, flyin_parakoopa_main, 3, $0100,\
-	$10, $40, $00, $00, $52, $B0)
+	$10, $40, $00, $00, $52, $B0,
+	koopa_pose_tbl)
 %alloc_sprite_spriteset_1(!flyin_parakoopa_h_sprnum, "flyin_parakoopa_horz", koopa_init, flyin_parakoopa_main, 3, $0100,\
-	$10, $40, $00, $00, $52, $B0)
+	$10, $40, $00, $00, $52, $B0,
+	koopa_pose_tbl)
 
-%alloc_sprite_spriteset_1(!giant_koopa_sprnum, "koopas", koopa_init, koopa_main, 5, $0110, \
-	$10, $40, $00, $00, $02, $A0)
+%alloc_sprite_spriteset_1(!giant_koopa_sprnum, "giant_koopas", koopa_init, koopa_main, 5, $0110, \
+	$10, $40, $00, $00, $02, $A0,
+	giant_koopa_pose_tbl)
 
 ;%alloc_sprite_sharedgfx_entry_9(!koopa_sprnum, $82,$A0,$82,$A2,$84,$A4,$8C,$8A,$8E)
 ;%alloc_sprite_sharedgfx_entry_mirror(!shell_sprnum, !koopa_sprnum)

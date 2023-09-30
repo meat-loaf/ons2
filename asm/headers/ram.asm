@@ -214,27 +214,26 @@ includeonce
 
 ; scratch used by spriteset code during level load:
 ; holds graphics files to be decompressed to vram
-; only needed during load time
+; only needed during load time, but can't be used by sprites
 !level_load_spriteset_files = $0DDF
-; reuse this after load time. room for 5 pointers. last must be 0000!!
-; todo: probably use a counter instead, thats a dumb requirement
-; todo remove, deprecated
-!gen_gfx_pose_list          = $0DDF
-; room for 6 14-byte tile info structs for the graphics routine. used for
-; tiles that would be unwieldy in size simply due to minor x/y offsetting.
-; claimed by sprites on their init, one at a time.
-; todo remove, deprecated
-!gfx_dyn_pose_buffer        = !gen_gfx_pose_list+(2*6)
+!spr_gfx_tbl_lo = !level_load_spriteset_files+20
+!spr_gfx_tbl_hi = !spr_gfx_tbl_lo+!num_sprites
+!spr_gfx_tbl_bk = !spr_gfx_tbl_hi+!num_sprites
+
 ; camera ram is all 2 bytes each
-!camera_control_x_pos     = !gfx_dyn_pose_buffer+(14*6)
+!camera_control_x_pos     = !spr_gfx_tbl_bk+!num_sprites
+;!camera_control_x_pos     = !gfx_dyn_pose_buffer+(14*6)
 !camera_control_y_pos     = !camera_control_x_pos+$2
 !camera_bound_left_delta  = !camera_control_y_pos+$2
 !camera_bound_right_delta = !camera_bound_left_delta+$2
 ;;; scratch
 !camera_state             = !camera_bound_right_delta+$2
-
 ; 4 bytes
-;!camera_scratch          = !camera_target_x_pos+2
+;!camera_scratch          = !camera_state+2
+
+!ambient_misc_3           = !camera_state+$2
+!ambient_id_loadval       = !ambient_misc_3+!ambient_tblsz
+assert !ambient_id_loadval+!ambient_tblsz < $0EF4
 
 !status_bar_tilemap     = $0EF9|!addr
 
@@ -459,6 +458,8 @@ assert (!ambient_misc_1)+(!ambient_tblsz) <= $1EA2, "ambient sprite ram exceeded
 !sprite_x_high            = $14E0
 !sprite_pos_y_frac        = $14EC
 !sprite_pos_x_frac        = $14F8
+
+; TODO REPURPOSE THIS TO NEW CFG IF NEEDED
 !sprite_misc_1504         = $1504
 !sprite_misc_1510         = $1510
 !sprite_misc_151c         = $151C
@@ -544,6 +545,9 @@ assert bank(!big_hdma_decomp_buff_rg) == bank(!big_hdma_decomp_buff_b), "hdma de
 !skidsmoke_status = !turnblock_status+$60
 ; 256 bytes: an entry for each sprite index
 !level_ss_sprite_offs = !skidsmoke_status+$48
+; 12 bytes each: used by sprites which use the generic gfx routines
+!spr_pose_ptr_lo = !level_ss_sprite_offs+$100
+!spr_pose_ptr_hi = !spr_pose_ptr_lo+$100
 
 ; ram defs ;
 !Freeram_SSP_PipeDir    ?= !sspipes_dir
