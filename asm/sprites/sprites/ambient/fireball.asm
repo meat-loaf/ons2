@@ -1,12 +1,8 @@
 includefrom "ambient_list.asm"
-!ambient_fireball_enemy_ng = $3B
-!ambient_fireball_enemy    = $3C
-!ambient_fireball_ix       = $3D
 
-
-%alloc_ambient_sprite_grav(!ambient_fireball_ix, "fireball", fireballz, !ambient_twk_check_offscr|!ambient_twk_has_grav, $04, $30)
-%alloc_ambient_sprite_grav(!ambient_fireball_enemy, "enemy_fireball", fireballz, !ambient_twk_check_offscr|!ambient_twk_has_grav, $04, $30)
-%alloc_ambient_sprite(!ambient_fireball_enemy_ng, "enemy_fireball_nograv", fireballz, !ambient_twk_check_offscr)
+%alloc_ambient_sprite_grav(!ambient_fireball_id, "fireball", fireballz, !ambient_twk_check_offscr|!ambient_twk_has_grav, $04, $30)
+%alloc_ambient_sprite_grav(!ambient_fireball_enemy_id, "enemy_fireball", fireballz, !ambient_twk_check_offscr|!ambient_twk_has_grav, $04, $30)
+%alloc_ambient_sprite(!ambient_fireball_enemy_ng_id, "enemy_fireball_nograv", fireballz, !ambient_twk_check_offscr)
 
 %set_free_start("bank2_altspr1")
 fireballz:
@@ -21,18 +17,19 @@ fireballz:
 	bne exit_short
 	inc !ambient_misc_2,x
 	jsr ambient_physics
-	lda !ambient_misc_1+1,x
+	;lda !ambient_misc_1+1,x
+	lda !ambient_id_loadval,x
 	and #$00FF
 	asl
 	tay
-	lda.w .interaction_rts-(!ambient_fireball_enemy_ng*2),y
+	lda.w .interaction_rts-(!ambient_fireball_enemy_ng_id*2),y
 	sta $02
 	jmp ($0002)
 .interaction_rts:
 	dw ambient_fb_checkplayer
 	dw ambient_fb_checkplayer
 	dw ambient_fb_checkobj_spr
-.props:	
+.props:
 	dw $042C,$042D
 	dw $C42C,$C42D
 

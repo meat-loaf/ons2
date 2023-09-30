@@ -46,7 +46,8 @@ ambient_coin:
 	sta $0e
 	lda .noam,y
 	sta $0c
-	lda !ambient_misc_1+1,x
+	;lda !ambient_misc_1+1,x
+	lda !ambient_id_loadval,x
 	and #$00FF
 	asl
 	tay

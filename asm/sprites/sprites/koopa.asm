@@ -49,31 +49,32 @@
 ;	db !wing_in_tile, !wing_out_tile
 ;	db !wing_in_tile, !wing_out_tile
 
-%alloc_sprite(!goomba_sprnum, "goomba", koopa_init_goomba, goomba_main, 2, \
-	$30, $00, $00, $00, $00, $00,
-	$0000)
+;%alloc_sprite(!goomba_sprnum, "goomba", koopa_init_goomba, goomba_main, 2, \
+;	$30, $00, $00, $00, $00, $00,
+;	$0000)
 
-%alloc_sprite_spriteset_1(!shelless_koopa_sprnum, "shelless_koopa", koopa_init, shelless_koopa_main, 2, \
-	$104, \
-	$70, $00, $00, $00, $00, $00,
-	$0000)
+;%alloc_sprite_spriteset_1(!shelless_koopa_sprnum, "shelless_koopa", koopa_init, shelless_koopa_main, 2, \
+;	$104, \
+;	$70, $00, $00, $00, $00, $00,
+;	$0000)
 
 %alloc_sprite_spriteset_1(!koopa_sprnum, "koopas", koopa_init, koopa_main, 5, $0100, \
 	$10, $40, $00, $00, $02, $A0,
-	koopa_pose_tbl)
-%alloc_sprite_spriteset_1(!lame_parakoopa_sprnum, "lame_parakoopa", koopa_init, koopa_main, 3, $0100,\
-	$10, $40, $00, $00, $42, $B0,
-	koopa_pose_tbl)
-%alloc_sprite_spriteset_1(!flyin_parakoopa_v_sprnum, "flyin_parakoopa_vert", koopa_init, flyin_parakoopa_main, 3, $0100,\
-	$10, $40, $00, $00, $52, $B0,
-	koopa_pose_tbl)
-%alloc_sprite_spriteset_1(!flyin_parakoopa_h_sprnum, "flyin_parakoopa_horz", koopa_init, flyin_parakoopa_main, 3, $0100,\
-	$10, $40, $00, $00, $52, $B0,
-	koopa_pose_tbl)
-
-%alloc_sprite_spriteset_1(!giant_koopa_sprnum, "giant_koopas", koopa_init, koopa_main, 5, $0110, \
-	$10, $40, $00, $00, $02, $A0,
-	giant_koopa_pose_tbl)
+	koopa_gfx_ptrs,
+	!gen_spr_gfx)
+;%alloc_sprite_spriteset_1(!lame_parakoopa_sprnum, "lame_parakoopa", koopa_init, koopa_main, 3, $0100,\
+;	$10, $40, $00, $00, $42, $B0,
+;	koopa_pose_tbl)
+;%alloc_sprite_spriteset_1(!flyin_parakoopa_v_sprnum, "flyin_parakoopa_vert", koopa_init, flyin_parakoopa_main, 3, $0100,\
+;	$10, $40, $00, $00, $52, $B0,
+;	koopa_pose_tbl)
+;%alloc_sprite_spriteset_1(!flyin_parakoopa_h_sprnum, "flyin_parakoopa_horz", koopa_init, flyin_parakoopa_main, 3, $0100,\
+;	$10, $40, $00, $00, $52, $B0,
+;	koopa_pose_tbl)
+;
+;%alloc_sprite_spriteset_1(!giant_koopa_sprnum, "giant_koopas", koopa_init, koopa_main, 5, $0110, \
+;	$10, $40, $00, $00, $02, $A0,
+;	giant_koopa_pose_tbl)
 
 ;%alloc_sprite_sharedgfx_entry_9(!koopa_sprnum, $82,$A0,$82,$A2,$84,$A4,$8C,$8A,$8E)
 ;%alloc_sprite_sharedgfx_entry_mirror(!shell_sprnum, !koopa_sprnum)
@@ -113,34 +114,34 @@ koopa_init:
 	db $5*2,$2*2,$4*2,$3*2
 
 ; TODO FIX WINGS
-koopa_gfx:
-	; used as 'is parakoopa' scratch throughout sprite
-	stz !koopa_is_winged_scr
-	lda !sprite_num,x
-	cmp #!koopa_sprnum
-	beq .no_wings
-	inc !koopa_is_winged_scr
-.fly_entry:
-	; todo port this routine, needs at least one fix
-	jsr $9E28
-.no_wings:
-	ldy !koopa_ani_frame,x
-	lda !sprite_num,x
-	cmp #!giant_koopa_sprnum
-	bcs .giant
-	lda koopa_pose_ptrs_lo,y
-	sta !spr_gfx_lo,x
-	lda koopa_pose_ptrs_hi,y
-	sta !spr_gfx_hi,x
-	jsl spr_gfx_2
-	rts
-.giant:
-	lda giant_koopa_pose_ptrs_lo,y
-	sta !spr_gfx_lo,x
-	lda giant_koopa_pose_ptrs_hi,y
-	sta !spr_gfx_hi,x
-	jsl spr_gfx_2
-	rts
+;koopa_gfx:
+;	; used as 'is parakoopa' scratch throughout sprite
+;	stz !koopa_is_winged_scr
+;	lda !sprite_num,x
+;	cmp #!koopa_sprnum
+;	beq .no_wings
+;	inc !koopa_is_winged_scr
+;.fly_entry:
+;	; todo port this routine, needs at least one fix
+;	jsr $9E28
+;.no_wings:
+;	ldy !koopa_ani_frame,x
+;	lda !sprite_num,x
+;	cmp #!giant_koopa_sprnum
+;	bcs .giant
+;	lda koopa_pose_ptrs_lo,y
+;	sta !spr_gfx_lo,x
+;	lda koopa_pose_ptrs_hi,y
+;	sta !spr_gfx_hi,x
+;	jsl spr_gfx_2
+;	rts
+;.giant:
+;	lda giant_koopa_pose_ptrs_lo,y
+;	sta !spr_gfx_lo,x
+;	lda giant_koopa_pose_ptrs_hi,y
+;	sta !spr_gfx_hi,x
+;	jsl spr_gfx_2
+;	rts
 
 goomba_main:
 	lda !sprite_oam_properties,x
@@ -273,7 +274,8 @@ shelless_koopa_main:
 	db $30,$D0
 
 koopa_main:
-	jsr koopa_gfx
+	stz !koopa_is_winged_scr
+;	jsr koopa_gfx
 	lda !sprites_locked
 	bne shelless_koopa_main_exit
 	jsr _suboffscr0_bank1
@@ -346,13 +348,18 @@ koopa_main:
 	jsr _sprspr_mario_spr_rt
 	jsr _spr_upd_pos
 	jsr _flip_if_side_blocked
+	lda !sprite_status,x
+	cmp #$09
+	bcc .exit
+	lda #$03
+	sta !koopa_ani_frame,x
 .exit:
 	rtl
 .speeds:
 	db $08,$F8,$0C,$F4
 
 flyin_parakoopa_main:
-	jsr koopa_gfx_fly_entry
+;	jsr koopa_gfx_fly_entry
 	lda !sprites_locked
 	bne .exit
 	ldy !sprite_num,x
@@ -440,6 +447,9 @@ flyin_parakoopa_main:
 	%start_sprite_pose_entry("k_turn", 16, 32)
 		%sprite_pose_tile_entry($00, $F8, $04, $00, 2, 1)
 		%sprite_pose_tile_entry($00, $E8, $08, $00, 2, 1)
+	%finish_sprite_pose_entry()
+	%start_sprite_pose_entry("k_stunned", 16, 16)
+		%sprite_pose_tile_entry($00, $00, $0C, $00, 2, 1)
 	%finish_sprite_pose_entry()
 %finish_sprite_pose_entry_list()
 

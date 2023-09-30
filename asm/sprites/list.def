@@ -3,7 +3,7 @@ includefrom "sprites.asm"
 incsrc "ambient_list.def"
 
 ;incsrc "sprites/originals_unconverted.asm"
-;incsrc "sprites/koopa.asm"
+incsrc "sprites/koopa.asm"
 incsrc "sprites/parabeetle.asm"
 ;incsrc "sprites/fishe.asm"
 ; todo this should be a level script instead

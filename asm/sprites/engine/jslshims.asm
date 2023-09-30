@@ -32,9 +32,9 @@ org $019AA8|!bank
 
 %set_free_start("bank1_bossfire")
 ; springboard graphics caller when carried
-springshim:
-	jsl $01E6F0|!bank
-	rts
+;springshim:
+;	jsl $01E6F0|!bank
+;	rts
 ;spr_spinkill_shim:
 ;	%jsl2rts(!bank01_jsl2rts_rtl, spr_spinkill)
 spr_lavadie_shim:
@@ -43,8 +43,8 @@ spr_smushed_shim:
 	%jsl2rts(!bank01_jsl2rts_rtl, spr_smushed)
 ;spr_killed_shim:
 ;	%jsl2rts(!bank01_jsl2rts_rtl, spr_killed)
-spr_stunned_shim:
-	%jsl2rts(!bank01_jsl2rts_rtl, spr_stunned)
+;spr_stunned_shim:
+;	%jsl2rts(!bank01_jsl2rts_rtl, spr_stunned)
 spr_kicked_shim:
 	%jsl2rts(!bank01_jsl2rts_rtl, spr_kicked)
 spr_carried_shim:

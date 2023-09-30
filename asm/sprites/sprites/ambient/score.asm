@@ -1,22 +1,3 @@
-!ambient_score_10pt_id   = $13
-!ambient_score_20pt_id   = $14
-!ambient_score_40pt_id   = $15
-!ambient_score_80pt_id   = $16
-!ambient_score_100pt_id  = $17
-!ambient_score_200pt_id  = $18
-!ambient_score_400pt_id  = $19
-!ambient_score_800pt_id  = $1A
-!ambient_score_1000pt_id = $1B
-!ambient_score_2000pt_id = $1C
-!ambient_score_4000pt_id = $1D
-!ambient_score_8000pt_id = $1E
-!ambient_score_1up_id    = $1F
-!ambient_score_2up_id    = $20
-!ambient_score_3up_id    = $21
-!ambinet_score_1coin_id  = $22
-!ambinet_score_2coins_id = $23
-!ambinet_score_5coins_id = $24
-
 %alloc_ambient_sprite(!ambient_score_10pt_id, "ambient_score_10pt", ambient_score, \
 	!ambient_twk_pos_upd)
 %alloc_ambient_sprite(!ambient_score_20pt_id, "ambient_score_20pt", ambient_score, \
@@ -66,7 +47,8 @@ ambient_score:
 	clc
 	adc #$0008
 	sta $0204|!addr,y
-	lda !ambient_misc_1+1,x
+	;lda !ambient_misc_1+1,x
+	lda !ambient_id_loadval,x
 	and #$00FF
 	asl : asl
 	tax
@@ -97,7 +79,8 @@ ambient_score:
 	lda !ambient_gen_timer,x
 	cmp #$002a
 	bne .no_reward_yet
-	lda !ambient_misc_1+1,x
+	;lda !ambient_misc_1+1,x
+	lda !ambient_id_loadval,x
 	and #$00FF
 	asl
 	tax

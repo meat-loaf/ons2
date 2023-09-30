@@ -119,7 +119,8 @@ handle_sprite:
 	; 8
 	dw spr_handle_main-1
 	; 9
-	dw spr_stunned_shim-1
+;	dw spr_stunned_shim-1
+	dw _spr_stunned-1
 	; A
 	dw spr_kicked_shim-1
 	; B

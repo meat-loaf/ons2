@@ -1,7 +1,35 @@
 !koopa_sprnum = $04
 
 !fish_sprnum = $15
+!springboard_sprnum = $2F
 
 !throwblock_sprnum = $53
 
 !wiggler_sprnum = $86
+
+
+; ambient
+!ambient_score_10pt_id   = $13
+!ambient_score_20pt_id   = $14
+!ambient_score_40pt_id   = $15
+!ambient_score_80pt_id   = $16
+!ambient_score_100pt_id  = $17
+!ambient_score_200pt_id  = $18
+!ambient_score_400pt_id  = $19
+!ambient_score_800pt_id  = $1A
+!ambient_score_1000pt_id = $1B
+!ambient_score_2000pt_id = $1C
+!ambient_score_4000pt_id = $1D
+!ambient_score_8000pt_id = $1E
+!ambient_score_1up_id    = $1F
+!ambient_score_2up_id    = $20
+!ambient_score_3up_id    = $21
+!ambinet_score_1coin_id  = $22
+!ambinet_score_2coins_id = $23
+!ambinet_score_5coins_id = $24
+
+!ambient_birb_id           = $38
+!ambient_fireball_enemy_ng_id = $3B
+!ambient_fireball_enemy_id    = $3C
+!ambient_fireball_id   = $3D
+!ambient_falling_piece_id  = $3E

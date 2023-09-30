@@ -1,7 +1,5 @@
 includefrom "ambient_list.def"
 
-!ambient_falling_piece_id = $3E
-
 %alloc_ambient_sprite_grav(!ambient_falling_piece_id, "falling_piece", ambient_falling_piece, \
 	!ambient_twk_has_grav|!ambient_twk_pos_upd|!ambient_twk_check_offscr, \
 	$03, $40)

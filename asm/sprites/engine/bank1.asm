@@ -100,13 +100,78 @@ spr_spinkill:
 ; TODO handle springboard, pballoon turning to normal state here? what's up with that
 ;      springboard probably wants to go from 0b->08 immediately
 _spr_stunned:
+	; TODO introduce a cfg bit for this?
+	lda !sprite_num,x
+	cmp #!springboard_sprnum
+	bne .cont
+.set_normal:
+	stz !sprite_speed_y,x
+	lda #$08
+	sta !sprite_status,x
 	rtl
-;	jsl spr_gfx_2
-;	lda !sprites_locked
-;	beq .cont
-;	rtl
-;.cont:
-;	rtl
+
+.cont:
+	jsr _spr_handle_stun_tmr
+	jsr _spr_upd_pos
+	%spr_on_ground()
+	beq .airborne
+	jsr _ground_spr_speed_adj
+	lda !sprite_num,x
+	cmp #!fish_sprnum
+	beq .set_normal
+	; TODO yoshi check was here
+.airborne:
+	%spr_touching_ceil()
+	beq .no_block_interact
+	lda #$10
+	sta !sprite_speed_y,x
+	%spr_touching_wall()
+	bne .no_block_interact
+	lda !sprite_x_low,x
+	clc
+	adc #$08
+	sta !block_xpos
+	lda !sprite_x_high,x
+	adc #$00
+	sta !block_xpos+1
+	lda !sprite_y_low,x
+	and #$F0
+	sta !block_ypos
+	lda !sprite_y_high,x
+	sta !block_ypos+1
+	ldy #$00
+	%spr_obj_blocked(!sprite_blocked_layer2_below)
+	beq .set_layer
+	iny
+.set_layer
+	sty !current_layer_process
+	ldy #$00
+	jsl kick_spr_hit_block
+	lda #$08
+	sta !sprite_cape_disable_time,x
+.no_block_interact:
+	%spr_touching_wall()
+	beq .interact
+	lda !sprite_num,x
+	cmp #$0d
+	bcc .no_koopa_special
+	; TODO somethign about this
+	jsr $999E
+.no_koopa_special
+	; signed divide by 2?
+	lda !sprite_speed_x,x
+	asl
+	php
+	ror !sprite_speed_x,x
+	plp
+	ror !sprite_speed_x,x
+.interact:
+	jsr _sprspr_mario_spr_rt
+	jsr _suboffscr0_bank1
+	rtl
+
+_spr_carried:
+	rtl
 
 _sprspr_mario_spr_rt:
 	jsr.w _spr_spr_interact

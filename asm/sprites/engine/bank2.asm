@@ -268,9 +268,11 @@ ambient_set_clipping_a_8a8i:
 
 ; TODO spritesets
 ambient_initer:
-	lda !ambient_misc_1,x
+;	lda !ambient_misc_1,x
+	lda !ambient_id_loadval,x
+	and #$00FF
 	; id stored in high byte
-	xba
+;	xba
 	asl
 	tay
 	lda ambient_twk_tsz,y
@@ -435,8 +437,8 @@ ambient_get_slot:
 	rep #$30
 	and #$00FF
 .axy_prepped:
-	xba
 	pha
+	;xba
 	ldy.w !ambient_spr_ring_ix
 	lda.w #!num_ambient_sprs
 	sta $0E
@@ -463,10 +465,11 @@ ambient_get_slot:
 .no_ring_ix_adj:
 	sta !ambient_spr_ring_ix
 	pla
-	; note: ambinet id stored in high byte
+	; note: ambient id stored in high byte
 	; low byte for common use as e.g. phase pointer
 	; TODO use dedicated table
-	sta !ambient_misc_1,y
+;	sta !ambient_misc_1,y
+	sta !ambient_id_loadval,y
 	lda #ambient_initer
 	sta !ambient_rt_ptr,y
 
@@ -478,15 +481,21 @@ ambient_get_slot:
 	; todo fix call sites to zero top byte if applicable
 	and #$00FF
 	sta !ambient_gen_timer,y
-	sep #$30
 
-	lda #$00
+	; cleanup
+	lda #$0000
+	sta !ambient_misc_1,y
+	sta !ambient_misc_2,y
+	sta !ambient_misc_3,y
+	sep #$30
 	sta !ambient_x_speed,y
 	sta !ambient_y_speed,y
+
 	lda !ambient_get_slot_xspd
 	sta !ambient_x_speed+1,y
 	lda !ambient_get_slot_yspd
 	sta !ambient_y_speed+1,y
+
 	clc
 	rtl
 .done
