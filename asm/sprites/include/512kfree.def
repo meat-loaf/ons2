@@ -14,6 +14,12 @@
 !bank1_spr0to13_free_start        = $0188EC|!bank
 !bank1_spr0to13_free_end          = $019032|!bank
 
+; TODO should be expanded to $0197AD but there is a stun timer handler in the middle
+;      that needs to be ported. Can expand further by porting grounded speed adj routine,
+;      which should be simple
+!bank1_stunned_handler_start      = $01953C|!bank
+!bank1_stunned_handler_end        = $0195FC|!bank
+
 !bank1_thwomp_free_start     = $01AE96|!bank
 !bank1_thwomp_free_end       = $01AF9F|!bank
 

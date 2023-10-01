@@ -109,6 +109,7 @@ includeonce
 ; 3 bytes - free in levels after gm11
 !map16_data_hi            = $6E
 !player_ani_trigger_state = $71
+!player_in_air            = $72
 !player_dir               = $76
 !player_blocked_status    = $77
 !player_x_spd_spx         = $7A
@@ -263,8 +264,8 @@ assert !dyn_pose_buffer_avail+1 <= $0FBE, "ambient sprite ram exceeded bounds"
 !midway_flag            = $13CE|!addr
 !ow_run_event_flag      = $13CE|!addr
 ; value to use when slippery blocks can be slippery
-!mario_slip             = $140A|!addr
 !mario_on_ground        = $13EF|!addr
+!mario_slip             = $140A|!addr
 
 !flight_phase           = $1407|!addr
 
@@ -273,6 +274,8 @@ assert !dyn_pose_buffer_avail+1 <= $0FBE, "ambient sprite ram exceeded bounds"
 
 !level_state_flags_curr = $1415|!addr      ; current live set
 !level_state_flags_midp = $1416|!addr      ; midpoint backup set
+
+!yoshi_in_pipe          = $1419|!addr
 
 !exit_counter           = $141A|!addr
 
@@ -381,6 +384,7 @@ assert (!ambient_y_speed)+(!num_ambient_sprs*2) <= $185C, "ambient sprite ram ex
 !on_platform_ix     = $1864|!addr
 
 !powerup_ix_slot_overwrite = $1861|!addr
+!map16_hi_table     = $1868|!addr
 ; two bytes: ambient sprites access in 16-bit mode
 !next_oam_index     = $1869|!addr
 

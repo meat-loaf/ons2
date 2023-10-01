@@ -146,6 +146,7 @@ _spr_stunned:
 .set_layer
 	sty !current_layer_process
 	ldy #$00
+	lda !map16_hi_table
 	jsl kick_spr_hit_block
 	lda #$08
 	sta !sprite_cape_disable_time,x
@@ -171,11 +172,136 @@ _spr_stunned:
 	rtl
 
 _spr_carried:
+	; todo pipe/yoshi prio stuff, probably handle that elsewhere?
+	; todo p-balloon is 'carried' while mario is using that, reimpl
+	jsr _spr_obj_interact
+	lda !player_ani_trigger_state
+	; todo why not just bne?
+	cmp #$01
+	bcc .dont_uncarry
+	lda !yoshi_in_pipe
+	bne .dont_uncarry
+	lda #$09
+	sta !sprite_status,x
+.exit:
+	rtl
+
+.dont_uncarry:
+	lda !sprite_status,x
+	cmp #$08
+	beq .exit
+	; no need to check sprites locked
+	jsr _spr_handle_stun_tmr
+	jsr _spr_spr_interact
+	lda !yoshi_in_pipe
+	bne .code_01a011
+	bit !byetudlr_hold
+	bvc .y_not_held
+.code_01a011:
+	; todo port
+	jsr _set_carried_spr_pos
+	rtl
+
+.y_not_held:
+	; ?
+	stz !sprite_misc_1626,x
+	ldy #$00
+	lda !sprite_num,x
+	; TODO goomba (weird logic...?)
+	cmp #$0F
+	bne .not_goom
+	lda !player_in_air
+	bne .not_goom
+	ldy #$ec
+.not_goom:
+	sty !sprite_speed_y,x
+	lda #$09
+	sta !sprite_status,x
+	lda !byetudlr_hold
+	and #$08
+	bne .kick_up
+	lda !sprite_num,x
+	cmp #$15
+	bcs .check_drop
+	lda !byetudlr_hold
+	and #$04
+	beq .kick
+	bra .drop
+
+.check_drop:
+	lda !byetudlr_hold
+	and #$03
+	bne .kick
+.drop:
+	ldy !player_dir
+	lda !player_x_current
+	clc
+	adc ..spr_x_off_lo,y
+	sta !sprite_x_low,x
+	lda !player_x_current+1
+	adc ..spr_x_off_hi,y
+	sta !sprite_x_high,x
+	jsr _sub_horz_pos_bank1
+	lda ..spr_x_spd_off,y
+	clc
+	adc !player_x_spd
+	sta !sprite_speed_x,x
+	stz !sprite_speed_y,x
+	bra .finish_spr_transition
+..spr_x_off_lo:
+	db $F3,$0D
+..spr_x_off_hi:
+	db $FF,$00
+..spr_x_spd_off:
+	db $FC,$04
+
+.kick_up:
+	jsl display_contact_gfx_s
+	lda #$90
+	sta !sprite_speed_y,x
+	lda !player_x_spd
+	sta !sprite_speed_x,x
+	asl
+	ror !sprite_speed_x,x
+	bra .finish_spr_transition
+.kick:
+	jsl display_contact_gfx_s
+	;lda !sprite_misc_1540,x
+	;sta !sprite_misc_c2,x
+	lda #$0a
+	sta !sprite_status,x
+	ldy !player_dir
+	lda !player_on_yoshi
+	beq ..not_on_yoshi
+	iny #2
+..not_on_yoshi:
+	lda c_shell_speed_x,y
+	sta !sprite_speed_x,x
+	eor !player_x_spd
+	bmi .finish_spr_transition
+	lda !player_x_spd
+	sta $00
+	asl $00
+	ror
+	clc
+	adc c_shell_speed_x,y
+	sta !sprite_speed_x,x
+.finish_spr_transition:
+	lda #$10
+	sta !sprite_misc_154c,x
+	lda #$0c
+	sta !player_kicking_timer
+	rtl
+
+; todo reloc
+c_shell_speed_x = $019F6B|!bank
+
+_spr_kicked:
 	rtl
 
 _sprspr_mario_spr_rt:
-	jsr.w _spr_spr_interact
-	jmp.w _mario_spr_interact
+	jsr _spr_spr_interact
+	jmp _mario_spr_interact
 .done:
 %set_free_finish("bank1_spr0to13", _sprspr_mario_spr_rt_done)
 

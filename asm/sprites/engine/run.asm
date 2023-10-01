@@ -77,6 +77,7 @@ allocate_oam_dec_timers:
 	%implement_timer("!sprite_misc_163e,x")
 .done:
 	rts
+
 handle_sprite:
 	lda !sprites_locked
 	beq .unlocked
@@ -101,31 +102,24 @@ handle_sprite:
 
 ; todo split tables
 .status_ptrs:
-	; 1
 	dw spr_handle_init-1
-	; 2
-	;dw spr_killed_shim-1
 	dw spr_killed-1
-	; 3
+	; TODO
 	dw spr_smushed_shim-1
-	; 4
 	dw spr_spinkill-1
-	; 5
+	; TODO
 	dw spr_lavadie_shim-1
-	; 6 - todo (code overwritten at the moment)
+	; TODO
 	dw spr_levelend-1
-	; 7 - unused: TODO yoshi tongue state?
+	; TODO proper yoshi tongue state
 	dw !bank01_jsl2rts_rtl-1
-	; 8
 	dw spr_handle_main-1
-	; 9
-;	dw spr_stunned_shim-1
 	dw _spr_stunned-1
-	; A
-	dw spr_kicked_shim-1
-	; B
-	dw spr_carried_shim-1
-	; C todo
+	dw _spr_kicked-1
+	dw _spr_carried-1
+	; todo end level
+	dw !bank01_jsl2rts_rtl-1
+
 spr_handle_init:
 	lda #$08
 	sta !sprite_status,x
@@ -183,7 +177,6 @@ handle_sprite_gfx:
 	lda !spr_gfx_lo,x
 	pha
 	rtl
-
 
 spr_callers_done:
 %set_free_finish("bank1_sprcall_inits", spr_callers_done)
