@@ -463,7 +463,6 @@ assert (!ambient_misc_1)+(!ambient_tblsz) <= $1EA2, "ambient sprite ram exceeded
 !sprite_pos_y_frac        = $14EC
 !sprite_pos_x_frac        = $14F8
 
-; TODO REPURPOSE THIS TO NEW CFG IF NEEDED
 !sprite_misc_1504         = $1504
 !sprite_misc_1510         = $1510
 !sprite_misc_151c         = $151C
@@ -497,13 +496,22 @@ assert (!ambient_misc_1)+(!ambient_tblsz) <= $1EA2, "ambient sprite ram exceeded
 !sprite_tweaker_166e      = $166E
 !sprite_tweaker_167a      = $167A
 !sprite_tweaker_1686      = $1686
+
+!sprite_map16_touch_v_lo  = $185F
+!sprite_map16_touch_h_lo  = $1860
+!sprite_to_overwrite      = $1861
+!sprite_map16_touch_h_hi  = $1862
+
 !sprite_off_screen_vert   = $186C
 !sprite_misc_187b         = $187B
+!sprite_map16_touch_v_hi  = $18D7
+; 18D8 free
 !sprite_tweaker_190f      = $190F
 
 !sprite_load_table        = $1938
 
-!sprite_misc_1fd6         = $1FD6
+;!sprite_misc_1fd6         = $1FD6
+!sprite_dyn_gfx_id         = $1FD6
 !sprite_cape_disable_time = $1FE2
 
 !mario_gfx               = $7E2000

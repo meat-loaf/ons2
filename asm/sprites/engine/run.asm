@@ -165,6 +165,7 @@ handle_sprite_gfx:
 	dex
 	bpl .loop
 	rts
+
 .call:
 	lda !spr_gfx_tbl_bk,x
 	pha

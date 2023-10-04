@@ -182,7 +182,7 @@ _spr_face_mario_bank1 = $01857C|!bank
 
 
 ;sfx ids
-;!sfx_kick = $03
+%decl_sfx_id("bonk", 1, $1DF9)
 %decl_sfx_id("kick", 3, $1DF9)
 
 

@@ -1,7 +1,9 @@
 !woozyguy_sprnum = $BA
 
 %alloc_sprite_dynamic_free(!woozyguy_sprnum, "woozyguy", woozyguy_init, woozyguy_main, 4, \
-	$30, $80, $01, $01, $00, $00)
+	$30, $80, $01, $01, $00, $00,\
+	dyn_woozie_guy_gfx_ptrs, \
+	gen_spr_gfx_dyn)
 
 !woozy_phase         = !sprite_misc_c2
 !woozy_phase_counter = !sprite_misc_1534
@@ -15,15 +17,16 @@
 
 %set_free_start("bank3_sprites")
 woozyguy_init:
-	lda #$C0
-	sta !spr_spriteset_off,x
+	;lda #$C0
+	;sta !spr_spriteset_off,x
+	%dyn_slot_setup("woozyguy")
 	lda #!jump_interval
 	sta !woozy_phase_counter,x
 
 	lda !sprite_x_low,x
 	lsr #4
 	and #$03
-	inc : inc
+	inc #2
 	clc
 	asl
 	ora !sprite_oam_properties,x
@@ -35,13 +38,8 @@ woozyguy_init:
 	rtl
 
 woozyguy_main:
-	%dynamic_gfx_rt_bank3("lda !woozy_ani_frame_id,x", "woozyguy")
-
-	lda !sprite_status,x
-	eor #$08
-	ora !sprite_being_eaten,x
-	ora !sprites_locked
-	bne woozyguy_init_exit
+	lda #$00
+	jsl sub_off_screen
 	lda !sprite_blocked_status,x
 	and #$08
 	beq .not_touching_ceiling
@@ -56,16 +54,12 @@ woozyguy_main:
 .not_touching_wall:
 
 	lda !woozy_phase,x
-	;lda #$00
 	txy
 	asl
 	tax
 	jsr (.behaviors,x)
-	; mario interact
 	jsl mario_spr_interact_l
-	; speed
 	jsl update_sprite_pos
-	; sprites
 	jml spr_spr_interact
 
 .behaviors:
@@ -168,5 +162,15 @@ woozyguy_main:
 
 ..x_speed:
 	db $10,$F0
+
+%start_sprite_pose_entry_list("dyn_woozie_guy")
+	%start_sprite_pose_entry("dyn_woozie_guy_impl", 16, 16)
+		%sprite_pose_tile_entry($F8, $F8, $80, $00, 2, 1)
+		%sprite_pose_tile_entry($08, $F8, $82, $00, 2, 1)
+		%sprite_pose_tile_entry($F8, $08, $84, $00, 2, 1)
+		%sprite_pose_tile_entry($08, $08, $86, $00, 2, 1)
+	%finish_sprite_pose_entry()
+%finish_sprite_pose_entry_list()
+
 woozyguy_done:
 %set_free_finish("bank3_sprites", woozyguy_done)

@@ -87,7 +87,7 @@
 
 !chuck_diggin_head_turn_ani_timer = !sprite_misc_1558
 
-; TODO clean this up
+; TODO move out of bank 7
 %set_free_start("bank7")
 CHUCKS_INIT:
 	LDA !spr_extra_byte_1,x
@@ -145,6 +145,7 @@ Diggin:
 	STA !chuck_gen_flag,x
 	STZ !chuck_hurt_ani_phase,x
 ADDR_02C150:
+	; TODO head frame
 	LDA #$02
 	STA !chuck_head_ani_frame,x
 Return02C155:
@@ -177,7 +178,7 @@ ADDR_02C181:
 	LDA DATA_02C136,y
 	STA !chuck_ani_frame,x
 	LDY !chuck_face_dir,x
-	LDA DATA_02C1F3,y
+	LDA diggin_head_ani_frame,y
 	STA !chuck_head_ani_frame,x
 Return02C193:
 	RTS                       ; Return
@@ -237,7 +238,7 @@ Return02C1F2:
 	RTS
 
 
-DATA_02C1F3:
+diggin_head_ani_frame:
 	db $01,$03
 
 
@@ -308,7 +309,6 @@ ADDR_02C25B:
 	jsl sub_off_screen
 	JSR chuck_check_contact
 	JSL SprSprInteract
-;	JSL $019138|!bank
 	jsl spr_obj_interact
 	LDA !sprite_blocked_status,x
 	AND #$08
@@ -457,7 +457,7 @@ ADDR_02C370:
 	JMP ADDR_02C556
 
 
-DATA_02C373:
+whistlin_head_ani_frame:
 	db $05,$05,$05,$02,$02,$06,$06,$06
 
 Whistlin:
@@ -481,7 +481,7 @@ ADDR_02C390:
 	LSR
 	AND #$07
 	TAY
-	LDA DATA_02C373,y
+	LDA whistlin_head_ani_frame,y
 	STA !chuck_head_ani_frame,x
 	LDA !sprite_x_low,x
 	LSR
@@ -752,7 +752,7 @@ ADDR_02C556:
 	JSR ADDR_02D4FA
 	TYA
 	STA !chuck_face_dir,x
-	LDA DATA_02C639,y
+	LDA jumpin_head_ani_frame,y
 	STA !chuck_head_ani_frame,x
 Return02C563:
 	RTS                       ; Return
@@ -884,11 +884,12 @@ Return02C62D:
 	RTS                       ; Return
 
 
+; hurt head ani frame?
 DATA_02C62E:
 	db $00,$00,$00,$00,$01,$02,$03,$04
 	db $04,$04,$04
 
-DATA_02C639:
+jumpin_head_ani_frame:
 	db $00,$04
 
 LookSideToSide:
@@ -945,12 +946,12 @@ ADDR_02C691:
 	LDA DATA_02C62E,y
 	STA !chuck_head_ani_frame,x
 Return02C69A:
-	RTS                       ; Return
+	RTS
 
 ADDR_02C69B:
 	INC !chuck_gen_flag,x
 Return02C69E:
-	RTS                       ; Return
+	RTS
 
 
 DATA_02C69F:
@@ -994,8 +995,9 @@ ADDR_02C6D7:
 	ORA #$40
 	STA !chuck_gen_wait_timer,x
 ADDR_02C6EC:
+	lda #$00
 	LDY !chuck_face_dir,x
-	LDA DATA_02C639,y
+	;LDA jumpin_head_ani_frame,y
 	STA !chuck_head_ani_frame,x
 	LDA !sprite_blocked_status,x             ; \ Branch if not on ground
 	AND #$04                ;  |
@@ -1042,11 +1044,15 @@ Return02C73C:
 	RTS                       ; Return
 
 
-DATA_02C73D:
+chuck_hurt_body_ani_frame:
 	db $0A,$0B,$0A,$0C,$0D,$0C
 
 DATA_02C743:
 	db $0C,$10,$10,$04,$08,$10,$18
+
+; used by callback
+chuck_head_shake_props:
+	db $40,$40,$00,$00,$00,$00,$40
 
 Hurt:
 	TYX
@@ -1060,20 +1066,20 @@ Hurt:
 	LDA DATA_02C743,y
 	STA !chuck_gen_wait_timer,x
 ADDR_02C760:
-	LDA DATA_02C73D,y
+	LDA chuck_hurt_body_ani_frame,y
 	STA !chuck_ani_frame,x
 	LDA #$02
 	CPY #$05
 	BNE ADDR_02C773
+	; range: $01 or $03 (head facing slightly left/right)
 	LDA $14
 	LSR
-	NOP
 	AND #$02
 	INC A
 ADDR_02C773:
 	STA !chuck_head_ani_frame,x
 Return02C776:
-	RTS                       ; Return
+	RTS
 
 ; this was originally a few sprite number checks;
 ; it also changed the sprite number to 91 to make it a chargin' chuck (..?)
@@ -1185,6 +1191,7 @@ ADDR_02C810:
 Return02C819:
 	RTS                       ; Return
 
+
 ; TODO DRAW HEAD
 chuck_gfx:
 ;	ldy !chuck_ani_frame,x
@@ -1204,8 +1211,8 @@ chuck_gfx:
 	%sprite_pose_entry_mirror("chuck_unused")
 	%sprite_pose_entry_mirror("chuck_unused")
 	; frame 3
-	%start_sprite_pose_entry("chuck_sitting", 16, 16)
-		%sprite_pose_tile_entry($00,$F8,$00|$80,$00,$02, 1)
+	%start_sprite_pose_entry_callback("chuck_sitting", 16, 16, chuck_sit_callback)
+		%sprite_pose_tile_entry($00,$F8,$00,$00,$02, 1)
 		%sprite_pose_tile_entry($FC,$00,$0E,$00,$02, 1)
 		%sprite_pose_tile_entry($04,$00,$0E,$40,$02, 1)
 	%finish_sprite_pose_entry()
@@ -1227,9 +1234,6 @@ chuck_gfx:
 		%sprite_pose_tile_entry(invert($0A),$F4,$28,$00,$00, 1)
 	%finish_sprite_pose_entry()
 	; frame 7
-	; note ugg this is gonna be a pain because the hands need to be above the head...
-	;      probably need to go back to linked list type system for this? or just skip it
-	;      maybe just draw an 8x8?
 	%start_sprite_pose_entry("chuck_clappin", 16, 16)
 		%sprite_pose_tile_entry($00,$F0,$24,$00,$02, 1)
 		%sprite_pose_tile_entry($08,$00,$22,$40,$02, 1)
@@ -1240,13 +1244,31 @@ chuck_gfx:
 	; crouching???
 	%sprite_pose_entry_mirror("chuck_unused")
 	; frame a-d
-	%start_sprite_pose_entry("chuck_hurt", 16, 16)
+	%start_sprite_pose_entry("chuck_hurt_1", 16, 16)
+		%sprite_pose_tile_entry($FC,$00,$0C,$00,$02, 1)
+		%sprite_pose_tile_entry($04,$00,$0C,$40,$02, 1)
+		%sprite_pose_tile_entry($00,$FE,$04,$00,$02, 1)
+	%finish_sprite_pose_entry()
+	%start_sprite_pose_entry("chuck_hurt_2", 16, 16)
+
+		;%sprite_pose_tile_entry_withnext($FC,$00,$0C,$00,$02, 1, chuck_hurt_1_tile_1)
+		%sprite_pose_tile_entry($FC,$00,$0C,$00,$02, 1)
+		%sprite_pose_tile_entry($04,$00,$0C,$40,$02, 1)
+		%sprite_pose_tile_entry($00,$00,$04,$00,$02, 1)
+	%finish_sprite_pose_entry()
+
+	%start_sprite_pose_entry_callback("chuck_hurt_3", 16, 16, chuck_head_shake_callback)
+		%sprite_pose_tile_entry($00,$F8,$04,$00,$02, 1)
 		%sprite_pose_tile_entry($FC,$00,$0C,$00,$02, 1)
 		%sprite_pose_tile_entry($04,$00,$0C,$40,$02, 1)
 	%finish_sprite_pose_entry()
-	%sprite_pose_entry_mirror("chuck_hurt")
-	%sprite_pose_entry_mirror("chuck_hurt")
-	%sprite_pose_entry_mirror("chuck_hurt")
+	%start_sprite_pose_entry("chuck_hurt_4", 16, 16)
+		%sprite_pose_tile_entry($00,$F4,$04,$00,$02, 1)
+		%sprite_pose_tile_entry($FC,$00,$0C,$00,$02, 1)
+		%sprite_pose_tile_entry($04,$00,$0C,$40,$02, 1)
+	%finish_sprite_pose_entry()
+
+
 	; todo diggin e,f, 10
 	%sprite_pose_entry_mirror("chuck_unused")
 	%sprite_pose_entry_mirror("chuck_unused")
@@ -1256,6 +1278,7 @@ chuck_gfx:
 	; frame 12
 	%start_sprite_pose_entry("chuck_run_1", 16, 16)
 		%sprite_pose_tile_entry($FC,$00,$09,$00,$02, 1)
+		%sprite_pose_tile_entry($FC,$F4,$00|$80,$00,$02, 1)
 		%sprite_pose_tile_entry($04,$00,$0A,$00,$02, 1)
 		%sprite_pose_tile_entry($08,$F4,$39,$00,$00, 1)
 		%sprite_pose_tile_entry($00,$F4,$38,$00,$00, 1)
@@ -1263,6 +1286,7 @@ chuck_gfx:
 	; frame 13
 	%start_sprite_pose_entry("chuck_run_2", 16, 16)
 		%sprite_pose_tile_entry($FC,$00,$06,$00,$02, 1)
+		%sprite_pose_tile_entry($FC,$F4,$00|$80,$00,$02, 1)
 		%sprite_pose_tile_entry($04,$00,$07,$00,$02, 1)
 		%sprite_pose_tile_entry($08,$F4,$39,$00,$00, 1)
 		%sprite_pose_tile_entry($00,$F4,$38,$00,$00, 1)

@@ -72,8 +72,7 @@ spr_spinkill:
 	lsr #3
 	and #$03
 	sta !sprite_misc_1602,x
-	; clean up tile offset to draw properly
-	;  TODO might be better as part of the code that sets sprite state to 4?
+	; clean up graphics related tables to draw properly
 	stz !spr_spriteset_off,x
 	lda !sprite_oam_properties,x
 	and #(~$01)
@@ -156,8 +155,7 @@ _spr_stunned:
 	lda !sprite_num,x
 	cmp #$0d
 	bcc .no_koopa_special
-	; TODO somethign about this
-	jsr $999E
+	jsr spr_hit_obj_side
 .no_koopa_special
 	; signed divide by 2?
 	lda !sprite_speed_x,x
@@ -203,7 +201,7 @@ _spr_carried:
 	rtl
 
 .y_not_held:
-	; ?
+	; TODO ?
 	stz !sprite_misc_1626,x
 	ldy #$00
 	lda !sprite_num,x
@@ -266,6 +264,7 @@ _spr_carried:
 	bra .finish_spr_transition
 .kick:
 	jsl display_contact_gfx_s
+	; TODO ?
 	;lda !sprite_misc_1540,x
 	;sta !sprite_misc_c2,x
 	lda #$0a
@@ -297,7 +296,174 @@ _spr_carried:
 c_shell_speed_x = $019F6B|!bank
 
 _spr_kicked:
+	lda !sprite_misc_187b,x
+	bne kicked_disco
+
+.not_disco:
+	lda !sprite_tweaker_167a,x
+	and #!spr_167a_not_shell_kickable
+	beq .kicked_like_shell
+	jsr _spr_stunned_setup
 	rtl
+
+.kicked_like_shell:
+	lda !sprite_misc_1528,x
+	bne .stay_kicked
+	lda !sprite_speed_x,x
+	clc
+	adc #$20
+	cmp #$40
+	bcs .stay_kicked
+	jsr _spr_stunned_setup
+	rtl
+
+.stay_kicked
+	stz !sprite_misc_1528,x
+	; originally check sprlock, or 163e, jump to gfx code. ignore that
+	jsr _spr_update_dir
+	lda !sprite_slope,x
+	pha
+	jsr _spr_upd_pos
+	pla
+	beq .no_slope
+	;sta $00
+	ldy !sprite_in_water,x
+	bne .no_slope
+	cmp !sprite_slope,x
+	beq .no_slope
+	eor !sprite_speed_x,x
+	bmi .no_slope
+	lda #$F8
+	sta !sprite_speed_y,x
+	bra .speed_y_set
+
+.no_slope:
+	%spr_on_ground()
+	beq .airborne
+	; jsr _set_some_y_spd
+	lda #$10
+	sta !sprite_speed_y,x
+.speed_y_set:
+	; original didn't check high byte
+	lda !sprite_map16_touch_h_hi
+	cmp #$01
+	bne .airborne
+	lda !sprite_map16_touch_h_lo
+	cmp #$B4
+	beq .touch_triangle
+	cmp #$B5
+	bne .airborne
+.touch_triangle:
+	lda #$B8
+	sta !sprite_speed_y,x
+.airborne:
+	%spr_touching_wall()
+	beq .no_block_interact
+	jsr spr_hit_obj_side
+.no_block_interact:
+	jsr _sprspr_mario_spr_rt
+	jsr _suboffscr0_bank1
+	; gfx code was here
+	rtl
+
+kicked_disco:
+	jsr _spr_upd_pos
+	;lda !sprite_misc_151c,x
+	;and #$1F
+	;bne .no_face_yet
+	jsr _spr_face_mario_rt
+;.no_face_yet
+	lda !sprite_speed_x,x
+	ldy !sprite_misc_157c,x
+	; cpy #$00
+	bne .moving_left
+	cmp #$20
+	bpl .accel_max
+	lda !sprite_speed_x,x
+	inc #2
+	bra .accel_max
+
+.moving_left:
+	cmp #$E0
+	bmi .accel_max
+	dec #2
+.accel_max:
+	sta !sprite_speed_x,x
+	%spr_touching_wall()
+	beq .not_touching_wall
+	pha
+	jsr spr_hit_obj_side
+	pla
+	and #$03
+	tay
+	lda .disco_shell_knockback_speeds-1,y
+	sta !sprite_speed_x,x
+; TODO this could be better with a table indexing method, perhaps
+.not_touching_wall;
+	%spr_on_ground()
+	beq .airborne
+	lda #$10
+	sta !sprite_speed_y,x
+.airborne:
+	%spr_touching_ceil()
+	beq .not_touching_ceiling
+	stz !sprite_speed_y,x
+.not_touching_ceiling:
+	lda !true_frame
+	and #$01
+	bne .no_pal_change
+	lda !sprite_oam_properties,x
+	inc
+	inc
+	and #$CF
+	sta !sprite_oam_properties,x
+.no_pal_change:
+	jsr _sprspr_mario_spr_rt
+	jsr _suboffscr0_bank1
+	rtl
+.disco_shell_knockback_speeds:
+	db $E0, $20
+
+spr_hit_obj_side:
+	%write_sfx("bonk")
+	jsr _flip_sprite_dir_imm
+	; todo fix offscr impl - maybe setup quickly before state caller (?)
+	;      or just dont care
+	;lda !sprite_off_screen_horz,x
+	;bne .offscr
+	lda !sprite_x_low,x
+	sec
+	sbc !layer_1_xpos_curr
+	clc
+	adc #$14
+	cmp #$1C
+	bcc .offscr
+	ldy #$00
+	%spr_obj_blocked(!sprite_blocked_layer2_side)
+	beq .no_layer2
+	iny
+.no_layer2:
+	sty !current_layer_process
+	ldy #$00
+	lda !tile_map16_lo_bak
+	jsl kick_spr_hit_block
+	lda #$05
+	sta !sprite_cape_disable_time,x
+.offscr:
+	lda !sprite_num,x
+	cmp #!throwblock_sprnum
+	; todo impl throw block
+	; bne .notThrowBlock
+	; jsr break_throw_block
+	rts
+
+_spr_set_ani_frame:
+	inc !sprite_misc_1570,x
+	lda !sprite_misc_1570,x
+	lsr #3
+	and #$01
+	sta !sprite_misc_1602,x
+	rts
 
 _sprspr_mario_spr_rt:
 	jsr _spr_spr_interact
@@ -309,6 +475,10 @@ _sprspr_mario_spr_rt:
 org $01A7C9|!bank
 	db $00,$00,$00,$00
 	db $04,$04,$04,$04
+
+; replace std interactio spawn sprite table load call
+org $01A9A4|!bank
+	jsl load_sprite_tables
 
 ; todo testing only.
 ; originally --

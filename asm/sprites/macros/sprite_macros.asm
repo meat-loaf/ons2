@@ -47,6 +47,7 @@ macro alloc_sprite(sprite_id, name, init_rt, main_rt, n_oam_tiles, spr_1656_val,
 	!{sprite_!{sid}_190F} = <spr_190F_val>
 	!{sprite_!{sid}_pose_tbl} = <spr_pose_tbl>
 	!{sprite_!{sid}_gfxptr} = <spr_gfx_rt>-1
+	assert or(equal(bank(<spr_gfx_rt>), $87),equal(<spr_gfx_rt>,$0000)), "Sprite graphics routines must be in bank 7."
 endmacro
 
 macro alloc_sprite_dynamic_512k(sprite_id, gfx_name, init_rt, main_rt, n_oam_tiles, spr_1656_val, spr_1662_val, spr_166E_val, spr_167A_val, spr_1686_val, spr_190F_val, free_tag)
@@ -72,8 +73,8 @@ macro alloc_sprite_dynamic_512k(sprite_id, gfx_name, init_rt, main_rt, n_oam_til
 	endif
 endmacro
 
-macro alloc_sprite_dynamic_free(sprite_id, gfx_name, init_rt, main_rt, n_oam_tiles, spr_1656_val, spr_1662_val, spr_166E_val, spr_167A_val, spr_1686_val, spr_190F_val)
-	%alloc_sprite(<sprite_id>, <gfx_name>, <init_rt>, <main_rt>, <n_oam_tiles>, <spr_1656_val>, <spr_1662_val>, <spr_166E_val>, <spr_167A_val>, <spr_1686_val>, <spr_190F_val>, $0000)
+macro alloc_sprite_dynamic_free(sprite_id, gfx_name, init_rt, main_rt, n_oam_tiles, spr_1656_val, spr_1662_val, spr_166E_val, spr_167A_val, spr_1686_val, spr_190F_val, spr_pose_tbl, spr_gfx_rt)
+	%alloc_sprite(<sprite_id>, <gfx_name>, <init_rt>, <main_rt>, <n_oam_tiles>, <spr_1656_val>, <spr_1662_val>, <spr_166E_val>, <spr_167A_val>, <spr_1686_val>, <spr_190F_val>, <spr_pose_tbl>, <spr_gfx_rt>)
 	if not(defined("n_dyn_gfx"))
 		!n_dyn_gfx #= 0
 	endif
@@ -85,4 +86,6 @@ macro alloc_sprite_dynamic_free(sprite_id, gfx_name, init_rt, main_rt, n_oam_til
 		!dyn_spr_<gfx_name>_gfx_id #= !n_dyn_gfx
 		!n_dyn_gfx #= !n_dyn_gfx+1
 	endif
+
+	!{sprite_!{sid}_166E} = (<spr_166E_val>|$01)
 endmacro

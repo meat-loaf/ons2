@@ -28,8 +28,6 @@ spr_gfx_lo_tbl:
 	skip $100
 spr_gfx_hi_tbl:
 	skip $100
-;spr_gfx_bk_tbl:
-;	skip $100
 
 zero_sprite_tables:
 	stz.w !sprite_in_water,x
@@ -60,7 +58,8 @@ zero_sprite_tables:
 	stz.w !sprite_misc_160e,x
 	stz.w !sprite_misc_1594,x
 	stz.w !sprite_misc_1504,x
-	stz.w !sprite_misc_1fd6,x
+;	stz.w !sprite_misc_1fd6,x
+	stz.w !sprite_dyn_gfx_id,x
 	stz.w !spr_spriteset_off,x
 	lda.b #$01
 	sta.w !sprite_off_screen_horz,x
@@ -104,7 +103,7 @@ load_sprite_tables:
 	sta !sprite_oam_properties,y
 	lda #$c0
 	sta !spr_spriteset_off,y
-	bcs .exit
+	bcs .dynspr
 
 	lda.l !level_ss_sprite_offs,x
 	cmp #$ff
@@ -115,9 +114,66 @@ load_sprite_tables:
 	asl
 	sta !spr_spriteset_off,y
 
+.dynspr:
 	plx
 	ply
 	rol !sprite_oam_properties,x
+.exit:
+	rtl
+
+
+; generic gfx callbacks
+chuck_head_shake_callback:
+	lda !sprite_misc_1570,x
+	cmp #$05
+	bne .exit
+	sty $00
+	ldy !sprite_misc_151c,x
+	lda.w chuck_head_shake_props,y
+	ldy $00
+	sta $00
+	lda $0303-$0C|!addr,y
+	and #(~$C0)
+	ora $00
+	sta $0303-$0C|!addr,y
+	lda $0302-$0C|!addr,y
+	dec #2
+	sta $0302-$0C|!addr,y
+.exit
+	rtl
+
+; TODO something about this is not exactly correct. inspect
+;      actual use of this table (see LookSideToSide behavior ptr in chuck)
+chuck_sit_callback:
+	lda !sprite_misc_1534,x
+	lsr
+	bcs .right
+	lda $0303-$0C|!addr,y
+	and #(~$40)
+	ora #$40
+	sta $0303-$0C|!addr,y
+	rtl
+.right:
+	lda $0303-$0C|!addr,y
+	and #(~$40)
+	sta $0303-$0C|!addr,y
+	rtl
+
+; todo more elegant...need tables. need to offset in x-dir if right facing
+winged_koopa_callback:
+	lda !sprite_misc_1602,x
+	cmp #$03
+	bne .grounded
+	lda #$4E
+	bra .set_tile
+
+.grounded:
+	lda #$5D
+.set_tile:
+	sta $0302-$0C|!addr,y
+	lda $0303-$0C|!addr,y
+	and #$FE
+	sta $0303-$0C|!addr,y
 .exit:
 	rtl
 
@@ -144,16 +200,11 @@ load_sprite_tables:
 !tile_off          = $49
 
 !spr_tile_off_2    = $8A
+!spr_finish_cb     = $D5
 ; 'default' entry point, mainly intended for sprite states outside of 8
-!gen_spr_gfx = spr_gfx_2_generic
+!gen_spr_gfx = spr_gfx_2
 spr_gfx_2:
-	lda !spr_gfx_hi,x
-	bmi .do_generic
-	jmp spr_gfx_single
-
-.generic:
 	lda !spr_gfx_tbl_hi,x
-.do_generic:
 	sta !curr_pose_ptr+1
 	lda !spr_gfx_tbl_lo,x
 	sta !curr_pose_ptr
@@ -174,6 +225,15 @@ spr_gfx_2:
 	lda (!curr_pose_ptr),y
 	sta $47
 	stz $48
+
+	; potential callback
+	iny
+	lda (!curr_pose_ptr),y
+	sta !spr_finish_cb
+	iny
+	lda (!curr_pose_ptr),y
+	sta !spr_finish_cb+1
+
 	iny
 	lda (!curr_pose_ptr),y
 	xba
@@ -279,6 +339,8 @@ spr_gfx_2:
 	sbc #$0010
 	sbc !tile_off
 
+	cmp #$FFF0
+	bcs ..y_onscr
 	cmp #$00F0
 	bcc ..y_onscr
 ..y_offscr:
@@ -336,8 +398,14 @@ spr_gfx_2:
 	bra .handle_pose
 
 ..done:
-	sep #$20
+	txy
 	ldx !current_sprite_process
+
+	lda !spr_finish_cb
+	sep #$20
+	beq .exit
+	jmp.w (!spr_finish_cb)
+
 .exit:
 	rtl
 
@@ -347,8 +415,6 @@ while !ix <= $64
 	db !ix*4
 	!ix #= !ix+1
 endif
-
-
 
 ; carry clear if successful: buffer index in y
 ; carry set if no slots left; y will be negative
@@ -467,6 +533,133 @@ spr_gfx_single:
 .abort:
 	rtl
 
+gen_spr_gfx_dyn:
+	jsr spr_dyn_allocate_slot
+	bcs spr_gfx_single_abort
+	jmp spr_gfx_2
+
+; call as follows:
+; $0E: frame number to upload to scratch
+; $0F: id of graphics to pull frame from
+;  * note: X is restored to the current sprite index by the routine
+; output:
+;  carry: clear if slot available, set if not
+; clobbers:
+;  $0660-$0662
+!dyn_gfx_files_max = 10
+!dyn_spr_slot_tbl = !sprite_misc_151c
+!dyn_spr_frame_id = !sprite_misc_160e
+!spr_dyn_gfx_tbl  = spr_dyn_allocate_slot_gfx
+spr_dyn_allocate_slot:
+	lda !dyn_slots
+	cmp #!dyn_max_slots
+	bcc .slots_avail
+	ldx !current_sprite_process
+	sec
+	rts
+
+.slots_avail:
+	txy
+	lda !sprite_dyn_gfx_id,y
+;	lda !spr_dyn_alloc_slot_arg_gfx_id
+	asl
+	adc !sprite_dyn_gfx_id,y
+;	adc !spr_dyn_alloc_slot_arg_gfx_id
+	tax
+
+	; setup rom gfx address
+	lda.l .gfx,x
+	sta !dyn_slot_ptr+0
+	lda.l .gfx+1,x
+	sta !dyn_slot_ptr+1
+	lda.l .gfx+2,x
+	sta !dyn_slot_ptr+2
+	; a = frame index
+;	lda !spr_dyn_alloc_slot_arg_frame_num
+	lda !dyn_spr_frame_id,y
+	; lsb to carry
+	lsr
+	; preserve carry
+	php
+	; clear carry (clamp frame to even values)
+	clc
+	; multiply by 4 (multiply even-valued frame by 2)
+	asl #2
+	; restore carry - add 1 if frame value is odd
+	plp
+	adc !dyn_slot_ptr+1
+	sta !dyn_slot_ptr+1
+
+	; setup ram buffer address
+	clc
+	ldx !dyn_slots
+	lda.l .buffer_offs_hi,x
+	inx
+	stx !dyn_slots
+	adc.b #(!dynamic_buffer>>8)&$FF
+	sta !dyn_slot_dest+1
+	lda.b #!dynamic_buffer
+	sta !dyn_slot_dest
+
+	rep #$10
+	;stz $4300
+	;lda #$80
+	;sta $4301
+	ldx #$8000
+	stx $4300
+
+	; setup wram write addr
+	ldx !dyn_slot_dest
+	stx $2181
+	lda.b #bank(!dynamic_buffer)
+	sta $2183
+
+	ldx !dyn_slot_ptr
+	stx $4302
+	; bank
+	lda !dyn_slot_ptr+2
+	sta $4304
+	ldx #$0100
+	stx $4305
+
+	; initiate transfer
+	lda #$01
+	sta $420B
+
+	; second line transfer - only need to setup addr offsets and reset size
+	lda !dyn_slot_dest+1
+	adc #$02
+	sta $2182
+
+	lda !dyn_slot_ptr+1
+	adc #$02
+	sta $4303
+
+	ldx #$0100
+	stx $4305
+
+	; initiate transfer
+	lda #$01
+	sta $420B
+
+	sep #$10
+	ldy !current_sprite_process
+	lda !dyn_slots
+	dec
+	tax
+	lda.l .slot_to_off,x
+	sta !dyn_spr_slot_tbl,y
+	tyx
+	clc
+	rts
+; slots are 2 16x64 strips
+.buffer_offs_hi:
+	db $00,$01
+	db $04,$05
+.slot_to_off:
+	db $00,$08,$20,$28
+.gfx:
+	skip 3*!dyn_gfx_files_max
 
 bank7_stuff_done:
 %set_free_finish("bank7", bank7_stuff_done)

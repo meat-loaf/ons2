@@ -19,11 +19,13 @@ macro start_sprite_pose_entry_list(name)
 	!n_poses #= 0
 endmacro
 
-macro start_sprite_pose_entry(name, hoff, voff)
+; callback is 8axy, x contains sprite index, y contains offset to oam (in $0300)
+macro start_sprite_pose_entry_callback(name, hoff, voff, callback)
 	if defined("sprite_pose_entry_name_!{n_poses}")
 		error "use 'finish_sprite_pose_entry' macro before starting another. Currently defined as: `!{sprite_pose_entry_name_!{n_poses}}'"
 	endif
 
+	assert or(equal(bank(<callback>), $87),equal(<callback>,$0000)), "Sprite graphics pose callback must be in bank 7."
 	!{sprite_pose_entry_name_!{n_poses}} = <name>
 	!n_tiles #= 0
 <name>:
@@ -31,8 +33,14 @@ macro start_sprite_pose_entry(name, hoff, voff)
 	db <hoff>/2
 .vsz:
 	db <voff>/2
+.done_callback:
+	dw <callback>
 .start:
 	skip 2
+endmacro
+
+macro start_sprite_pose_entry(name, hoff, voff)
+	%start_sprite_pose_entry_callback(<name>, <hoff>, <voff>, $0000)
 endmacro
 
 macro sprite_pose_entry_mirror(name)
@@ -113,12 +121,12 @@ macro sprite_pose_tile_entry_withnext(xoff, yoff, tile, props, size, use_mem_pro
 	; sprite_pose_tile_entry adds 1 to n_tiles as part of finalization
 	!p #= !n_tiles-1
 	pushpc
+;	org .tile_!{p}_next
 	org .tile_!{p}_next
 		dw <next_tile>
+	!have_withnext = 1
 	pullpc
 	undef "p"
-	; todo we really should have a way to enforce that no poses are defined after this
-	;      but whatever i guess
 endmacro
 
 macro finish_sprite_pose_entry()
@@ -126,12 +134,13 @@ macro finish_sprite_pose_entry()
 	error "Sprite table !sprite_pose_entry_name_!{n_poses} has no poses defined. Use the 'sprite_pose_entry' macro."
 endif
 	!p #= !{n_tiles}-1
+if not(defined("have_withnext"))
 ; finish off the last table with nullptr
 	pushpc
 	org .tile_!{p}_next
 		dw $0000
 	pullpc
-
+endif
 	!n_poses #= !n_poses+1
 
 	undef "n_tiles"
@@ -139,122 +148,22 @@ endmacro
 
 macro finish_sprite_pose_entry_list()
 !p #= 0
-;if !n_poses != 1
-;	!p #= 0
-;	!{sprite_pose_entry_list_name}_pose_ptrs_lo:
-;		skip !n_poses
-;	!{sprite_pose_entry_list_name}_pose_ptrs_hi:
-;		skip !n_poses
-;pushpc
 !{sprite_pose_entry_list_name}_gfx_ptrs:
 	while !p < !n_poses
 		dw !{sprite_pose_entry_name_!{p}}
-;		org !{sprite_pose_entry_list_name}_pose_ptrs_lo+!{p}
-;			db !{sprite_pose_entry_name_!{p}}
-;		org !{sprite_pose_entry_list_name}_pose_ptrs_hi+!{p}
-;			db (!{sprite_pose_entry_name_!{p}})>>8
 		undef "sprite_pose_entry_name_!{p}"
 		!p #= !p+1
 	endif
-;pullpc
-;else
-;	undef "sprite_pose_entry_name_0"
-;endif
-
 undef "n_poses"
 undef "sprite_pose_entry_list_name"
+
+if defined("have_withnext")
+	undef "have_withnext"
+endif
+
 endmacro
 
 ;; old (todo deprecated) ;;
-
-macro start_sprite_table(name, hsize, vsize)
-	if defined("start_sprite_table")
-		error("use 'finish_sprite_table' macro before starting another. Currently defined as !start_sprite_table")
-	endif
-	!start_sprite_table = <name>
-	!n_poses #= 0
-<name>:
-.x_size:
-	dw <hsize>/2
-.y_size:
-	dw <vsize>/2
-.n_tiles:
-	skip 1
-endmacro
-
-macro sprite_table_entry(xoff, yoff, tile, props, size, use_mem_props)
-
-!use_props = 0
-if <use_mem_props> == 1
-	!use_props = 1
-endif
-
-if not(or(equal(<size>,2), equal(<size>, 0)))
-	error "sprite_table_entry: size may only be 2 (big) or 0 (small). Is <size>."
-endif
-if <size> == 2
-	!off = $08
-else
-	!off = $04
-endif
-
-.pose_!{n_poses}:
-..tilesz:
-	; high bit shifted in via rol
-	db (<size>)>>1
-..tile_center_off:
-	db !off
-..x_off:
-	db <xoff>
-	; handle sign because asar doesnt sign extend i guess
-	if (<xoff>&$80)
-		db $FF
-	else
-		db $00
-	endif
-..y_off:
-	db <yoff>
-	if (<yoff>&$80)
-		db $FF
-	else
-		db $00
-	endif
-
-..tile:
-	db <tile>
-..props:
-	db ((<props>)>>1)|(!use_props<<8)
-!n_poses #= !n_poses+1
-undef "use_props"
-undef "off"
-endmacro
-
-macro finish_sprite_table()
-if equal(!n_poses, 0)
-	error "Sprite table !sprite_table_name has no poses defined. Use the 'sprite_table_entry' macro."
-endif
-; finish off the last table with nullptr
-	pushpc
-	org !{start_sprite_table}_n_tiles
-		db !n_poses
-	pullpc
-	undef "start_sprite_table"
-	undef "n_poses"
-endmacro
-
-; todo deprecated, remove all below
-macro dynamic_gfx_rt_bank3(load_frame_code, dyn_name)
-	<load_frame_code>
-	sta !spr_dyn_alloc_slot_arg_frame_num
-	if !{dyn_spr_<dyn_name>_gfx_id} == 0
-	    stz !spr_dyn_alloc_slot_arg_gfx_id
-	else
-	    lda #!{dyn_spr_<dyn_name>_gfx_id}
-	    sta !spr_dyn_alloc_slot_arg_gfx_id
-	endif
-	jsr.w spr_dyn_gfx_rt
-endmacro
-
 ; original shared sprite routine - table allocation macros
 macro __alloc_sprite_sharedgfx_begin(sprite_id)
 	if not(defined("sharedgfx_tilemap_currentoff"))

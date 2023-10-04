@@ -11,6 +11,18 @@ macro invert_accum_16()
 	inc
 endmacro
 
+macro dyn_slot_setup(dyn_name)
+if !{dyn_spr_<dyn_name>_gfx_id} == 0
+	;stz !spr_dyn_alloc_slot_arg_gfx_id
+	stz !sprite_dyn_gfx_id,x
+else
+	lda #!{dyn_spr_<dyn_name>_gfx_id}
+	sta !sprite_dyn_gfx_id,x
+;	sta !spr_dyn_alloc_slot_arg_gfx_id
+endif
+
+endmacro
+
 macro sub_horz_pos(tag)
 <tag>sub_horz_pos:
 	ldy #$00

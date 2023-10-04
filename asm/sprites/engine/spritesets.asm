@@ -7,7 +7,7 @@ endif
 
 org $0096F8|!bank
 ss_hijack:
-autoclean \
+;autoclean \
 	jml ss_setup_spriteset
 	nop #6
 .done:
@@ -15,11 +15,11 @@ autoclean \
 ; orignally, a call to the LM code that decompresses graphics files after
 ; pulling the graphics file number from a long pointer at $8A
 org $0FF8C6|!bank
-autoclean \
+;autoclean \
 	jsl spriteset_extract_gfx_hijack
 
-
-freecode
+;freecode
+%set_free_start("bank7")
 ss_data_table:
 	skip $100*2*4
 level_setup_ram_special:
@@ -59,8 +59,6 @@ level_setup_ram_special:
 
 	sep #$20
 	rts
-
-
 
 ; pull spriteset before sprite inits run. By default, it uses the low byte of the SP3 graphics
 ; file number to determine the spriteset.
@@ -227,7 +225,10 @@ check_file_allocated:
 	rts
 
 ..offs:
-	dw $0000,$0020,$0040,$0060,$0080,$00A0
+;	dw $0000,$0020,$0040,$0060,$0080,$00A0
+	dw $0080>>1,$00A0>>1,$00C0>>1,$00E0>>1
+	dw $0100>>1,$0120>>1,$0140>>1,$0160>>1
+	dw $0180>>1,$01A0>>1,$01C0>>1
 
 ; AXY are 16 bit here. $8A contains a pointer to the level's ExGFX list, and Y
 ; is the index to the current file to be uploaded. We will use the lower 8 bits
@@ -295,3 +296,5 @@ spriteset_extract_gfx_hijack:
 	dw $0010,$0008,$0000
 .nfiles:
 	dw $0002-1,$0004-1,$0004-1
+ss_stuff_done:
+%set_free_finish("bank7", ss_stuff_done)

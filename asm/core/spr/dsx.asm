@@ -18,7 +18,7 @@ lorom
 
 !dsx_buffer     = !dynamic_buffer
 
-org $00816A
+org $00816A|!bank
 	autoclean jml dsx_main
 
 ;;;;;;;;;;;;;
@@ -27,13 +27,13 @@ org $00816A
 
 ; A is 16-bit, X is 8-bit.
 macro transferslot(slot, bytes, shift)
-	LDA.W #$7C00+(<slot>*256)+<shift>	; \ VRAM address + line*slot
-	STA.W $2116				; /
-	LDA.W #(!dsx_buffer&65535)+(<slot>*512)+(<shift>*2) ;\ Set Buffer location
-	STA.W $4302				; /
-	LDA.W #<bytes>				; \ Set bytes to transfer
-	STA.W $4305				; /
-	STY.W $420B				; Run DMA.
+	lda.w #$7C00+(<slot>*256)+<shift>	; \ VRAM address + line*slot
+	sta.w $2116				; /
+	lda.w #(!dsx_buffer&65535)+(<slot>*512)+(<shift>*2) ;\ Set Buffer location
+	sta.w $4302				; /
+	lda.w #<bytes>				; \ Set bytes to transfer
+	sta.w $4305				; /
+	sty.w $420B				; Run DMA.
 endmacro
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -42,50 +42,50 @@ endmacro
 
 freecode
 return:
-	SEP #$30		;8bit AXY
-	JML $808176		;jump to code just after pushing, into FastROM area
+	sep #$30
+	jml $008176|!bank       ;jump to code just after pushing, into FastROM area
 dsx_main:
-	SEI
-	PHP
-	REP #$30		;initialize NMI
-	PHA
-	PHX
-	PHY
-	PHB
-	SEP #$30
+	sei
+	php
+	rep #$30		;initialize NMI
+	pha
+	phx
+	phy
+	phb
+	sep #$30
 	
-	LDA #$80		;set bank to zero in FastROM area
-	PHA
-	PLB
+	lda #$80		;set bank to zero in FastROM area
+	pha
+	plb
 	
-	LDA #$01		;FastROM on
-	STA $420D
+	lda #$01		;FastROM on
+	sta $420D
 
-	LDA !gamemode		;check game mode to see if in game
-	CMP #$14		;must be in either this mode (level)...
-	BEQ GameModeOK		
-	CMP #$07		;... or this mode (title screen)
-	BNE return
+	lda !gamemode		;check game mode to see if in game
+	cmp #$14		;must be in either this mode (level)...
+	beq GameModeOK
+	cmp #$07		;... or this mode (title screen)
+	bne return
 
 GameModeOK:
-	LDA !dyn_slots		;and only if there's actual stuff to transfer
-	BEQ return
+	lda !dyn_slots		;and only if there's actual stuff to transfer
+	beq return
 	
-	REP #$20
-	TDC			;clear A
-	LDY #$80
-	STY $2115		;setup some DMA transfer info
-	LDA #$1801
-	STA $4300
-	LDY.b #!dsx_buffer/65536
-	STY $4304
-	LDY #$01
+	rep #$20
+	tdc			;clear A
+	ldy #$80
+	sty $2115		;setup some DMA transfer info
+	lda #$1801
+	sta $4300
+	ldy.b #!dsx_buffer/65536
+	sty $4304
+	ldy #$01
 
 	; note: used slots ram cleared in sprite loop each frame, not here like original
-	LDA !dyn_slots
-	ASL
-	TAX
-	JMP (dsx_modes-2,x)
+	lda !dyn_slots
+	asl
+	tax
+	jmp (dsx_modes-2,x)
 
 dsx_modes:
 	dw .transfer_one
@@ -96,19 +96,21 @@ dsx_modes:
 .transfer_one:
 	%transferslot(0, $0100, $00)
 	%transferslot(1, $0100, $00)
-	SEP #$30
-	JML $808176
+	sep #$30
+	jml $808176
 
 .transfer_two:
 	%transferslot(0, $0400, $00)
-	SEP #$30
-	JML $808176
+	sep #$30
+	jml $808176
+
 .transfer_three:
 	%transferslot(0, $0500, $00)
 	%transferslot(3, $0100, $00)
-	SEP #$30
-	JML $808176
+	sep #$30
+	jml $808176
+
 .transfer_four:
 	%transferslot(0, $0800, $00)
-	SEP #$30
-	JML $808176
+	sep #$30
+	jml $808176
