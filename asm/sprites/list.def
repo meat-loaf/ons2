@@ -26,7 +26,7 @@ incsrc "sprites/goonie.asm"
 ;
 ;incsrc "sprites/key.asm"
 ;incsrc "sprites/springboard.asm"
-;incsrc "sprites/powerups.asm"
+incsrc "sprites/powerups.asm"
 ;;incsrc "sprites/piranhas.asm"
 incsrc "sprites/chucks.asm"
 ;incsrc "sprites/chucks2.asm"

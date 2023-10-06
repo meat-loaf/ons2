@@ -154,6 +154,8 @@ macro finish_sprite_pose_entry_list()
 		undef "sprite_pose_entry_name_!{p}"
 		!p #= !p+1
 	endif
+;!!{sprite_pose_entry_list_name}_n_poses = !n_poses
+
 undef "n_poses"
 undef "sprite_pose_entry_list_name"
 

@@ -1,6 +1,3 @@
-; TODO unstunning koopa hardlocks generic sprite gfx routine by invalid ani frame.
-;      really need to implement a custom sprite state 9
-
 !goomba_sprnum = $00
 ; todo - not really much to do, just proper configs/update std interaction
 !galoomba_sprnum = $01
@@ -33,19 +30,6 @@
 
 !parakoopa_accel_wait      = !sprite_misc_1540
 !parakoopa_hv              = !sprite_misc_1534
-
-;!wing_out_tile = $EC
-;!wing_in_tile  = $FE
-
-; todo reimplement the koopa wing gfx routine
-;      can use the new changes to generic gfx to do it, need to free 151c
-; note - new sprites have walking parakoopas that stay on ledges,
-;        the new version should account for this and not flare the wing
-;        out for a frame in this case
-; koopa wings
-;org $019E1C|!bank
-;	db !wing_in_tile, !wing_out_tile
-;	db !wing_in_tile, !wing_out_tile
 
 ;%alloc_sprite(!goomba_sprnum, "goomba", koopa_init_goomba, goomba_main, 2, \
 ;	$30, $00, $00, $00, $00, $00,

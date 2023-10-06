@@ -163,9 +163,13 @@ ss_setup_spriteset:
 	; all sprite entries are 4 bytes
 	iny #2
 	bpl ..parse_sprite_entry
+	tya
 	clc
 	adc !ss_temp_sprite_data_ptr
 	sta !ss_temp_sprite_data_ptr
+	lda !ss_temp_sprite_data_ptr+1
+	adc #$00
+	sta !ss_temp_sprite_data_ptr+1
 	ldy #$00
 	bra ..parse_sprite_entry
 

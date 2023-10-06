@@ -1,36 +1,40 @@
-!roulette_sprnum   = $3F
-!mushroom_sprnum   = $40
-!feather_sprnum    = $41
-!fireflower_sprnum = $42
-!poison_sprnum     = $43
-!star_sprnum       = $44
-!pballoon_sprnum   = $46
-!1up_sprnum        = $47
-
 
 !roulette_change_frames = $20
 
-%alloc_sprite(!roulette_sprnum, "item_roulette", powerup_init, roulette_main, 1, \
-	$00, $00, $00, $C2, $28, $40, $0000)
+;%alloc_sprite(!roulette_sprnum, "item_roulette", powerup_init, roulette_main, 1, \
+;	$00, $00, $00, $C2, $28, $40, $0000)
 ; TODO use exbyte
 %alloc_sprite(!mushroom_sprnum, "mushroom", powerup_init, powerup_main, 1, \
-	$00, $00, $08, $C2, $28, $40, $0000)
+	$00, $00, $08, $C2, $28, $40, \
+	power_gfx_tiles_mushroom, \
+	spr_gfx_single)
 %alloc_sprite(!feather_sprnum, "cape_feather", powerup_init, feather_main, 1, \
-	$00, $00, $24, $C2, $28, $40, $0000)
+	$00, $00, $24, $C2, $28, $40, \
+	power_gfx_tiles_feather, \
+	spr_gfx_single)
+
 %alloc_sprite(!fireflower_sprnum, "fire_flower", fire_flower_init, fire_flower_main, 1, \
-	$00, $00, $0A, $C2, $28, $40, $0000)
+	$00, $00, $0A, $C2, $28, $40, \
+	power_gfx_tiles_fire_flower, \
+	spr_gfx_single)
+
 %alloc_sprite(!poison_sprnum, "poison_mushroom", powerup_init, powerup_main, 1, \
-	$00, $00, $08, $C2, $28, $40, $0000)
-%alloc_sprite(!star_sprnum, "starman", powerup_init, powerup_main, 1, \
-	$00, $00, $04, $C2, $08, $40, $0000)
+	$00, $00, $08, $C2, $28, $40, \
+	power_gfx_tiles_poison, \
+	spr_gfx_single)
 
-%alloc_sprite_sharedgfx_entry_1(!mushroom_sprnum, $24)
-%alloc_sprite_sharedgfx_entry_1(!feather_sprnum, $22)
-%alloc_sprite_sharedgfx_entry_1(!fireflower_sprnum, $26)
-%alloc_sprite_sharedgfx_entry_1(!poison_sprnum, $20)
-%alloc_sprite_sharedgfx_entry_1(!star_sprnum, $28)
+;%alloc_sprite(!star_sprnum, "starman", powerup_init, powerup_main, 1, \
+;	$00, $00, $04, $C2, $08, $40, \
+;	power_gfx_tiles_star, \
+;	spr_gfx_single)
 
-%alloc_sprite_sharedgfx_entry_mirror(!roulette_sprnum, !mushroom_sprnum)
+;%alloc_sprite_sharedgfx_entry_1(!mushroom_sprnum, $24)
+;%alloc_sprite_sharedgfx_entry_1(!feather_sprnum, $22)
+;%alloc_sprite_sharedgfx_entry_1(!fireflower_sprnum, $26)
+;%alloc_sprite_sharedgfx_entry_1(!poison_sprnum, $20)
+;%alloc_sprite_sharedgfx_entry_1(!star_sprnum, $28)
+
+;%alloc_sprite_sharedgfx_entry_mirror(!roulette_sprnum, !mushroom_sprnum)
 
 !powerup_no_move_flag        = !sprite_misc_c2
 !roulette_current_powerup_ix = !sprite_misc_151c
@@ -60,7 +64,8 @@ init_alt:
 	sta !powerup_rising_from_block,x
 	rtl
 powerup_should_interact:
-	jsr.w $01A80F|!bank
+	;jsr.w $01A80F|!bank
+	jsr _process_interact_noprox
 	bcc .no
 	lda !powerup_disable_interaction,x
 	bne .no_set_carry
@@ -181,6 +186,7 @@ feather_main:
 	db $20,$E0
 .y_speeds:
 	db $0A,$F6,$08
+
 fire_flower_main:
 	lda !effective_frame
 	and #$08
@@ -235,6 +241,7 @@ spr_give_powerup:
 	inc
 	tay
 	bra .load_tbl
+
 .not_roulette:
 	cmp #$03
 	bcc .not_special
@@ -295,7 +302,7 @@ powerup_no_interact:
 	sta !sprite_speed_y,x
 	jsr _spr_upd_y_no_grav
 	rtl
-
+;
 moving_powerup_x_speeds:
 	db $F0,$10
 
@@ -307,6 +314,21 @@ power_pointer_index:
 	; small->fire, big->fire, fire->cape, fire->fire
 	db $03, $03, $02, $00
 
+power_gfx_tiles:
+.mushroom:
+	db $24
+.feather:
+	db $0E
+.fire_flower:
+	db $26
+.poison:
+	db $2E
+.star:
+	db $48
+.pballoon:
+	db $42
+.1up:
+	db $24
 
 power_pointer_routines_lo:
 	db power_do_nothing
@@ -314,15 +336,14 @@ power_pointer_routines_lo:
 	db give_cape
 	db give_flower
 	db powerup_hurt
-	;db give_1up
-	;db give_star
-	;db give_pballoon
+
 power_pointer_routines_hi:
 	db power_do_nothing>>8
 	db give_mushroom>>8
 	db give_cape>>8
 	db give_flower>>8
 	db powerup_hurt>>8
+
 powerup_hurt:
 	jml hurt_mario
 
@@ -335,14 +356,20 @@ give_mushroom:
 power_do_nothing:
 	lda #$0A
 	sta !spc_io_1_sfx_1DF9
-; todo
-.points:
-	lda #$04
-	jml spr_give_points
-;	rtl
-; todo
 give_cape:
+	lda #$02
+	sta !powerup
+	%write_sfx("get_cape")
+	inc !sprites_locked
+	lda #$04
+	jsl spr_give_points
+	lda #$03
+	sta !player_ani_trigger_state
+	lda #$18
+	sta !player_ani_timer
+; TODO smoke
 	rtl
+
 give_flower:
 	lda #$20
 	sta !player_palette_cycle_timer
@@ -352,6 +379,7 @@ give_flower:
 	lda #$03
 	sta !powerup
 	bra power_do_nothing
+
 give_star:
 	rtl
 powerups_done:

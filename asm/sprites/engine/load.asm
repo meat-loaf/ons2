@@ -84,14 +84,14 @@ sprite_loader_prep_for_next_sprite:
 	inx
 	jml load_next_sprite
 
-
 ; a = sprite id
 ; y = index to sprite x position
 load_control_spr:
 	cmp #$ff
 	beq .camera
+	bra .ambient
 	; todo: ambient spawner
-	bra sprite_loader_prep_for_next_sprite
+;	bra sprite_loader_prep_for_next_sprite
 .camera:
 	; always initialize camera script when in-range
 	stz !sprite_load_table,x
@@ -114,7 +114,7 @@ load_control_spr:
 	iny
 	; don't care about id
 	iny
-	; CAMERA SPRITES ARE ALWAYS 4 BYTES
+	; extra byte
 	lda [!level_sprite_data_ptr],y
 	;asl
 	cmp !camera_control_resident
@@ -124,6 +124,45 @@ load_control_spr:
 ..ok:
 	dey
 	bra sprite_loader_prep_for_next_sprite_no_y_adj
+
+.ambient:
+	dey
+	lda [!level_sprite_data_ptr],y
+	and #$F0
+	sta !ambient_get_slot_ypos
+	lda [!level_sprite_data_ptr],y
+	and #$01
+	sta !ambient_get_slot_ypos+1
+
+	iny
+	lda [!level_sprite_data_ptr],y
+	and #$F0
+	sta !ambient_get_slot_xpos
+	lda [!level_sprite_data_ptr],y
+	and #$01
+	sta !ambient_get_slot_xpos+1
+
+	iny
+	; ignore id
+	iny
+	lda [!level_sprite_data_ptr],y
+	stz !ambient_get_slot_xspd
+	stz !ambient_get_slot_yspd
+	stz !ambient_get_slot_timer
+	phy
+	jsl ambient_get_slot
+	bcs .no_slots
+..cont:
+	txa
+	sta !ambient_id_loadval+1,y
+	ply
+	dey
+	jmp sprite_loader_prep_for_next_sprite_no_y_adj
+.no_slots:
+	ply
+	dey
+	stz !sprite_load_table,x
+	jmp sprite_loader_prep_for_next_sprite_no_y_adj
 camera_done:
 %set_free_finish("bank7", camera_done)
 

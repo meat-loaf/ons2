@@ -8,6 +8,10 @@ db $00,$40,$42,$44,$41,$47
 ; table repeats at 88b4?
 warnpc $0288C5|!bank
 
+; powerup spawn
+org $02894F|!bank
+	jsl init_sprite_tables|!bank
+
 %set_free_start("bank2_altspr1")
 ambient_sub_off_screen:
 	stz $0e
@@ -77,6 +81,15 @@ ambient_sub_off_screen:
 	rts
 .erase:
 	stz !ambient_rt_ptr,x
+
+	lda !ambient_id_loadval+1,x
+	and #$00FF
+	cmp #$00FF
+	beq .no_oam_left
+	tay
+	lda !sprite_load_table,y
+	and #$FF00
+	sta !sprite_load_table,y
 .no_oam_left:
 	; immediately terminate the ambient sprite routine
 	; by destroying this return val
@@ -465,10 +478,6 @@ ambient_get_slot:
 .no_ring_ix_adj:
 	sta !ambient_spr_ring_ix
 	pla
-	; note: ambient id stored in high byte
-	; low byte for common use as e.g. phase pointer
-	; TODO use dedicated table
-;	sta !ambient_misc_1,y
 	sta !ambient_id_loadval,y
 	lda #ambient_initer
 	sta !ambient_rt_ptr,y
@@ -490,6 +499,9 @@ ambient_get_slot:
 	sep #$30
 	sta !ambient_x_speed,y
 	sta !ambient_y_speed,y
+
+	dec
+	sta !ambient_id_loadval+1,y
 
 	lda !ambient_get_slot_xspd
 	sta !ambient_x_speed+1,y

@@ -182,8 +182,9 @@ _spr_face_mario_bank1 = $01857C|!bank
 
 
 ;sfx ids
-%decl_sfx_id("bonk", 1, $1DF9)
-%decl_sfx_id("kick", 3, $1DF9)
+%decl_sfx_id("bonk", $01, $1DF9)
+%decl_sfx_id("kick", $03, $1DF9)
+%decl_sfx_id("get_cape", $0D, $1DF9)
 
 
 ;;; screen scrolling pipe stuff ;;;

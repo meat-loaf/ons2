@@ -4,10 +4,19 @@ includeonce
 !koopa_sprnum = $04
 !lame_parakoopa_sprnum = $05
 !flyin_parakoopa_v_sprnum = $06
-;!flyin_parakoopa_h_sprnum = $08
+
 
 !fish_sprnum = $15
 !springboard_sprnum = $2F
+
+!roulette_sprnum    = $3F
+!mushroom_sprnum    = $40
+!feather_sprnum     = $41
+!fireflower_sprnum  = $42
+!poison_sprnum      = $43
+!star_sprnum        = $44
+!pballoon_sprnum    = $46
+!1up_sprnum         = $47
 
 !throwblock_sprnum = $53
 

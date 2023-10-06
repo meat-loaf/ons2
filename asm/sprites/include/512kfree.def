@@ -47,8 +47,8 @@
 !bank1_koopakids_free_start  = $01F75C|!bank
 !bank1_koopakids_free_end    = $020000|!bank
 
-!bank2_d51e_free_start       = $02D51E|!bank
-!bank2_d51e_free_end         = $02D580|!bank
+;!bank2_d51e_free_start       = $02D51E|!bank
+;!bank2_d51e_free_end         = $02D580|!bank
 
 ; TODO there's more space here, but there's also
 ;  some cape interaction after this range?
