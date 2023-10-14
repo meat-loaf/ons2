@@ -8,6 +8,7 @@ incsrc "sprites/parabeetle.asm"
 ; todo this should be a level script instead
 incsrc "sprites/19_levelmessage.asm"
 incsrc "sprites/banzai_bill.asm"
+incsrc "sprites/piranhas2.asm"
 ;
 ;;incsrc "sprites/growing_vine.asm"
 ;
@@ -29,6 +30,7 @@ incsrc "sprites/goonie.asm"
 incsrc "sprites/powerups.asm"
 ;;incsrc "sprites/piranhas.asm"
 incsrc "sprites/chucks.asm"
+incsrc "sprites/rotating.asm"
 ;incsrc "sprites/chucks2.asm"
 ;incsrc "sprites/float_plat.asm"
 ;incsrc "sprites/fall_plat.asm"

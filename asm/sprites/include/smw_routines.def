@@ -78,3 +78,5 @@ _sub_vert_pos_bank3  = $03B829|!bank
 
 ;_spr_inits_start     = $01817D|!bank
 _spr_mains_start     = $0185CC|!bank
+
+smw_halfsine         = $07F7DB|!bank

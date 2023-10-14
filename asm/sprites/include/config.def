@@ -2,7 +2,6 @@ if not(defined("__ons_sprs_config_def__"))
 !__ons_sprs_config_def__ = 1
 
 incsrc "consts.def"
-incsrc "512kfree.def"
 
 !next_ambient_id #= 0
 

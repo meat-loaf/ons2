@@ -121,7 +121,6 @@ macro sprite_pose_tile_entry_withnext(xoff, yoff, tile, props, size, use_mem_pro
 	; sprite_pose_tile_entry adds 1 to n_tiles as part of finalization
 	!p #= !n_tiles-1
 	pushpc
-;	org .tile_!{p}_next
 	org .tile_!{p}_next
 		dw <next_tile>
 	!have_withnext = 1

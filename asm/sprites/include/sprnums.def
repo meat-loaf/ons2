@@ -7,6 +7,7 @@ includeonce
 
 
 !fish_sprnum = $15
+!piranhas_sprite_id = $20
 !springboard_sprnum = $2F
 
 !roulette_sprnum    = $3F

@@ -13,65 +13,40 @@
 	goonie_winged_gfx_ptrs,
 	!gen_spr_gfx)
 
-%alloc_sprite_spriteset_2($A2, "flyin_goonie_test", goonie_fly_init, goonie_fly_test, 8, \
-	$10C, $10D, \
-	$90&$E0, $8C, $03, $99, $90, $81,
-	goonie_winged_gfx_ptrs,
-	!gen_spr_gfx)
+;%alloc_sprite_spriteset_2($A2, "flyin_goonie_test", goonie_fly_init, goonie_fly_test, 8, \
+;	$10C, $10D, \
+;	$90&$E0, $8C, $03, $99, $90, $81,
+;	goonie_winged_gfx_ptrs,
+;	!gen_spr_gfx)
 
 
+; TODO check how many frames the original glides for.
+;      maybe make it customizable (or random?) to some degree
 !glide_time = $63
 !fly_time = $FF
+
+!goonie_gliding_frame_index = $25
 
 !run_goonie_spd_grnd = $20
 !slope_speed_chg     = $04
 
-!goonie_face_dir = !sprite_misc_157c
-!goonie_ani_frame = !sprite_misc_1602
+!goonie_face_dir         = !sprite_misc_157c
+!goonie_ani_frame        = !sprite_misc_1602
 
+!goonie_f_phase          = !sprite_misc_c2
+!goonie_f_body_frame     = !sprite_misc_151c
+!goonie_f_moved_x_px     = !sprite_misc_1528
+!goonie_f_body_frame_ctr = !sprite_misc_1534
+!goonie_f_weight_timer   = !sprite_misc_1540
+!goonie_f_ani_timer      = !sprite_misc_1570
+!goonie_f_phase_timer    = !sprite_misc_163e
+!goonie_f_ridden         = !sprite_misc_1626
 
-!goonie_f_phase             = !sprite_misc_c2
-!goonie_f_body_frame        = !sprite_misc_151c
-!goonie_f_moved_x_px        = !sprite_misc_1528
-!goonie_f_body_frame_ctr    = !sprite_misc_1534
-!goonie_f_weight_timer      = !sprite_misc_1540
-!goonie_f_ani_timer         = !sprite_misc_1558
-!goonie_f_phase_timer       = !sprite_misc_163e
-;!goonie_f_body_ani_frame    = !sprite_misc_160e
-!goonie_f_ridden            = !sprite_misc_1626
-
-%set_free_start("bank7")
-
-!test_max_ani_frames = $25
-;
-goonie_fly_test:
-	lda #$00
-	jsl sub_off_screen
-	;lda.b #!test_max_ani_frames
-	;sta !goonie_ani_frame,x
-	;bra .exit
-
-	lda !sprite_misc_1540,x
-	bne .exit
-	lda !spr_extra_byte_1,x
-	sta !sprite_misc_1540,x
-	lda !goonie_ani_frame,x
-	inc
-	cmp.b #!test_max_ani_frames+1
-	bcc .ani_frame_ok
-	lda #$00
-.ani_frame_ok:
-	sta !goonie_ani_frame,x
-.exit:
-	jsl spr_invis_blk_rt_l
-	rtl
-
+%set_free_start("bank3_sprites")
 goonie_fly_init:
 	lda #!glide_time
 	sta !goonie_f_phase_timer,x
-	lda #$24
-	sta !goonie_ani_frame,x
-	inc !goonie_f_phase,x
+	;inc !goonie_f_phase,x
 ; just 'face mario'...use shared somewhere maybe?
 ; todo use parabeetle init for facing configurations
 goonie_init:
@@ -144,33 +119,40 @@ goonie_fly_main:
 .run:
 	jsl sub_off_screen
 
-	lda !goonie_ani_frame,x
+	; TODO clean up setting speed, it's dumb
+	;      currently replicates the original (ported
+	;      sprite, that is), but certainly could be better
+	lda !goonie_f_ani_timer,x
 	lsr #2
 	tay
 	lda .speeds_y,y
-	ldy !goonie_f_weight_timer,x
-	beq .not_weighed_down_y
-	cmp #$00
-	bmi .y_neg_weighed
-	clc
-.y_neg_weighed:
-	ror
+	sta !sprite_speed_y,x
+	;ldy !goonie_f_weight_timer,x
+	;beq .x_spd
+
+	lda !sprite_speed_y,x
+	bpl +
+	eor #$ff
+	inc
++
+	lsr
+	ldy !sprite_speed_y,x
+	bpl +
+	eor #$ff
+	inc
++
 	clc
 	adc !goonie_f_weight_timer,x
-.not_weighed_down_y:
 	sta !sprite_speed_y,x
+	
 
+.x_spd:
 	ldy !goonie_face_dir,x
-	lda .speeds_x,y
-	ldy !goonie_f_weight_timer,x
+	lda !goonie_f_ridden,x
 	beq .not_weighed_down_x
-	cmp #$00
-	clc
-	bpl .carry_ok_x
-	sec
-.carry_ok_x:
-	ror
+	iny #2
 .not_weighed_down_x:
+	lda .speeds_x,y
 	sta !sprite_speed_x,x
 
 	; position stuff
@@ -199,14 +181,15 @@ goonie_fly_main:
 	sta !goonie_f_phase,x
 
 	; doubletime
-	jsr fly_goonie_upd_ani_frames
+	;jsr fly_goonie_upd_ani_frames
 	lda $45
 	bne .riding_last_frame
 	; TODO original did this every frame while riding, here is likely fine
 	lda !goonie_ani_frame,x
-	cmp #$24
+	cmp #$25
 	bne .wasnt_gliding
 	stz !goonie_ani_frame,x
+	stz !goonie_f_ani_timer,x
 .wasnt_gliding:
 	lda #$18
 	sta !goonie_f_weight_timer,x
@@ -232,8 +215,10 @@ goonie_fly_main:
 .not_riding:
 	lda !goonie_f_phase,x
 	bne .no_glide
-	lda #$24
+
+	lda #$25
 	sta !goonie_ani_frame,x
+	sta !goonie_f_ani_timer,x
 .no_glide:
 	lda !goonie_f_phase_timer,x
 	bne .no_phase_change
@@ -244,34 +229,40 @@ goonie_fly_main:
 	lda .phase_timers,y
 	sta !goonie_f_phase_timer,x
 	stz !goonie_ani_frame,x
+	stz !goonie_f_ani_timer,x
 .no_phase_change:
 	rtl
 
 .speeds_y:
 	db $F8,$00,$00,$00,$00,$F8,$F0,$F0,$F8,$10
-.speeds_x
+
+.speeds_x:
 	db $0C, invert($0C)
+..weighed_down:
+	db $0C/2, invert($0C/2)
+
 .phase_timers:
 	db !glide_time
 	db !fly_time
 
 fly_goonie_upd_ani_frames:
-	lda !goonie_ani_frame,x
-	cmp #$24
-	beq .exit
 	lda !goonie_f_ani_timer,x
-	bne .exit
-	lda #$04
-	sta !goonie_f_ani_timer,x
-
-	lda !goonie_ani_frame,x
 	inc
 	cmp #$24
-	bne .no_ani_frame_loop
+	bcc .no_ani_frame_loop
 	tdc
 .no_ani_frame_loop:
+	sta !goonie_f_ani_timer,x
+	and #$03
+	bne .body
+	lda !goonie_ani_frame,x
+	inc
+	cmp #$25
+	bcc .f_ok
+	lda #$00
+.f_ok:
 	sta !goonie_ani_frame,x
-
+.body:
 	lda !goonie_f_body_frame_ctr,x
 	inc
 	cmp #$0c
@@ -282,12 +273,11 @@ fly_goonie_upd_ani_frames:
 	tay
 	lda .body_frame_offs,y
 	sta !goonie_f_body_frame,x
-.exit:
 	rts
 .body_frame_offs:
 	db $00, $00, $00, $00
 	db $02, $02, $02, $02
-	db $02, $03, $03, $03
+	db $04, $04, $04, $04
 
 %start_sprite_pose_entry_list("goonie_body")
 	%start_sprite_pose_entry("goonie_body_1", 16, 16)
@@ -454,4 +444,4 @@ fly_goonie_upd_ani_frames:
 %finish_sprite_pose_entry_list()
 
 goonies_done:
-%set_free_finish("bank7", goonies_done)
+%set_free_finish("bank3_sprites", goonies_done)

@@ -70,6 +70,23 @@
 ;%alloc_sprite_sharedgfx_entry_mirror(!flyin_parakoopa_h_sprnum, !koopa_sprnum)
 
 %set_free_start("bank1_spr0to13")
+; koopa extra byte:
+; s---focc
+; cc:
+;   00: green
+;   01: yellow
+;   02: red
+;   03: blue
+;    yellow and blue move fast.
+; o: orientation, for flying parakoopas only
+;   0: vertical
+;   1: horizontal
+; f: initial facing dir, for flying parakoopas only
+;   0: right
+;   1: left
+; s: stunned
+;   0: normal
+;   1: start in stunned state
 parakoopa_init:
 	lda !spr_extra_byte_1,x
 	bit #$08
@@ -80,6 +97,7 @@ parakoopa_init:
 	and #$04
 	lsr #2
 	sta !parakoopa_hv,x
+
 koopa_init:
 	lda !sprite_num,x
 	cmp #!lame_parakoopa_sprnum

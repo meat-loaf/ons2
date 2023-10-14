@@ -157,6 +157,7 @@ handle_sprite_gfx:
 	; TODO this is a shim, remove
 	lda #!RTL_OPCODE
 	sta $00
+	sta $01
 	lda !sprite_status,x
 	cmp #$01
 	bcc .next

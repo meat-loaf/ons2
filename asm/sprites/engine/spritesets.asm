@@ -150,6 +150,7 @@ ss_setup_spriteset:
 	asl
 	tay
 	jsr check_file_allocated
+	bcs ...ss_already_set
 	ldy $06
 ...skip_slot:
 	iny #2
@@ -218,6 +219,7 @@ check_file_allocated:
 	clc
 	adc.w #!ss_tile_offset
 	sta !ss_off_curr
+	clc
 	rts
 
 .found:
@@ -226,6 +228,7 @@ check_file_allocated:
 	ora ..offs,y
 	sta !level_ss_sprite_offs,x
 	ldy $04
+	sec
 	rts
 
 ..offs:
