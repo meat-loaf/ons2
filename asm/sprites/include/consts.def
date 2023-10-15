@@ -1,2 +1,6 @@
-!free_area_code = "code"
-!free_area_data = "data"
+includeonce
+
+!spr_norm_gfx_single_rt_id  = $01
+!spr_norm_gfx_generic_rt_id = $02
+!spr_norm_gfx_dyn_rt_id     = $03
+!player_gfx_rt_id           = $04

@@ -150,6 +150,9 @@ spr_handle_main:
 	ldx !current_sprite_process
 	rtl
 
+; TODO: move graphics callers to end-of-frame, genericize via priority lists
+;       then remove the old oam cleanup routine at beginning-of-frame, replace
+;       with a version that knows how many tiles were used
 handle_sprite_gfx:
 	ldx #!num_sprites-1
 .loop
@@ -179,6 +182,14 @@ handle_sprite_gfx:
 	lda !spr_gfx_lo,x
 	pha
 	rtl
+
+.routines:
+	db bank(spr_gfx_single) : dl spr_gfx_single
+	db bank(spr_gfx_2)      : dl spr_gfx_2
+	; todo: dynamic rt, for rotating
+	db $00 : dl $000000
+	; todo: player
+	db $00 : dl $000000
 
 spr_callers_done:
 %set_free_finish("bank1_sprcall_inits", spr_callers_done)
@@ -355,6 +366,8 @@ oam_refresh:
 	stz !next_oam_index+1
 	jml oam_refresh_hijack_done2
 ; This table is automatically generated when sprite tables are created
+; TODO eventually completely deprecate this, and have gfx routines pull from a global val
+;      can then repurpose the sprite val
 oam_tile_count:
 	skip $100
 oam_alloc_free_done:
