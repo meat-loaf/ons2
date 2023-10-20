@@ -7,7 +7,7 @@
 	$108, $109, \
 	$00,$0D,$0B,$F9,$11,$48,
 	chuck_body_gfx_ptrs,
-	!gen_spr_gfx)
+	!spr_norm_gfx_generic_rt_id)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; USES EXTRA BIT: YES

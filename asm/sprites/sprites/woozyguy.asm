@@ -3,7 +3,7 @@
 %alloc_sprite_dynamic_free(!woozyguy_sprnum, "woozyguy", woozyguy_init, woozyguy_main, 4, \
 	$30, $80, $01, $01, $00, $00,\
 	dyn_woozie_guy_gfx_ptrs, \
-	gen_spr_gfx_dyn)
+	!spr_norm_gfx_dyn_rt_id)
 
 !woozy_phase         = !sprite_misc_c2
 !woozy_phase_counter = !sprite_misc_1534

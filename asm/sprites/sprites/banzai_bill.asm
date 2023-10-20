@@ -5,7 +5,7 @@
 	$105, $106, \
 	$10, $B6, $32, $01, $19, $04,
 	banzai_bill_gfx_ptrs,
-	!gen_spr_gfx)
+	!spr_norm_gfx_generic_rt_id)
 
 !banzai_bill_rot         = !sprite_misc_151c
 !banzai_behavior_chase   = !sprite_misc_1528

@@ -23,7 +23,7 @@
 	$10E, \
 	$10, $95, $11, $B9, $90, $01,
 	parabeetle_gfx_tiles,
-	spr_gfx_single)
+	!spr_norm_gfx_single_rt_id)
 
 !para_pal_index       = !sprite_misc_151c
 !para_ani_timer       = !sprite_misc_1570

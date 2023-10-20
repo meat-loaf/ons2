@@ -8,6 +8,9 @@ includeonce
 ;   goal tape code here?
 
 %set_free_start("bank7")
+; TODO currently some ids at the end of the range
+;      aren't for normal sprites, and thus don't have
+;      tweaker bits, not all entries are currently used
 spr_tweaker_1656_tbl:
 	skip $100
 spr_tweaker_1662_tbl:
@@ -20,10 +23,12 @@ spr_tweaker_1686_tbl:
 	skip $100
 spr_tweaker_190F_tbl:
 	skip $100
-spr_gfxptr_lo_tbl:
+spr_gfxptr_rt_id_tbl:
 	skip $100
-spr_gfxptr_hi_tbl:
-	skip $100
+;spr_gfxptr_lo_tbl:
+;	skip $100
+;spr_gfxptr_hi_tbl:
+;	skip $100
 spr_gfx_lo_tbl:
 	skip $100
 spr_gfx_hi_tbl:
@@ -74,15 +79,12 @@ load_sprite_tables:
 	lda !sprite_num,x
 	txy
 	tax
-	lda.l spr_gfxptr_lo_tbl,x
-	sta !spr_gfx_lo,y
-	lda.l spr_gfxptr_hi_tbl,x
-	sta !spr_gfx_hi,y
+	lda.l spr_gfxptr_rt_id_tbl,x
+	sta !spr_gfx_rt_id,y
 	lda.l spr_gfx_lo_tbl,x
 	sta !spr_gfx_tbl_lo,y
 	lda.l spr_gfx_hi_tbl,x
 	sta !spr_gfx_tbl_hi,y
-;	lda.l spr_gfx_bk_tbl,x
 	lda.l !sprite_main_table_bk,x
 	sta !spr_gfx_tbl_bk,y
 	lda.l spr_tweaker_1656_tbl,x
@@ -97,7 +99,10 @@ load_sprite_tables:
 	sta !sprite_tweaker_1686,y
 	lda.l spr_tweaker_190F_tbl,x
 	sta !sprite_tweaker_190f,y
-	lda.l spr_tweaker_166E_tbl,x
+
+	; TODO all this sucks
+	;lda.l spr_tweaker_166E_tbl,x
+	lda !sprite_tweaker_166e,y
 	and #$0f
 	lsr
 	sta !sprite_oam_properties,y
@@ -313,7 +318,7 @@ spr_gfx_2:
 	lda !sprite_y_high,x
 	xba
 	lda !sprite_y_low,x
-	; carry is always clear here anywhay from rol above from rol above  but whatever
+	; carry is always clear here anywhay from rol above but whatever
 	rep #$21
 	adc #$0010
 	sec

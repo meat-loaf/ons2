@@ -4,7 +4,7 @@
 	$113, \
 	$81, $01, $00, $00, $10, $20, \
 	piranha_plants_gfx_ptrs, \
-	spr_gfx_2)
+	!spr_norm_gfx_generic_rt_id)
 
 !piranha_exbyte_invert   = $01
 !piranha_exbyte_horz     = $02

@@ -7,26 +7,26 @@
 %alloc_sprite(!mushroom_sprnum, "mushroom", powerup_init, powerup_main, 1, \
 	$00, $00, $08, $C2, $28, $40, \
 	power_gfx_tiles_mushroom, \
-	spr_gfx_single)
+	!spr_norm_gfx_single_rt_id)
 %alloc_sprite(!feather_sprnum, "cape_feather", powerup_init, feather_main, 1, \
 	$00, $00, $24, $C2, $28, $40, \
 	power_gfx_tiles_feather, \
-	spr_gfx_single)
+	!spr_norm_gfx_single_rt_id)
 
 %alloc_sprite(!fireflower_sprnum, "fire_flower", fire_flower_init, fire_flower_main, 1, \
 	$00, $00, $0A, $C2, $28, $40, \
 	power_gfx_tiles_fire_flower, \
-	spr_gfx_single)
+	!spr_norm_gfx_single_rt_id)
 
 %alloc_sprite(!poison_sprnum, "poison_mushroom", powerup_init, powerup_main, 1, \
 	$00, $00, $08, $C2, $28, $40, \
 	power_gfx_tiles_poison, \
-	spr_gfx_single)
+	!spr_norm_gfx_single_rt_id)
 
 ;%alloc_sprite(!star_sprnum, "starman", powerup_init, powerup_main, 1, \
 ;	$00, $00, $04, $C2, $08, $40, \
 ;	power_gfx_tiles_star, \
-;	spr_gfx_single)
+;	!spr_norm_gfx_single_rt_id)
 
 ;%alloc_sprite_sharedgfx_entry_1(!mushroom_sprnum, $24)
 ;%alloc_sprite_sharedgfx_entry_1(!feather_sprnum, $22)

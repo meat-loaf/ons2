@@ -78,7 +78,9 @@ spr_spinkill:
 	and #(~$01)
 	sta !sprite_oam_properties,x
 	; setup table
-	%set_spr_gfx_rt(spr_gfx_single)
+	lda #!spr_norm_gfx_single_rt_id
+	sta !spr_gfx_rt_id,x
+
 	lda.b #.smoke_tiles
 	sta !spr_gfx_tbl_lo,x
 	lda.b #.smoke_tiles>>8

@@ -412,18 +412,18 @@ assert (!ambient_y_speed)+(!num_ambient_sprs*2) <= $185C, "ambient sprite ram ex
 !level_general_purpose_2 = !level_general_purpose_1+$01
 ; 2 bytes
 !current_ambient_process = $1926|!addr
+
 !current_layer_process   = $1933|!addr
 
 !exit_table              = $19B8|!addr
 !exit_table_new_lm       = $19D8|!addr
 
-; XXX: in SA1 add |!addr define to these, but you cant do them all!
-!spr_extra_bits           = $19F8                                ; 384 bytes free due to relocating item memory (up until $1B84)
+; 384 bytes free due to relocating item memory (up until $1B84)
+!spr_extra_bits           = $19F8
 !spr_extra_byte_1         = !spr_extra_bits+!num_sprites
 !spr_spriteset_off        = !spr_extra_byte_1+!num_sprites
-!spr_gfx_lo               = !spr_spriteset_off+!num_sprites
-!spr_gfx_hi               = !spr_gfx_lo+!num_sprites
-!ambient_twk_tilesz       = !spr_gfx_hi+!num_sprites
+!spr_gfx_rt_id            = !spr_spriteset_off+!num_sprites
+!ambient_twk_tilesz       = !spr_gfx_rt_id+!num_sprites
 !ambient_grav_setting     = !ambient_twk_tilesz+!ambient_tblsz
 !ambient_misc_2           = !ambient_grav_setting+!ambient_tblsz
 !ambient_x_speed          = !ambient_misc_2+!ambient_tblsz

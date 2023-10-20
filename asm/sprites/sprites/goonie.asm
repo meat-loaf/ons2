@@ -5,19 +5,19 @@
 	$10C, $10D, \
 	$90, $80, $03, $19, $10, $80,
 	goonie_body_gfx_ptrs,
-	!gen_spr_gfx)
+	!spr_norm_gfx_generic_rt_id)
 
 %alloc_sprite_spriteset_2(!sprnum_goonie_fly, "flyin_goonie", goonie_fly_init, goonie_fly_main, 8, \
 	$10C, $10D, \
 	$90&$E0, $8C, $03, $99, $90, $81,
 	goonie_winged_gfx_ptrs,
-	!gen_spr_gfx)
+	!spr_norm_gfx_generic_rt_id)
 
 ;%alloc_sprite_spriteset_2($A2, "flyin_goonie_test", goonie_fly_init, goonie_fly_test, 8, \
 ;	$10C, $10D, \
 ;	$90&$E0, $8C, $03, $99, $90, $81,
 ;	goonie_winged_gfx_ptrs,
-;	!gen_spr_gfx)
+;	!spr_norm_gfx_generic_rt_id)
 
 
 ; TODO check how many frames the original glides for.

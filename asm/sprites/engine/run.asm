@@ -171,25 +171,38 @@ handle_sprite_gfx:
 	rts
 
 .call:
+	lda !spr_gfx_rt_id,x
+	beq ..abort
+
+	txy
+	asl
+	clc
+	adc !spr_gfx_rt_id,y
+	tax
+	lda.l .routines-3,x
+	sta $00
+	lda.l .routines-2,x
+	sta $01
+	lda.l .routines-1,x
+	sta $02
+	tyx
+
 	lda !spr_gfx_tbl_bk,x
 	pha
 	plb
 
-	lda #$07
-	pha
-	lda !spr_gfx_hi,x
-	pha
-	lda !spr_gfx_lo,x
-	pha
+	jml [$0000]
+
+..abort:
 	rtl
 
 .routines:
-	db bank(spr_gfx_single) : dl spr_gfx_single
-	db bank(spr_gfx_2)      : dl spr_gfx_2
+	dl spr_gfx_single
+	dl spr_gfx_2
 	; todo: dynamic rt, for rotating
-	db $00 : dl $000000
+	dl gen_spr_gfx_dyn
 	; todo: player
-	db $00 : dl $000000
+	dl $000000
 
 spr_callers_done:
 %set_free_finish("bank1_sprcall_inits", spr_callers_done)

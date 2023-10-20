@@ -39,22 +39,22 @@
 	$104, \
 	$70, $00, $00, $00, $00, $00,
 	shelless_koopa_main_gfx_tiles,
-	spr_gfx_single)
+	!spr_norm_gfx_single_rt_id)
 
 %alloc_sprite_spriteset_1(!koopa_sprnum, "koopas", koopa_init, koopa_main, 5, $0100, \
 	$10, $40, $00, $00, $02, $A0,
 	koopa_gfx_ptrs,
-	!gen_spr_gfx)
+	!spr_norm_gfx_generic_rt_id)
 
 %alloc_sprite_spriteset_1(!lame_parakoopa_sprnum, "lame_parakoopa", koopa_init, koopa_main, 3, $0100,\
 	$10, $40, $00, $00, $42, $B0,
 	winged_koopa_gfx_ptrs,
-	!gen_spr_gfx)
+	!spr_norm_gfx_generic_rt_id)
 	
 %alloc_sprite_spriteset_1(!flyin_parakoopa_v_sprnum, "flyin_parakoopa_vert", parakoopa_init, flyin_parakoopa_main, 3, $0100,\
 	$10, $40, $00, $00, $52, $B0,
 	parakoopa_gfx_ptrs,
-	!gen_spr_gfx)
+	!spr_norm_gfx_generic_rt_id)
 ;%alloc_sprite_spriteset_1(!flyin_parakoopa_h_sprnum, "flyin_parakoopa_horz", koopa_init, flyin_parakoopa_main, 3, $0100,\
 ;	$10, $40, $00, $00, $52, $B0,
 ;	koopa_pose_tbl)
