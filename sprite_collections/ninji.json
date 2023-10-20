@@ -1,0 +1,12 @@
+[{
+	"id":"30",
+	"name": "Ninji",
+	"desc": "A Ninji that jumps periodically through a series of heights.",
+	"category":"generic",
+	"custom": false,
+	"extra_bit": false,
+	"n_exbytes": 1,
+	"smap16":{
+		"tile":"5E8"
+	}
+}]

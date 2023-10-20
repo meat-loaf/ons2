@@ -1,0 +1,210 @@
+[{
+	"id":"12",
+	"name":"Para-Beetle",
+	"desc":"A Para-Beetle from SMB3. Mario can ride on it, but it will rise if he does. This one goes normal speed, and spawns facing Mario",
+	"category":"athletic",
+	"custom":false,
+	"extra_bit":false,
+	"n_exbytes":1,
+	"which_exbyte":0,
+	"which_exbyte_val":"4",
+	"smap16":{
+		"tile":"6FC"
+	}
+},{
+	"id":"12",
+	"name":"...always faces left.",
+	"desc":"A Para-Beetle from SMB3. Mario can ride on it, but it will rise if he does. This one goes normal speed, and always flies to the left.",
+	"category":"athletic",
+	"custom":false,
+	"extra_bit":false,
+	"n_exbytes":1,
+	"which_exbyte":0,
+	"which_exbyte_val":"14",
+	"smap16":{
+		"tile":"6EC"
+	}
+},{
+	"id":"12",
+	"name":"...always faces right.",
+	"desc":"A Para-Beetle from SMB3. Mario can ride on it, but it will rise if he does. This one goes normal speed, and always faces to the right.",
+	"category":"athletic",
+	"custom":false,
+	"extra_bit":false,
+	"n_exbytes":1,
+	"which_exbyte":0,
+	"which_exbyte_val":"24",
+	"smap16":{
+		"tile":"6CC"
+	}
+},{
+	"id":"12",
+	"name":"...face away from player.",
+	"desc":"A Para-Beetle from SMB3. Mario can ride on it, but it will rise if he does. This one goes normal speed, and always faces away from the player.",
+	"category":"athletic",
+	"custom":false,
+	"extra_bit":false,
+	"n_exbytes":1,
+	"which_exbyte":0,
+	"which_exbyte_val":"34",
+	"smap16":{
+		"tile":"6DC"
+	}
+},{
+	"id":"12",
+	"name":"Para-Beetle, slow",
+	"desc":"A Para-Beetle from SMB3. Mario can ride on it, but it will rise if he does. This one goes quite slowly, and spawns facing Mario.",
+	"category":"athletic",
+	"custom":false,
+	"extra_bit":false,
+	"n_exbytes":1,
+	"which_exbyte":0,
+	"which_exbyte_val":"2",
+	"smap16":{
+		"tile":"6FA"
+	}
+},{
+	"id":"12",
+	"name":"...always faces left.",
+	"desc":"A Para-Beetle from SMB3. Mario can ride on it, but it will rise if he does. This one goes quite slowly, and always flies to the left.",
+	"category":"athletic",
+	"custom":false,
+	"extra_bit":false,
+	"n_exbytes":1,
+	"which_exbyte":0,
+	"which_exbyte_val":"12",
+	"smap16":{
+		"tile":"6EA"
+	}
+},{
+	"id":"12",
+	"name":"...always faces right.",
+	"desc":"A Para-Beetle from SMB3. Mario can ride on it, but it will rise if he does. This one goes quite slowly, and always faces to the right.",
+	"category":"athletic",
+	"custom":false,
+	"extra_bit":false,
+	"n_exbytes":1,
+	"which_exbyte":0,
+	"which_exbyte_val":"22",
+	"smap16":{
+		"tile":"6CA"
+	}
+},{
+	"id":"12",
+	"name":"...face away from player.",
+	"desc":"A Para-Beetle from SMB3. Mario can ride on it, but it will rise if he does. This one goes quite slowly, and always faces away from the player.",
+	"category":"athletic",
+	"custom":false,
+	"extra_bit":false,
+	"n_exbytes":1,
+	"which_exbyte":0,
+	"which_exbyte_val":"32",
+	"smap16":{
+		"tile":"6DA"
+	}
+},{
+	"id":"12",
+	"name":"Para-Beetle, fast",
+	"desc":"A Para-Beetle from SMB3. Mario can ride on it, but it will rise if he does. This one goes rather quickly, and spawns facing Mario",
+	"category":"athletic",
+	"custom":false,
+	"extra_bit":false,
+	"n_exbytes":1,
+	"which_exbyte":0,
+	"which_exbyte_val":"5",
+	"smap16":{
+		"tile":"6FD"
+	}
+},{
+	"id":"12",
+	"name":"...always faces left.",
+	"desc":"A Para-Beetle from SMB3. Mario can ride on it, but it will rise if he does. This one goes rather quickly, and always flies to the left.",
+	"category":"athletic",
+	"custom":false,
+	"extra_bit":false,
+	"n_exbytes":1,
+	"which_exbyte":0,
+	"which_exbyte_val":"15",
+	"smap16":{
+		"tile":"6ED"
+	}
+},{
+	"id":"12",
+	"name":"...always faces right.",
+	"desc":"A Para-Beetle from SMB3. Mario can ride on it, but it will rise if he does. This one goes rather quickly, and always faces to the right.",
+	"category":"athletic",
+	"custom":false,
+	"extra_bit":false,
+	"n_exbytes":1,
+	"which_exbyte":0,
+	"which_exbyte_val":"25",
+	"smap16":{
+		"tile":"6CD"
+	}
+},{
+	"id":"12",
+	"name":"...face away from player.",
+	"desc":"A Para-Beetle from SMB3. Mario can ride on it, but it will rise if he does. This one goes rather quickly, and always faces away from the player.",
+	"category":"athletic",
+	"custom":false,
+	"extra_bit":false,
+	"n_exbytes":1,
+	"which_exbyte":0,
+	"which_exbyte_val":"35",
+	"smap16":{
+		"tile":"6DD"
+	}
+},{
+
+	"id":"12",
+	"name":"Para-Beetle, very fast",
+	"desc":"A Para-Beetle from SMB3. Mario can ride on it, but it will rise if he does. This one goes very quickly, and spawns facing Mario",
+	"category":"athletic",
+	"custom":false,
+	"extra_bit":false,
+	"n_exbytes":1,
+	"which_exbyte":0,
+	"which_exbyte_val":"3",
+	"smap16":{
+		"tile":"6FB"
+	}
+},{
+	"id":"12",
+	"name":"...always faces left.",
+	"desc":"A Para-Beetle from SMB3. Mario can ride on it, but it will rise if he does. This one goes very quickly, and always flies to the left.",
+	"category":"athletic",
+	"custom":false,
+	"extra_bit":false,
+	"n_exbytes":1,
+	"which_exbyte":0,
+	"which_exbyte_val":"13",
+	"smap16":{
+		"tile":"6EB"
+	}
+},{
+	"id":"12",
+	"name":"...always faces right.",
+	"desc":"A Para-Beetle from SMB3. Mario can ride on it, but it will rise if he does. This one goes very quickly, and always faces to the right.",
+	"category":"athletic",
+	"custom":false,
+	"extra_bit":false,
+	"n_exbytes":1,
+	"which_exbyte":0,
+	"which_exbyte_val":"23",
+	"smap16":{
+		"tile":"6CB"
+	}
+},{
+	"id":"12",
+	"name":"...face away from player.",
+	"desc":"A Para-Beetle from SMB3. Mario can ride on it, but it will rise if he does. This one goes very quickly, and always faces away from the player.",
+	"category":"athletic",
+	"custom":false,
+	"extra_bit":false,
+	"n_exbytes":1,
+	"which_exbyte":0,
+	"which_exbyte_val":"33",
+	"smap16":{
+		"tile":"6DB"
+	}
+}]

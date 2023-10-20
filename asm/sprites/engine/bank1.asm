@@ -64,6 +64,9 @@ sprite_die_no_smoke:
 	jmp spr_handle_main
 
 .no_call_main:
+	lda !sprite_oam_properties,x
+	ora #$80
+	sta !sprite_oam_properties,x
 	rtl
 
 spr_spinkill:

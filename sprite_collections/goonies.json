@@ -1,0 +1,53 @@
+[{
+	"id":"A0",
+	"name": "Runnin' Goonie",
+	"desc": "A running goonie from Yoshi's Island. It quickly runs along the ground.",
+	"category":"athletic",
+	"display_xoff":"0",
+	"display_yoff":"0",
+	"extra_bit": false,
+	"custom": false,
+	"n_exbytes": 1,
+	"smap16":[{
+		"xoff":"-8",
+		"tile":"703"
+	},{
+		"xoff":"8",
+		"tile":"704"
+	},{
+		"xoff":"4",
+		"yoff":"8",
+		"tile":"705"
+	}]
+
+},{
+	"id":"A1",
+	"name": "Flyin' Goonie",
+	"desc": "A flying goonie from Yoshi's Island. It starts by gliding for a time, and then flaps its wings, ascending slowly upward. It can be ridden on, in which case it will slowly ascend and not glide at all.",
+	"category":"athletic",
+	"display_xoff":"0",
+	"display_yoff":"0",
+	"extra_bit": false,
+	"custom": false,
+	"n_exbytes": 1,
+	"smap16":[{
+		"xoff":"-8",
+		"tile":"701"
+	},{
+		"xoff":"-18",
+		"tile":"700"
+	},{
+		"xoff":"-8",
+		"tile":"703"
+	},{
+		"xoff":"8",
+		"tile":"706"
+	},{
+		"xoff":"E",
+		"tile":"708"
+	},{
+		"xoff":"1E",
+		"tile":"709"
+
+	}]
+}]

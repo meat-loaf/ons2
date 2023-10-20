@@ -9,6 +9,7 @@ incsrc "sprites/parabeetle.asm"
 incsrc "sprites/19_levelmessage.asm"
 incsrc "sprites/banzai_bill.asm"
 incsrc "sprites/piranhas2.asm"
+incsrc "sprites/ninji.asm"
 ;
 ;;incsrc "sprites/growing_vine.asm"
 ;
