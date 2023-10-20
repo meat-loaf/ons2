@@ -1,4 +1,5 @@
 includeonce
+lorom
 
 incsrc "headers/hw_regs.asm"
 incsrc "headers/consts.asm"

@@ -39,6 +39,12 @@ sprites_asm_sources= \
 	$(wildcard ${SPRITES_DIR}/sprites/ambient/*.asm) \
 	$(wildcard ${SPRITES_DIR}/dyn_gfx/*.bin)
 
+CUSTOM_SPR_COLLECTION_FILES=${ROM_NAME}.ssc ${ROM_NAME}.mwt ${ROM_NAME}.mw2
+CUSTOM_SPR_COLLECTION_JSON_DEFS_DIR=sprite_collections
+CUSTOM_SPR_COLLECTION_DEF_FILES=$(wildcard ${CUSTOM_SPR_COLLECTION_JSON_DEFS_DIR}/*.json)
+CUSTOM_SPR_COLLECTION_SSC_BASE=${ROM_BASE_PATH}/base.ssc
+
+
 blocks_dir=${asm_dir}/blocks
 blocks_asm_main_file=${blocks_dir}/blocks.asm
 blocks_asm_sources= \
@@ -75,7 +81,7 @@ MWL_FNAME_BASE=l
 
 .PHONY: ons test debug
 
-ons: ${CLEAN_ROM_FULL} ${ROM_NAME} ${CORE_BUILD_RULES} ${ASM_TS} ${GFX_TS} ${MWL_FAKE_TS}
+ons: ${CLEAN_ROM_FULL} ${ROM_NAME} ${CORE_BUILD_RULES} ${ASM_TS} ${GFX_TS} ${MWL_FAKE_TS} ${CUSTOM_SPR_COLLECTION_FILES}
 
 test: ons
 	${TEST_EMU} ${ROM_NAME} >/dev/null 2>&1 &
@@ -101,6 +107,10 @@ ${ROM_RAW_BASE_SRC}: ${ROM_RAW_BASE_SRC_P}
 ${MWL_FAKE_TS}: ${MWL_DIR}/${MWL_FNAME_BASE}\ *.mwl
 	${LUNAR_MAGIC} -ImportMultLevels ${ROM_NAME} ./${MWL_DIR}
 	touch $@
+
+${CUSTOM_SPR_COLLECTION_FILES}&: ${ASM_TS} ${CUSTOM_SPR_COLLECTION_DEF_FILES}
+	./scripts/generate_sprite_collection.py --name-prefix ${ROM_NAME_BASE} --base-ssc ${CUSTOM_SPR_COLLECTION_SSC_BASE} -x 7 -y 7 ${CUSTOM_SPR_COLLECTION_DEF_FILES}
+
 
 clean:
 	rm -f ${ROM_NAME} ${SYM_NAME} .*.ts

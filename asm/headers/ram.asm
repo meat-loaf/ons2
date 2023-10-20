@@ -69,7 +69,7 @@ includeonce
 ; V - Vertical layer 2
 ; v - vertical layer 1
 !screen_mode       = $5B
-!current_spriteset = $5C
+;!current_spriteset = $5C
 !num_screens       = $5D
 !screens_stop_horz = $5E
 !screens_stop_vert = $5F      ; free if not using vertical levels
@@ -96,7 +96,6 @@ includeonce
 !sspipes_enter_exit_flag = $62
 
 ; flag set if you carried a sprite through a pipe
-; TODO move this to the asstd_lvl_flags_1 bitmask
 !sspipes_carry_spr        = $63
 
 !sprite_level_props       = $64
@@ -104,9 +103,7 @@ includeonce
 !layer_1_bank_byte_ptr    = $65
 ; 3 bytes
 !layer_2_bank_byte_ptr    = $68
-; 3 bytes - free in levels after gm11
 !map16_data_lo            = $6B
-; 3 bytes - free in levels after gm11
 !map16_data_hi            = $6E
 !player_ani_trigger_state = $71
 !player_in_air            = $72
@@ -423,7 +420,8 @@ assert (!ambient_y_speed)+(!num_ambient_sprs*2) <= $185C, "ambient sprite ram ex
 !spr_extra_byte_1         = !spr_extra_bits+!num_sprites
 !spr_spriteset_off        = !spr_extra_byte_1+!num_sprites
 !spr_gfx_rt_id            = !spr_spriteset_off+!num_sprites
-!ambient_twk_tilesz       = !spr_gfx_rt_id+!num_sprites
+!spr_gfx_alt_props        = !spr_gfx_rt_id+!num_sprites
+!ambient_twk_tilesz       = !spr_gfx_alt_props+!num_sprites
 !ambient_grav_setting     = !ambient_twk_tilesz+!ambient_tblsz
 !ambient_misc_2           = !ambient_grav_setting+!ambient_tblsz
 !ambient_x_speed          = !ambient_misc_2+!ambient_tblsz
@@ -512,14 +510,14 @@ assert (!ambient_misc_1)+(!ambient_tblsz) <= $1EA2, "ambient sprite ram exceeded
 
 ;!sprite_misc_1fd6         = $1FD6
 !sprite_dyn_gfx_id         = $1FD6
-!sprite_cape_disable_time = $1FE2
+!sprite_cape_disable_time  = $1FE2
 
 !mario_gfx               = $7E2000
 
 ; sram stuff
 ; todo reorganize a bit. Original free sram starts at $70035A
-!item_memory_mirror_s    = $701000
-!wiggler_segment_buffer_srm = !item_memory_mirror_s+!item_memory_size
+;!item_memory_mirror_s    = $701000
+;!wiggler_segment_buffer_srm = !item_memory_mirror_s+!item_memory_size
 ;!big_hdma_decomp_buff_rg = !wiggler_segment_buffer_srm+$200
 ;!big_hdma_decomp_buff_b   = !big_hdma_decomp_buff_rg+$1000
 
@@ -544,6 +542,7 @@ assert bank(!big_hdma_decomp_buff_rg) == bank(!big_hdma_decomp_buff_b), "hdma de
 ; pointers to above
 !big_hdma_ptr_rg = !big_hdma_decomp_buff_b+$1000
 !big_hdma_ptr_b  = !big_hdma_ptr_rg+$7
+
 ; 7F3C16-7F3FFF free
 
 
@@ -557,9 +556,35 @@ assert bank(!big_hdma_decomp_buff_rg) == bank(!big_hdma_decomp_buff_b), "hdma de
 !skidsmoke_status = !turnblock_status+$60
 ; 256 bytes: an entry for each sprite index
 !level_ss_sprite_offs = !skidsmoke_status+$48
-; 12 bytes each: used by sprites which use the generic gfx routines
-!spr_pose_ptr_lo = !level_ss_sprite_offs+$100
-!spr_pose_ptr_hi = !spr_pose_ptr_lo+$100
+
+!oam_rts_highest_prio = !level_ss_sprite_offs+$100
+;!oam_rts_high_prio    = !oam_rts_highest_prio+(!num_highest_prio_oam_rt_slots*5)
+;!oam_rts_normal_prio  = !oam_rts_high_prio+(!num_high_prio_oam_rt_slots*5)
+;!oam_rts_low_prio     = !oam_rts_normal_prio+(!num_normal_prio_oam_rt_slots*5)
+;!oam_rts_lowest_prio   = !oam_rts_low_prio+(!num_low_prio_oam_rt_slots*5)
+
+
+org !wiggler_segment_buffer
+wiggler_segment_buffer:
+	skip $200
+dynamic_buffer:
+	skip $800
+turnblock_status:
+	skip $60
+skidsmoke_status:
+	skip $48
+level_ss_sprite_offs:
+	skip $100
+oam_rts_highest_prio:
+	skip (!num_highest_prio_oam_rt_slots*!oam_rt_struct_size)
+oam_rts_high_prio:
+	skip (!num_high_prio_oam_rt_slots*!oam_rt_struct_size)
+oam_rts_normal_prio:
+	skip (!num_normal_prio_oam_rt_slots*!oam_rt_struct_size)
+oam_rts_low_prio:
+	skip (!num_low_prio_oam_rt_slots*!oam_rt_struct_size)
+oam_rts_lowest_prio:
+	skip (!num_lowest_prio_oam_rt_slots*!oam_rt_struct_size)
 
 ; ram defs ;
 !Freeram_SSP_PipeDir    ?= !sspipes_dir

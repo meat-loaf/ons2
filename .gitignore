@@ -4,5 +4,10 @@
 *.sym
 *.vim
 *.ts
-RATS.log
+*.mwt
+*.mw2
+*.ssc
 rom_src/*.smc
+!rom_src/base.ssc
+RATS.log
+*__pycache__*

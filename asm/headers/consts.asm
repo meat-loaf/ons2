@@ -33,6 +33,14 @@ else
 	!num_sprites = $0C
 endif
 
+!oam_rt_struct_size = $5
+
+!num_highest_prio_oam_rt_slots    = 5
+!num_high_prio_oam_rt_slots       = 30
+!num_normal_prio_oam_rt_slots     = 30
+!num_low_prio_oam_rt_slots        = 30
+!num_lowest_prio_oam_rt_slots     = 5
+
 !ambient_debug = 0
 
 !JSL_OPCODE           = $22

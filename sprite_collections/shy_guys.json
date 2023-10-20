@@ -1,0 +1,96 @@
+[{
+	"id":"02",
+	"name":"Shy Guy, green",
+	"desc":"A green shy guy. It slowly walks along the ground, and will walk off ledges, safety be damned. It will kick shells.",
+	"back_color": "ccff99",
+	"category": "generic",
+	"display_xoff": 0,
+	"display_yoff": 0,
+	"custom": false,
+	"extra_bit": false,
+	"n_exbytes": 1,
+	"which_exbyte": "0",
+	"which_exbyte_val": "0",
+	"smap16":{
+		"tile":"561"
+	}
+},{
+	"id":"02",
+	"name":"...yellow",
+	"desc":"A yellow shy guy. It quickly walks along the ground, and will walk off ledges, safety be damned. It will kick shells, turning them into disco shells.",
+	"back_color": "ffff99",
+	"category": "generic",
+	"display_xoff": 0,
+	"display_yoff": 0,
+	"custom": false,
+	"extra_bit": false,
+	"n_exbytes": 1,
+	"which_exbyte": "0",
+	"which_exbyte_val": "1",
+	"smap16":{
+		"tile":"563"
+	}
+},{
+	"id":"02",
+	"name":"...red",
+	"desc":"A red shy guy. It slowly walks along the ground, and will stay on ledges. It will kick shells.",
+	"back_color": "ff9999",
+	"category": "generic",
+	"display_xoff": 0,
+	"display_yoff": 0,
+	"custom": false,
+	"extra_bit": false,
+	"n_exbytes": 1,
+	"which_exbyte": "0",
+	"which_exbyte_val": "2",
+	"smap16":{
+		"tile":"560"
+	}
+},{
+	"id":"02",
+	"name":"...blue",
+	"desc":"A blue shy guy. It quickly walks along the ground, and will stay on ledges. It will kick shells.",
+	"back_color": "99ccff",
+	"category": "generic",
+	"display_xoff": 0,
+	"display_yoff": 0,
+	"custom": false,
+	"extra_bit": false,
+	"n_exbytes": 1,
+	"which_exbyte": "0",
+	"which_exbyte_val": "3",
+	"smap16":{
+		"tile":"562"
+	}
+},{
+	"id":"BA",
+	"name":"Woozy Guy (dynamic)",
+	"desc":"A Woozy Guy from Yoshi's Island. He does somersaults towards Mario. Its color is based on its starting X position.",
+	"category": "dynamic",
+	"custom": false,
+	"extra_bit": false,
+	"back_color": "0",
+	"text_color": "FFFFFF",
+	"n_exbytes": 1,
+	"smap16":[{
+		"xmask":0,
+		"dat":{
+			"tile":"573"
+		}
+	},{
+		"xmask": 1,
+		"dat":{
+			"tile":"572"
+		}
+	},{
+		"xmask": 2,
+		"dat":{
+			"tile":"570"
+		}
+	},{
+		"xmask": 3,
+		"dat":{
+			"tile":"571"
+		}
+	}]
+}]

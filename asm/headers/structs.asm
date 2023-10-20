@@ -23,6 +23,13 @@ struct skidsmoke_status_d
 	.timer: skip 2
 endstruct align 6
 
+org !oam_rts_highest_prio
+struct oam_rt_d
+	.ptr: skip 2
+	.ptr_bank: skip 1
+	.arg: skip 2
+endstruct
+
 
 ;struct entity_pose_entry
 ;	.x_off: skip 1
@@ -35,4 +42,4 @@ endstruct align 6
 ;oam_lo = oam_entry[$0000]
 ;oam_hi = oam_entry[$0100]
 
-!turnblocks = turnblock_status_d[!num_turnblock_slots]
+;!turnblocks = turnblock_status_d[!num_turnblock_slots]

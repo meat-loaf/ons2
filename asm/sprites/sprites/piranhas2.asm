@@ -128,18 +128,17 @@ venus_check_shoot:
 	rts
 
 shoot_fire:
-	rts
-	; TODO below doesn't work. properly
+	; TODO below doesn't work properly, indices are wrong
 	jsl sub_horz_pos
 	stz $03
 	tya
 	beq +
-	lda $03
+	lda $0E
 	eor #$ff
 	inc
-	sta $03
+	sta $0E
 +
-	lda $03
+	lda $0E
 	cmp #$40
 	bcs +
 	lda #$04
@@ -151,20 +150,19 @@ shoot_fire:
 	sta $01
 	; we only set 'facing' dir for vertical venus
 	clc
-	lda !sprite_oam_properties,x
-	and #$40
-	rol #3
+	;lda !sprite_oam_properties,x
+	;and #$40
+	;rol #4
 	ora !sprite_misc_157c,x
 	sta $02
 	tsb $01
 
-	lda !sprite_x_low,x
 	ldy $01
+	lda !sprite_x_low,x
 	clc
 	adc .xoffs_lo,y
 	sta !ambient_get_slot_xpos
 	lda !sprite_x_high,x
-	clc
 	adc .xoffs_hi,y
 	sta !ambient_get_slot_xpos+1
 
@@ -173,7 +171,6 @@ shoot_fire:
 	adc .yoffs_lo,y
 	sta !ambient_get_slot_ypos
 	lda !sprite_y_high,x
-	clc
 	adc .yoffs_hi,y
 	sta !ambient_get_slot_ypos+1
 

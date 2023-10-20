@@ -126,7 +126,6 @@ load_sprite_tables:
 .exit:
 	rtl
 
-
 ; generic gfx callbacks
 chuck_head_shake_callback:
 	lda !sprite_misc_1570,x

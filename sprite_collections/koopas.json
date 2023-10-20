@@ -1,0 +1,470 @@
+[{
+	"id":"04",
+	"name":"Koopa, green",
+	"desc":"A green koopa. It slowly walks along the ground, and will walk off ledges, safety be damned. If jumped on, it will hide in its shell for some time.",
+	"category": "generic",
+	"back_color": "ccff99",
+	"display_xoff": 0,
+	"display_yoff": 0,
+	"custom": false,
+	"extra_bit": false,
+	"n_exbytes": 1,
+	"which_exbyte": "0",
+	"which_exbyte_val": "0",
+	"smap16":[{
+			"yoff":"2",
+			"tile":"595"
+		},{
+			"yoff":"-0E",
+			"tile":"585"
+		}]
+},{
+	"id":"04",
+	"name":"...yellow",
+	"desc":"A yellow koopa. It quickly walks along the ground, and will walk off ledges, safety be damned. If jumped on, it will hide in its shell for some time.",
+	"category": "generic",
+	"back_color": "ffff99",
+	"display_xoff": 0,
+	"display_yoff": 0,
+	"custom": false,
+	"extra_bit": false,
+	"n_exbytes": 1,
+	"which_exbyte": "0",
+	"which_exbyte_val": "1",
+	"smap16":[{
+			"yoff":"2",
+			"tile":"597"
+		},{
+			"yoff":"-0E",
+			"tile":"587"
+		}]
+},{
+	"id":"04",
+	"name":"...red",
+	"desc":"A red koopa. It slowly walks along the ground, and will stay on ledges. If jumped on, it will hide in its shell for some time.",
+	"back_color": "ff9999",
+	"category": "generic",
+	"display_xoff": 0,
+	"display_yoff": 0,
+	"custom": false,
+	"extra_bit": false,
+	"n_exbytes": 1,
+	"which_exbyte": "0",
+	"which_exbyte_val": "2",
+	"smap16":[{
+			"yoff":"2",
+			"tile":"594"
+		},{
+			"yoff":"-0E",
+			"tile":"584"
+		}]
+},{
+	"id":"04",
+	"name":"...blue",
+	"desc":"A blue koopa. It quickly walks along the ground, and will stay on ledges. If jumped on, it will hide in its shell for some time.",
+	"back_color": "99ccff",
+	"category": "generic",
+	"display_xoff": 0,
+	"display_yoff": 0,
+	"custom": false,
+	"extra_bit": false,
+	"n_exbytes": 1,
+	"which_exbyte": "0",
+	"which_exbyte_val": "3",
+	"smap16":[{
+			"yoff":"2",
+			"tile":"596"
+		},{
+			"yoff":"-0E",
+			"tile":"586"
+		}]
+},{
+	"id":"04",
+	"name":"Koopa shell, green",
+	"desc":"A green koopa shell.",
+	"back_color": "ccff99",
+	"category": "generic",
+	"display_xoff": 0,
+	"display_yoff": 0,
+	"custom": false,
+	"extra_bit": false,
+	"n_exbytes": 1,
+	"which_exbyte": "0",
+	"which_exbyte_val": "80",
+	"smap16":[{
+			"yoff":"1",
+			"tile":"589"
+		}]
+},{
+	"id":"04",
+	"name":"...yellow",
+	"desc":"A yellow koopa shell.",
+	"back_color": "ccff99",
+	"category": "generic",
+	"display_xoff": 0,
+	"display_yoff": 0,
+	"custom": false,
+	"extra_bit": false,
+	"n_exbytes": 1,
+	"which_exbyte": "0",
+	"which_exbyte_val": "81",
+	"smap16":[{
+			"yoff":"1",
+			"tile":"58B"
+		}]
+},{
+	"id":"04",
+	"name":"...red",
+	"desc":"A red koopa shell.",
+	"back_color": "ff9999",
+	"category": "generic",
+	"display_xoff": 0,
+	"display_yoff": 0,
+	"custom": false,
+	"extra_bit": false,
+	"n_exbytes": 1,
+	"which_exbyte": "0",
+	"which_exbyte_val": "82",
+	"smap16":[{
+			"yoff":"1",
+			"tile":"588"
+		}]
+},{
+	"id":"04",
+	"name":"...blue",
+	"desc":"A blue koopa shell.",
+	"back_color": "99ccff",
+	"category": "generic",
+	"display_xoff": 0,
+	"display_yoff": 0,
+	"custom": false,
+	"extra_bit": false,
+	"n_exbytes": 1,
+	"which_exbyte": "0",
+	"which_exbyte_val": "83",
+	"smap16":[{
+			"yoff":"1",
+			"tile":"58A"
+		}]
+},{
+	"id":"05",
+	"name":"Lame parakoopa, green",
+	"desc":"A green parakoopa that can't fly. It slowly walks along the ground, and will walk off ledges, safety be damned. If jumped on, it will loose its wings and turn into a normal koopa. It jumps over sprites kicked at it if it is facing them.",
+	"back_color": "ccff99",
+	"category": "generic",
+	"display_xoff": 0,
+	"display_yoff": 0,
+	"custom": false,
+	"extra_bit": false,
+	"n_exbytes": 1,
+	"which_exbyte": "0",
+	"which_exbyte_val": "00",
+	"smap16":[{
+			"yoff":"2",
+			"tile":"595"
+		},{
+			"yoff":"-0E",
+			"tile":"585"
+		},{
+			"xoff":"08",
+			"yoff":"-0A",
+			"tile":"5B7"
+		}]
+},{
+	"id":"05",
+	"name":"...yellow",
+	"desc":"A yellow parakoopa that can't fly. It quickly walks along the ground, and will walk off ledges, safety be damned. If jumped on, it will loose its wings and turn into a normal koopa. It jumps over sprites kicked at it if it is facing them.",
+	"back_color": "ffff99",
+	"category": "generic",
+	"display_xoff": 0,
+	"display_yoff": 0,
+	"custom": false,
+	"extra_bit": false,
+	"n_exbytes": 1,
+	"which_exbyte": "0",
+	"which_exbyte_val": "01",
+	"smap16":[{
+			"yoff":"2",
+			"tile":"597"
+		},{
+			"yoff":"-0E",
+			"tile":"587"
+		},{
+			"xoff":"08",
+			"yoff":"-0A",
+			"tile":"5B7"
+		}]
+},{
+	"id":"05",
+	"name":"...red",
+	"desc":"A red parakoopa that can't fly. It quickly walks along the ground, and will stay on ledges. If jumped on, it will loose its wings and turn into a normal koopa. It jumps over sprites kicked at it if it is facing them.",
+	"back_color": "ff9999",
+	"category": "generic",
+	"display_xoff": 0,
+	"display_yoff": 0,
+	"custom": false,
+	"extra_bit": false,
+	"n_exbytes": 1,
+	"which_exbyte": "0",
+	"which_exbyte_val": "02",
+	"smap16":[{
+			"yoff":"2",
+			"tile":"594"
+		},{
+			"yoff":"-0E",
+			"tile":"584"
+		},{
+			"xoff":"08",
+			"yoff":"-0A",
+			"tile":"5B7"
+		}]
+},{
+	"id":"05",
+	"name":"...blue",
+	"desc":"A blue parakoopa that can't fly. It quickly walks along the ground, and will stay on ledges. If jumped on, it will loose its wings and turn into a normal koopa. It jumps over sprites kicked at it if it is facing them.",
+	"back_color": "99ccff",
+	"category": "generic",
+	"display_xoff": 0,
+	"display_yoff": 0,
+	"custom": false,
+	"extra_bit": false,
+	"n_exbytes": 1,
+	"which_exbyte": "0",
+	"which_exbyte_val": "03",
+	"smap16":[{
+			"yoff":"2",
+			"tile":"596"
+		},{
+			"yoff":"-0E",
+			"tile":"586"
+		},{
+			"xoff":"08",
+			"yoff":"-0A",
+			"tile":"5B7"
+		}]
+},{
+	"id":"06",
+	"name":"Vertical parakoopa, green",
+	"desc":"A green parakoopa that slowly flies vertically, up 5.5 tiles and then back down. If jumped on, it will loose its wings and turn into a normal koopa.",
+	"back_color": "ccff99",
+	"category": "generic",
+	"display_xoff": 0,
+	"display_yoff": 0,
+	"custom": false,
+	"extra_bit": false,
+	"n_exbytes": 1,
+	"which_exbyte": "0",
+	"which_exbyte_val": "00",
+	"smap16":[{
+			"yoff":"2",
+			"tile":"595"
+		},{
+			"yoff":"-12",
+			"xoff":"-4",
+			"tile":"592"
+		},{
+			"yoff":"-0E",
+			"tile":"585"
+		},{
+			"xoff":"08",
+			"yoff":"-0A",
+			"tile":"5B6"
+		}]
+},{
+	"id":"06",
+	"name":"...yellow",
+	"desc":"A yellow parakoopa that quickly flies vertically, up 5.5 tiles and then back down. If jumped on, it will loose its wings and turn into a normal koopa.",
+	"back_color": "ccff99",
+	"category": "generic",
+	"display_xoff": 0,
+	"display_yoff": 0,
+	"custom": false,
+	"extra_bit": false,
+	"n_exbytes": 1,
+	"which_exbyte": "0",
+	"which_exbyte_val": "01",
+	"smap16":[{
+			"yoff":"2",
+			"tile":"597"
+		},{
+			"yoff":"-12",
+			"xoff":"-4",
+			"tile":"592"
+		},{
+
+			"yoff":"-0E",
+			"tile":"587"
+		},{
+			"xoff":"08",
+			"yoff":"-0A",
+			"tile":"5B6"
+		}]
+},{
+	"id":"06",
+	"name":"...red",
+	"desc":"A red parakoopa that slowly flies vertically, up 5.5 tiles and then back down. If jumped on, it will loose its wings and turn into a normal koopa.",
+	"back_color": "ff9999",
+	"category": "generic",
+	"display_xoff": 0,
+	"display_yoff": 0,
+	"custom": false,
+	"extra_bit": false,
+	"n_exbytes": 1,
+	"which_exbyte": "0",
+	"which_exbyte_val": "02",
+	"smap16":[{
+			"yoff":"2",
+			"tile":"594"
+		},{
+			"yoff":"-12",
+			"xoff":"-4",
+			"tile":"592"
+		},{
+			"yoff":"-0E",
+			"tile":"584"
+		},{
+			"xoff":"08",
+			"yoff":"-0A",
+			"tile":"5B6"
+		}]
+},{
+	"id":"06",
+	"name":"...blue",
+	"desc":"A blue parakoopa that quickly flies vertically, up 5.5 tiles and then back down. If jumped on, it will loose its wings and turn into a normal koopa.",
+	"back_color": "99ccff",
+	"category": "generic",
+	"display_xoff": 0,
+	"display_yoff": 0,
+	"custom": false,
+	"extra_bit": false,
+	"n_exbytes": 1,
+	"which_exbyte": "0",
+	"which_exbyte_val": "03",
+	"smap16":[{
+			"yoff":"2",
+			"tile":"596"
+		},{
+			"yoff":"-12",
+			"xoff":"-4",
+			"tile":"592"
+		},{
+			"yoff":"-0E",
+			"tile":"586"
+		},{
+			"xoff":"08",
+			"yoff":"-0A",
+			"tile":"5B6"
+		}]
+},{
+	"id":"06",
+	"name":"Horizontal parakoopa, green",
+	"desc":"A green parakoopa that slowly flies horizontally, left 7 tiles and then back. If jumped on, it will loose its wings and turn into a normal koopa.",
+	"back_color": "ccff99",
+	"category": "generic",
+	"display_xoff": 0,
+	"display_yoff": 0,
+	"custom": false,
+	"extra_bit": false,
+	"n_exbytes": 1,
+	"which_exbyte": "0",
+	"which_exbyte_val": "04",
+	"smap16":[{
+			"yoff":"2",
+			"tile":"595"
+		},{
+			"yoff":"-0",
+			"xoff":"-12",
+			"tile":"593"
+		},{
+			"yoff":"-0E",
+			"tile":"585"
+		},{
+			"xoff":"08",
+			"yoff":"-0A",
+			"tile":"5B6"
+		}]
+},{
+	"id":"06",
+	"name":"...yellow",
+	"desc":"A yellow parakoopa that quickly flies horizontally, left 7 tiles and then back. If jumped on, it will loose its wings and turn into a normal koopa.",
+	"back_color": "ccff99",
+	"category": "generic",
+	"display_xoff": 0,
+	"display_yoff": 0,
+	"custom": false,
+	"extra_bit": false,
+	"n_exbytes": 1,
+	"which_exbyte": "0",
+	"which_exbyte_val": "05",
+	"smap16":[{
+			"yoff":"2",
+			"tile":"597"
+		},{
+			"yoff":"-0",
+			"xoff":"-12",
+			"tile":"593"
+		},{
+			"yoff":"-0E",
+			"tile":"585"
+		},{
+			"xoff":"08",
+			"yoff":"-0A",
+			"tile":"5B6"
+		}]
+},{
+	"id":"06",
+	"name":"...red",
+	"desc":"A red parakoopa that slowly flies horizontally, left 7 tiles and then back. If jumped on, it will loose its wings and turn into a normal koopa.",
+	"back_color": "ff9999",
+	"category": "generic",
+	"display_xoff": 0,
+	"display_yoff": 0,
+	"custom": false,
+	"extra_bit": false,
+	"n_exbytes": 1,
+	"which_exbyte": "0",
+	"which_exbyte_val": "06",
+	"smap16":[{
+			"yoff":"2",
+			"tile":"594"
+		},{
+			"yoff":"-0",
+			"xoff":"-12",
+			"tile":"593"
+		},{
+			"yoff":"-0E",
+			"tile":"585"
+		},{
+			"xoff":"08",
+			"yoff":"-0A",
+			"tile":"5B6"
+		}]
+},{
+	"id":"06",
+	"name":"...blue",
+	"desc":"A blue parakoopa that quickly flies horizontally, left 7 tiles and then back. If jumped on, it will loose its wings and turn into a normal koopa.",
+	"back_color": "99ccff",
+	"category": "generic",
+	"display_xoff": 0,
+	"display_yoff": 0,
+	"custom": false,
+	"extra_bit": false,
+	"n_exbytes": 1,
+	"which_exbyte": "0",
+	"which_exbyte_val": "07",
+	"smap16":[{
+			"yoff":"2",
+			"tile":"596"
+		},{
+			"yoff":"-0",
+			"xoff":"-12",
+			"tile":"593"
+		},{
+			"yoff":"-0E",
+			"tile":"585"
+		},{
+			"xoff":"08",
+			"yoff":"-0A",
+			"tile":"5B6"
+		}]
+}]

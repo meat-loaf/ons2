@@ -55,10 +55,7 @@
 	$10, $40, $00, $00, $52, $B0,
 	parakoopa_gfx_ptrs,
 	!spr_norm_gfx_generic_rt_id)
-;%alloc_sprite_spriteset_1(!flyin_parakoopa_h_sprnum, "flyin_parakoopa_horz", koopa_init, flyin_parakoopa_main, 3, $0100,\
-;	$10, $40, $00, $00, $52, $B0,
-;	koopa_pose_tbl)
-;
+
 ;%alloc_sprite_spriteset_1(!giant_koopa_sprnum, "giant_koopas", koopa_init, koopa_main, 5, $0110, \
 ;	$10, $40, $00, $00, $02, $A0,
 ;	giant_koopa_pose_tbl)
@@ -95,6 +92,7 @@ parakoopa_init:
 	;inc !koopa_face_dir,x
 .no_right_first:
 	and #$04
+	; used as a table index
 	lsr #2
 	sta !parakoopa_hv,x
 
