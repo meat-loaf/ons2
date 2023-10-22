@@ -585,6 +585,12 @@ oam_rts_low_prio:
 	skip (!num_low_prio_oam_rt_slots*!oam_rt_struct_size)
 oam_rts_lowest_prio:
 	skip (!num_lowest_prio_oam_rt_slots*!oam_rt_struct_size)
+rot_spr_gfx_arr:
+	skip 7*!num_sprites
+.end:
+assert .end <= $7FABFF
+
+!rot_spr_gfx_arr = rot_spr_gfx_arr
 
 ; ram defs ;
 !Freeram_SSP_PipeDir    ?= !sspipes_dir

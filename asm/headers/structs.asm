@@ -30,6 +30,17 @@ struct oam_rt_d
 	.arg: skip 2
 endstruct
 
+org !rot_spr_gfx_arr
+struct rot_spr_gfx_buff
+	.ntiles: skip 1
+	.tile_x_delta: skip 1
+	.tile_y_delta: skip 1
+	.tile_id: skip 1
+	.tile_prop: skip 1
+	.draw_end: skip 2
+endstruct
+
+
 
 ;struct entity_pose_entry
 ;	.x_off: skip 1

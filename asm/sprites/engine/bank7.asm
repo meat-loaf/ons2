@@ -420,39 +420,7 @@ while !ix <= $64
 	!ix #= !ix+1
 endif
 
-; carry clear if successful: buffer index in y
-; carry set if no slots left; y will be negative
-;get_dyn_pose:
-;	txy
-;	ldx !dyn_pose_buffer_avail
-;	lda.l .free_indices,x
-;	bmi .none
-;	tsb !dyn_pose_buffer_avail
-;	tax
-;	lda.l .buff_index_to_offset,x
-;.none:
-;	tyx
-;	tay
-;
-;	rtl
-;
-;.free_indices:
-;	db $00, $01, $00, $02, $00, $01, $00, $03
-;	db $00, $01, $00, $02, $00, $01, $00, $04
-;	db $00, $01, $00, $02, $00, $01, $00, $03
-;	db $00, $01, $00, $02, $00, $01, $00, $05
-;	db $00, $01, $00, $02, $00, $01, $00, $03
-;	db $00, $01, $00, $02, $00, $01, $00, $04
-;	db $00, $01, $00, $02, $00, $01, $00, $03
-;	db $00, $01, $00, $02, $00, $01, $00, $06|$80
-;.buff_index_to_offset:
-;	db !gen_gfx_tile_tblsz*0
-;	db !gen_gfx_tile_tblsz*1
-;	db !gen_gfx_tile_tblsz*2
-;	db !gen_gfx_tile_tblsz*3
-;	db !gen_gfx_tile_tblsz*4
-;	db !gen_gfx_tile_tblsz*5
-;
+
 
 ; draw a single sprite tile at the sprite's position.
 ; inputs:
@@ -664,6 +632,13 @@ spr_dyn_allocate_slot:
 	db $00,$08,$20,$28
 .gfx:
 	skip 3*!dyn_gfx_files_max
+
+spr_id_to_rot_spr_gfx_buff:
+	!ix #= 0
+	while !ix < !num_sprites
+		db !ix*sizeof(rot_spr_gfx_buff)
+		!ix #= !ix+1
+	endif
 
 bank7_stuff_done:
 %set_free_finish("bank7", bank7_stuff_done)
