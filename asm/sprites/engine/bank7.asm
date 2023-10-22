@@ -25,18 +25,17 @@ spr_tweaker_190F_tbl:
 	skip $100
 spr_gfxptr_rt_id_tbl:
 	skip $100
-;spr_gfxptr_lo_tbl:
-;	skip $100
-;spr_gfxptr_hi_tbl:
-;	skip $100
 spr_gfx_lo_tbl:
 	skip $100
 spr_gfx_hi_tbl:
 	skip $100
 
 zero_sprite_tables:
+	stz.w !sprite_grav_setting,x
 	stz.w !sprite_in_water,x
 	stz.w !sprite_behind_scenery,x
+	stz.w !sprite_dyn_gfx_id,x
+
 	stz.b !sprite_misc_c2,x
 	stz.w !sprite_misc_151c,x
 	stz.w !sprite_misc_1528,x
@@ -62,9 +61,6 @@ zero_sprite_tables:
 	stz.w !sprite_misc_187b,x
 	stz.w !sprite_misc_160e,x
 	stz.w !sprite_misc_1594,x
-	stz.w !sprite_misc_1504,x
-;	stz.w !sprite_misc_1fd6,x
-	stz.w !sprite_dyn_gfx_id,x
 	stz.w !spr_spriteset_off,x
 	lda.b #$01
 	sta.w !sprite_off_screen_horz,x

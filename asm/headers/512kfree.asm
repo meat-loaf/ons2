@@ -12,7 +12,9 @@
 
 ; todo validate range - overwrites more than just spr0to13
 !bank1_spr0to13_free_start        = $0188EC|!bank
-!bank1_spr0to13_free_end          = $019032|!bank
+;!bank1_spr0to13_free_end          = $019032|!bank
+; NOTE overwrites UpdateSprPos routine!
+!bank1_spr0to13_free_end          = $019089|!bank
 
 ; TODO should be expanded to $0197AD but there is a stun timer handler in the middle
 ;      that needs to be ported. Can expand further by porting grounded speed adj routine,

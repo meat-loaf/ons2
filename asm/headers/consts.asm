@@ -177,16 +177,20 @@ _spr_face_mario_bank1 = $01857C|!bank
 !gen_spr_prop_use_32x16_tilemap = %01000000
 !gen_spr_prop_fast_ani_in_air   = %10000000
 
-; NEW, added by changes (TODO);
-!gen_spr_prop_reverse_gravity   = %00010000
+!grav_setting_normal            = %00000000
+!grav_setting_y_invert          = %00000001
+!grav_setting_x_left            = %00000010
+!grav_setting_x_right           = %00000100
 
-!sprite_blocked_layer2_above  = %10000000
-!sprite_blocked_layer2_side   = %01000000
-!sprite_blocked_layer2_below  = %00100000
-!sprite_blocked_above         = %00001000
-!sprite_blocked_below         = %00000100
-!sprite_blocked_left          = %00000010
-!sprite_blocked_right         = %00000001
+!grav_setting_ignore_global     = %10000000
+
+!sprite_blocked_layer2_above    = %10000000
+!sprite_blocked_layer2_side     = %01000000
+!sprite_blocked_layer2_below    = %00100000
+!sprite_blocked_above           = %00001000
+!sprite_blocked_below           = %00000100
+!sprite_blocked_left            = %00000010
+!sprite_blocked_right           = %00000001
 
 
 ;sfx ids

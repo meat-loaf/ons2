@@ -11,6 +11,15 @@ spr_upd_yx_no_grav_l:
 	rtl
 warnpc $018029|!bank
 
+org $01802A|!bank
+update_sprite_pos:
+	phb
+	phk
+	plb
+	jsr.w _spr_upd_pos
+	plb
+	rtl
+
 org $01803D|!bank
 	jsr.w _sprspr_mario_spr_rt
 
@@ -469,6 +478,59 @@ _spr_set_ani_frame:
 	and #$01
 	sta !sprite_misc_1602,x
 	rts
+
+_spr_upd_pos:
+	jsr _spr_upd_y_no_grav
+	lda !sprite_grav_setting,x
+	bmi .unaffected
+	eor !gravity_setting
+.unaffected:
+	and #!grav_setting_y_invert
+	asl
+	sta $00
+	ldy #$00
+	lda !sprite_in_water,x
+	beq .dry_y
+	iny
+.dry_y:
+	sty $0E
+	tya
+	ora $00
+	tay
+	bit #(!grav_setting_y_invert<<1)
+	bne .invert_y
+	lda !sprite_speed_y,x
+	bpl .no_accel_check_yplus
+	cmp .y_speed_max,y
+	bcs .no_accel_check_yplus
+	lda .y_speed_max,y
+	sta !sprite_speed_y,x
+.no_accel_check_yplus:
+	lda !sprite_speed_y,x
+	clc
+	adc .y_accels,y
+	sta !sprite_speed_y,x
+	bmi ..down
+	cmp .y_opp_speed_max,y
+	bcc .do_x
+	lda .y_opp_speed_max,y
+	sta !sprite_speed_y,x
+	bra .do_x
+..down:
+
+.invert_y:
+
+.do_x:
+	; TODO water physics
+	jsr _spr_upd_x_no_grav
+	jmp _spr_obj_interact
+
+.y_speed_max:
+	db $80,$E8,$7F,invert($E8)
+.y_accels:
+	db $03,$01,invert($03),invert($01)
+.y_opp_speed_max:
+	db $40,$10,invert($40),invert($10)
 
 _sprspr_mario_spr_rt:
 	jsr _spr_spr_interact

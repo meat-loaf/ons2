@@ -295,5 +295,5 @@ write_angle_stdout:
 	sta !status_bar_tilemap+2
 	rts
 
-.done
+plats_main_done:
 %set_free_finish("bank3_sprites", plats_main_done)

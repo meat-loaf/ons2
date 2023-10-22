@@ -69,7 +69,8 @@ includeonce
 ; V - Vertical layer 2
 ; v - vertical layer 1
 !screen_mode       = $5B
-;!current_spriteset = $5C
+
+!gravity_setting   = $5C
 !num_screens       = $5D
 !screens_stop_horz = $5E
 !screens_stop_vert = $5F      ; free if not using vertical levels
@@ -461,7 +462,7 @@ assert (!ambient_misc_1)+(!ambient_tblsz) <= $1EA2, "ambient sprite ram exceeded
 !sprite_pos_y_frac        = $14EC
 !sprite_pos_x_frac        = $14F8
 
-!sprite_misc_1504         = $1504
+!sprite_grav_setting      = $1504
 !sprite_misc_1510         = $1510
 !sprite_misc_151c         = $151C
 !sprite_misc_1528         = $1528
