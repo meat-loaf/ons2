@@ -106,7 +106,7 @@ load_sprite_tables:
 	sta !spr_spriteset_off,y
 	bcs .dynspr
 
-	lda.l !level_ss_sprite_offs,x
+	lda.l level_ss_sprite_offs,x
 	cmp #$ff
 	bne .have_set
 	inc
@@ -263,11 +263,11 @@ spr_gfx_2:
 
 	lda !sprite_oam_properties,x
 	sta $00
-	and #$3F
+	and #$3E
 	sta !spr_props_no_flip+1
 	ldy #$02
 	lda $00
-	and #$C0
+	and #$C1
 	eor $01
 	ora $64
 	sta !spr_props_flip+1
@@ -464,6 +464,7 @@ spr_gfx_single:
 	sta !sprite_off_screen_horz,x
 	bne .abort
 
+	; TODO SIZE INPUT
 	lda #$02
 	ldy $01
 	beq .x_ok
@@ -628,6 +629,121 @@ spr_dyn_allocate_slot:
 	db $00,$08,$20,$28
 .gfx:
 	skip 3*!dyn_gfx_files_max
+
+rotspr_gfx:
+	lda !sprite_x_high,x
+	xba
+	lda !sprite_x_low,x
+	rep #$20
+	sec
+	sbc !layer_1_xpos_curr
+	sta $00
+	clc
+	adc #$0040
+	cmp #$0180
+	sep #$20
+	tdc
+	rol
+	sta !sprite_off_screen_horz,x
+	beq .onscr
+	rtl
+.onscr:
+
+	lda !sprite_y_high,x
+	xba
+	lda !sprite_y_low,x
+	rep #$20
+	sec
+	sbc !layer_1_ypos_curr
+	; the generic routine offsets y-pos to skip this comparison,
+	; but this is faster for a single tile
+	sta $02
+	sep #$20
+
+	ldy !sprite_oam_index,x
+	lda !spr_spriteset_off,x
+	sta $08
+	lda !sprite_oam_properties,x
+	ora $64
+	sta $09
+
+	lda.l spr_id_to_rot_spr_gfx_buff,x
+	tax
+	lda.l rot_spr_gfx_buff.ntiles,x
+	sta $0D
+
+	lda.l rot_spr_gfx_buff.tile_x_delta,x
+	sta $04
+	stz $05
+	bpl .xnotneg
+	dec $05
+.xnotneg:
+	lda.l rot_spr_gfx_buff.tile_y_delta,x
+	sta $06
+	stz $07
+	bpl .ynotneg
+	dec $07
+.ynotneg:
+	lda.l rot_spr_gfx_buff.tile_id,x
+	sta $0A
+	stz $0B
+
+	; TODO TILE SIZE PARAM?
+	lda #$02
+	sta $0F
+
+	ldx !current_sprite_process
+.draw_loop:
+	rep #$20
+	; TODO TILE SIZE PARAM?
+	lda #$0200
+	sta $0E
+
+	lda $00
+	clc
+	adc $04
+	sta $00
+
+	lda $02
+	clc
+	adc $06
+	sta $02
+
+	lda $08
+	clc
+	adc $0A
+	sta $0302|!addr,y
+
+	lda $00
+	sta $0300|!addr,y
+	cmp #$0100
+	bcc .onscr_x
+	lda #$0100
+	tsb $0E
+.onscr_x:
+	lda $02
+	cmp #$FFF0
+	bcs .onscr_y
+	cmp #$00F0
+	bcc .onscr_y
+	lda #$00F0
+.onscr_y:
+	sep #$20
+	sta $0301|!addr,y
+
+	lda $0F
+	phy
+	tya
+	lsr #2
+	tay
+	lda $0F
+	sta $0460|!addr,y
+	ply
+	iny #4
+	dec $0D
+	bne .draw_loop
+.abort:
+	rtl
 
 spr_id_to_rot_spr_gfx_buff:
 	!ix #= 0

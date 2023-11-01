@@ -20,8 +20,14 @@ update_sprite_pos:
 	plb
 	rtl
 
-org $01803D|!bank
+org $01803A|!bank
+sprspr_mariospr_l:
+	phb
+	phk
+	plb
 	jsr.w _sprspr_mario_spr_rt
+	plb
+	rtl
 
 %set_free_start("bank1_spr0to13")
 _spr_kick:
@@ -61,8 +67,8 @@ sprite_set_spinkill_l:
 	rtl
 
 sprite_die_no_smoke:
-	lda !sprites_locked
-	bne .no_pos_update
+	;lda !sprites_locked
+	;bne .no_pos_update
 	jsr.w _spr_upd_pos
 	lda #$00
 .no_pos_update:
@@ -70,7 +76,8 @@ sprite_die_no_smoke:
 	lda !sprite_tweaker_167a,x
 	and #!spr_167a_prop_keep_clipping_on_starkill
 	beq .no_call_main
-	jmp spr_handle_main
+	rtl
+	;jmp spr_handle_main
 
 .no_call_main:
 	lda !sprite_oam_properties,x
@@ -562,7 +569,11 @@ org $01965C|!bank
 ; sprite unstun: replace original spike top number check
 ; todo check if this is actually used
 org $0196AF|!bank
-	cmp #$04
+	cmp #!koopa_sprnum
+
+org $0196BF|!bank
+	cmp #!giant_koopa_sprnum
+	beq $96CB
 
 org $01AA12|!bank
 	bra set_stunned_timer_stun

@@ -27,15 +27,19 @@ class ssc_entry():
 		def err(v, k, t):
 			if (type(v) is not t):
 				raise TypeError("{} must be {} (got {} with data {})".format(k, t, type(v), v))
+
+		def get_base(self):
+			return self.base + (1 if self.disable_orig_xy_off else 0)
 	
-		def __init__(self, base, exbits):
+		def __init__(self, base, exbits, disable_orig_xy_off = True):
 			ssc_entry.ssc_kind_base.err(base, "base", int)
 			ssc_entry.ssc_kind_base.err(exbits, "exbits", int)
-			self.base = base;
+			self.base = base
 			self.exbits = exbits
+			self.disable_orig_xy_off = disable_orig_xy_off
 	
 		def __str__(self):
-			return "000{}{}".format(self.exbits, self.base)
+			return "000{}{}".format(self.exbits, self.get_base())
 
 	class ssc_kind_exbyte(ssc_kind_base):
 		def __init__(self, base, exbits, exbyte, exbyte_val):
@@ -54,7 +58,7 @@ class ssc_entry():
 				raise ValueError("Extension byte to look at cannot be greater than 4.")
 			elif exbyte < 0:
 				raise ValueError("Don't pass negative numbers for exbyte.")
-			exbyte += 2
+			exbyte += 3
 			if base not in ssc_entry.ssc_kind_base.KINDS:
 					raise ValueError("Bad base `{}'.".format(base))
 			self.exbyte = exbyte
@@ -63,7 +67,7 @@ class ssc_entry():
 
 		def __str__(self):
 			eb_nb = "{:02X}".format(self.exbyte_val)
-			return "{}{}{}{}".format(self.exbyte, eb_nb, self.exbits, self.base)
+			return "{}{}{}{}".format(self.exbyte, eb_nb, self.exbits, self.get_base())
 
 	class ssc_kind_xymask(ssc_kind_base):
 		def __init__(self, base, exbits, xmask, ymask):
@@ -75,6 +79,6 @@ class ssc_entry():
 			self.ymask = ymask
 			super().__init__(base, exbits)
 		def __str__(self):
-			return "0{}{}{}{}".format(self.ymask, self.xmask, self.exbits, self.base)
+			return "0{}{}{}{}".format(self.ymask, self.xmask, self.exbits, self.get_base())
 
 

@@ -1,6 +1,8 @@
 includeonce
 
+!spr_gfx_none               = $00
 !spr_norm_gfx_single_rt_id  = $01
 !spr_norm_gfx_generic_rt_id = $02
 !spr_norm_gfx_dyn_rt_id     = $03
-!player_gfx_rt_id           = $04
+!spr_nom_gfx_rot_rt_id      = $04
+!player_gfx_rt_id           = $05

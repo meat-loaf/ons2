@@ -39,7 +39,7 @@ ninji_init:
 	sta !ninji_jump_speed_ix,x
 	rtl
 .randoff:
-	db $03, $07
+	db $03,$07
 
 ninji_main:
 	jsl sub_horz_pos
@@ -60,20 +60,20 @@ ninji_main:
 	bne .not_jumping
 	ldy !ninji_jump_kind,x
 	lda .jump_timer,y
-;	lda #$60
 	sta !ninji_jump_wait_timer,x
 
 	lda !ninji_rand_jump_height,x
 	beq .nilla_jump
 	jsl get_rand
-	and #$07
 	bra .store_speed_ix
 
 .nilla_jump:
 	lda !ninji_jump_speed_ix,x
 	inc
-	and #$03
 .store_speed_ix:
+	ldy !ninji_rand_jump_height,x
+	and ninji_init_randoff,y
+
 	sta !ninji_jump_speed_ix,x
 	tay
 	lda .y_speeds,y
@@ -90,7 +90,7 @@ ninji_main:
 .y_speeds:
 	db $D0,$C0,$B0,$D0
 	; random only
-	db $E0,$D0,$C0,$B0
+	db $B8,$D0,$C0,$B0
 .tiles:
 	db $02, $00
 .jump_timer:

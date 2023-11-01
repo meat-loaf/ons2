@@ -6,7 +6,7 @@
 ; todo - smb3 flying/microgoomba spawning shithead
 
 ;!shell_sprnum = $05
-!giant_koopa_sprnum       = $09
+
 
 !koopa_stays_on_ledges     = !sprite_misc_c2
 !koopa_falling_last_frame  = !sprite_misc_151c
@@ -51,20 +51,15 @@
 	winged_koopa_gfx_ptrs,
 	!spr_norm_gfx_generic_rt_id)
 	
-%alloc_sprite_spriteset_1(!flyin_parakoopa_v_sprnum, "flyin_parakoopa_vert", parakoopa_init, flyin_parakoopa_main, 3, $0100,\
+%alloc_sprite_spriteset_1(!flyin_parakoopa_sprnum, "flyin_parakoopa", parakoopa_init, flyin_parakoopa_main, 3, $0100,\
 	$10, $40, $00, $00, $52, $B0,
 	parakoopa_gfx_ptrs,
 	!spr_norm_gfx_generic_rt_id)
 
-;%alloc_sprite_spriteset_1(!giant_koopa_sprnum, "giant_koopas", koopa_init, koopa_main, 5, $0110, \
-;	$10, $40, $00, $00, $02, $A0,
-;	giant_koopa_pose_tbl)
-
-;%alloc_sprite_sharedgfx_entry_9(!koopa_sprnum, $82,$A0,$82,$A2,$84,$A4,$8C,$8A,$8E)
-;%alloc_sprite_sharedgfx_entry_mirror(!shell_sprnum, !koopa_sprnum)
-;%alloc_sprite_sharedgfx_entry_mirror(!lame_parakoopa_sprnum, !koopa_sprnum)
-;%alloc_sprite_sharedgfx_entry_mirror(!flyin_parakoopa_v_sprnum, !koopa_sprnum)
-;%alloc_sprite_sharedgfx_entry_mirror(!flyin_parakoopa_h_sprnum, !koopa_sprnum)
+%alloc_sprite_spriteset_1(!giant_koopa_sprnum, "giant_koopas", koopa_init, koopa_main, 5, $0110, \
+	$19, $3B, $00, $01, $02, $80,
+	giant_koopa_gfx_ptrs,
+	!spr_norm_gfx_generic_rt_id)
 
 %set_free_start("bank1_spr0to13")
 ; koopa extra byte:
@@ -425,6 +420,10 @@ flyin_parakoopa_main:
 	db $30,$30
 	db $18,$18
 
+koopas_done:
+%set_free_finish("bank1_spr0to13", koopas_done)
+
+%set_free_start("bank1_bossfire")
 %start_sprite_pose_entry_list("koopa")
 	%start_sprite_pose_entry("k_walk_1", 16, 32)
 		%sprite_pose_tile_entry($00, $F7, $00, $00, 2, 1)
@@ -468,17 +467,22 @@ flyin_parakoopa_main:
 
 %start_sprite_pose_entry_list("giant_koopa")
 	%start_sprite_pose_entry("g_walk_1", 24, 32)
-		%sprite_pose_tile_entry($FC, $F8, $00, $00, 2, 1)
-		%sprite_pose_tile_entry($04, $F8, $01, $00, 2, 1)
-		%sprite_pose_tile_entry($FC, $08, $03, $00, 2, 1)
-		%sprite_pose_tile_entry($04, $08, $04, $00, 2, 1)
+		%sprite_pose_tile_entry($FC, $E8, $00, $00, 2, 1)
+		%sprite_pose_tile_entry($04, $E8, $01, $00, 2, 1)
+		%sprite_pose_tile_entry($FC, $F8, $03, $00, 2, 1)
+		%sprite_pose_tile_entry($04, $F8, $04, $00, 2, 1)
 	%finish_sprite_pose_entry()
 	%start_sprite_pose_entry("g_walk_2", 24, 32)
-		%sprite_pose_tile_entry($FC, $F8, $06, $00, 2, 1)
-		%sprite_pose_tile_entry($04, $F8, $01, $00, 2, 1)
-		%sprite_pose_tile_entry($FC, $08, $08, $00, 2, 1)
-		%sprite_pose_tile_entry($04, $08, $09, $00, 2, 1)
+		%sprite_pose_tile_entry($FC, $E8, $06, $00, 2, 1)
+		%sprite_pose_tile_entry($04, $E8, $01, $00, 2, 1)
+		%sprite_pose_tile_entry($FC, $F8, $08, $00, 2, 1)
+		%sprite_pose_tile_entry($04, $F8, $09, $00, 2, 1)
+	%finish_sprite_pose_entry()
+	%sprite_pose_entry_mirror("g_walk_1")
+	%sprite_pose_entry_mirror("g_walk_2")
+	%start_sprite_pose_entry("g_shell", 24, 32)
+		%sprite_pose_tile_entry($00, $00, $0B, $00, 2, 1)
 	%finish_sprite_pose_entry()
 %finish_sprite_pose_entry_list()
-koopas_done:
-%set_free_finish("bank1_spr0to13", koopas_done)
+koopa_tiles_done:
+%set_free_finish("bank1_bossfire", koopa_tiles_done)

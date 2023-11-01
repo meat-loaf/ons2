@@ -13,14 +13,35 @@ endmacro
 
 macro dyn_slot_setup(dyn_name)
 if !{dyn_spr_<dyn_name>_gfx_id} == 0
-	;stz !spr_dyn_alloc_slot_arg_gfx_id
 	stz !sprite_dyn_gfx_id,x
 else
 	lda #!{dyn_spr_<dyn_name>_gfx_id}
 	sta !sprite_dyn_gfx_id,x
-;	sta !spr_dyn_alloc_slot_arg_gfx_id
 endif
 
+endmacro
+
+macro spr_pos_offset(val, table_lo, table_hi)
+	lda <table_lo>
+	clc
+	adc <val>
+	sta <table_lo>
+	lda <table_hi>
+	adc #$00
+	sta <table_hi>
+endmacro
+
+macro spr_offset_xy8()
+	sta $00
+	bit #$01
+	beq ?no_x
+	%spr_pos_offset(#$08, "!sprite_x_low,x", "!sprite_x_high,x")
+	lda $00
+?no_x:
+	bit #$02
+	beq  ?done
+	%spr_pos_offset(#$08, "!sprite_y_low,x", "!sprite_y_high,x")
+?done:
 endmacro
 
 macro sub_horz_pos(tag)

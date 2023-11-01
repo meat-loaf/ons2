@@ -1,0 +1,118 @@
+[{
+	"id":"B9",
+	"name":"Star Coin (dynamic)",
+	"desc":"A Star Coin, of which there are 5 in a level.",
+	"category": "dynamic",
+	"back_color": "0",
+	"text_color": "FFFFFF",
+	"custom": false,
+	"extra_bit": false,
+	"n_exbytes": 1,
+	"which_exbyte": 0,
+	"which_exbyte_val": 0,
+	"smap16":[{
+			"xoff":0,
+			"yoff":0,
+			"tile":"540"
+		},{
+			"xoff":16,
+			"yoff":0,
+			"tile":"541"
+		},{
+			"xoff":0,
+			"yoff":16,
+			"tile":"550"
+		},{
+			"xoff":16,
+			"yoff":16,
+			"tile":"551"
+		}]
+},{
+	"id":"B9",
+	"name":"...offset 8 pixels right",
+	"desc":"A Star Coin, of which there are 5 in a level. This one is offset 8 pixels to the right.",
+	"category": "dynamic",
+	"back_color": "0",
+	"text_color": "FFFFFF",
+	"custom": false,
+	"extra_bit": false,
+	"n_exbytes": 1,
+	"which_exbyte": 0,
+	"which_exbyte_val": "01",
+	"smap16":[{
+			"xoff":8,
+			"yoff":0,
+			"tile":"540"
+		},{
+			"xoff":"18",
+			"yoff":0,
+			"tile":"541"
+		},{
+			"xoff":8,
+			"yoff":16,
+			"tile":"550"
+		},{
+			"xoff":"18",
+			"yoff":16,
+			"tile":"551"
+		}]
+},{
+	"id":"B9",
+	"name":"...offset 8 pixels down",
+	"desc":"A Star Coin, of which there are 5 in a level. This one is offset 8 pixels down.",
+	"category": "dynamic",
+	"back_color": "0",
+	"text_color": "FFFFFF",
+	"custom": false,
+	"extra_bit": false,
+	"n_exbytes": 1,
+	"which_exbyte": 0,
+	"which_exbyte_val": "02",
+	"smap16":[{
+			"xoff":0,
+			"yoff":8,
+			"tile":"540"
+		},{
+			"xoff":"10",
+			"yoff":8,
+			"tile":"541"
+		},{
+			"xoff":0,
+			"yoff":"18",
+			"tile":"550"
+		},{
+			"xoff":"10",
+			"yoff":"18",
+			"tile":"551"
+		}]
+},{
+	"id":"B9",
+	"name":"...offset 8 pixels down and to the right",
+	"desc":"A Star Coin, of which there are 5 in a level. This one is offset 8 pixels down and to the right.",
+	"category": "dynamic",
+	"back_color": "0",
+	"text_color": "FFFFFF",
+	"custom": false,
+	"extra_bit": false,
+	"n_exbytes": 1,
+	"which_exbyte": 0,
+	"which_exbyte_val": "03",
+	"smap16":[{
+			"xoff":8,
+			"yoff":8,
+			"tile":"540"
+		},{
+			"xoff":"18",
+			"yoff":8,
+			"tile":"541"
+		},{
+			"xoff":8,
+			"yoff":"18",
+			"tile":"550"
+		},{
+			"xoff":"18",
+			"yoff":"18",
+			"tile":"551"
+		}]
+}
+]

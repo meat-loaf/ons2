@@ -467,4 +467,104 @@
 			"yoff":"-0A",
 			"tile":"5B6"
 		}]
+},{
+	"id":"09",
+	"name":"Giant Koopa, green",
+	"desc":"A large green koopa. It slowly walks along the ground, and will walk off ledges, safety be damned. If jumped on, it will hide in its shell for some time.",
+	"category": "generic",
+	"back_color": "ccff99",
+	"custom": false,
+	"extra_bit": false,
+	"n_exbytes": 1,
+	"which_exbyte": "0",
+	"which_exbyte_val": "0",
+	"smap16":[{
+			"yoff":"-10",
+			"tile":"714"
+		},{
+			"tile":"724"
+		},{
+			"yoff":"-10",
+			"xoff":"10",
+			"tile":"715"
+		},{
+			
+			"xoff":"10",
+			"tile":"725"
+		}]
+},{
+	"id":"09",
+	"name":"...yellow",
+	"desc":"A large yellow koopa. It quickly walks along the ground, and will walk off ledges, safety be damned. If jumped on, it will hide in its shell for some time.",
+	"category": "generic",
+	"back_color": "ffff99",
+	"custom": false,
+	"extra_bit": false,
+	"n_exbytes": 1,
+	"which_exbyte": "0",
+	"which_exbyte_val": "1",
+	"smap16":[{
+			"yoff":"-10",
+			"tile":"716"
+		},{
+			"tile":"726"
+		},{
+			"yoff":"-10",
+			"xoff":"10",
+			"tile":"717"
+		},{
+			
+			"xoff":"10",
+			"tile":"727"
+		}]
+},{
+	"id":"09",
+	"name":"...red",
+	"desc":"A large red koopa. It slowly walks along the ground, and will stay on ledges. If jumped on, it will hide in its shell for some time.",
+	"category": "generic",
+	"back_color": "ff9999",
+	"custom": false,
+	"extra_bit": false,
+	"n_exbytes": 1,
+	"which_exbyte": "0",
+	"which_exbyte_val": "2",
+	"smap16":[{
+			"yoff":"-10",
+			"tile":"712"
+		},{
+			"tile":"722"
+		},{
+			"yoff":"-10",
+			"xoff":"10",
+			"tile":"713"
+		},{
+			
+			"xoff":"10",
+			"tile":"723"
+		}]
+},{
+	"id":"09",
+	"name":"...blue",
+	"desc":"A large blue koopa. It quickly walks along the ground, and will stay on ledges. If jumped on, it will hide in its shell for some time.",
+	"back_color": "99ccff",
+	"category": "generic",
+	"custom": false,
+	"extra_bit": false,
+	"n_exbytes": 1,
+	"which_exbyte": "0",
+	"which_exbyte_val": "3",
+	"smap16":[{
+			"yoff":"-10",
+			"tile":"718"
+		},{
+			"tile":"728"
+		},{
+			"yoff":"-10",
+			"xoff":"10",
+			"tile":"719"
+		},{
+			
+			"xoff":"10",
+			"tile":"729"
+		}]
 }]

@@ -3,13 +3,17 @@ includeonce
 !shelless_koopa_sprnum = $02
 !koopa_sprnum = $04
 !lame_parakoopa_sprnum = $05
-!flyin_parakoopa_v_sprnum = $06
+!flyin_parakoopa_sprnum = $06
 
+!giant_goomba_sprnum      = $08
+!giant_koopa_sprnum       = $09
 
 !fish_sprnum = $15
-!piranhas_sprite_id = $20
+!piranhas_sprnum    = $20
 !springboard_sprnum = $2F
 !ninji_sprnum       = $30
+!rex_sprnum         = $31
+!slidin_rex_sprnum  = !rex_sprnum+1
 
 !roulette_sprnum    = $3F
 !mushroom_sprnum    = $40
@@ -20,10 +24,12 @@ includeonce
 !pballoon_sprnum    = $46
 !1up_sprnum         = $47
 
-!throwblock_sprnum = $53
+!throwblock_sprnum  = $53
 
 !wiggler_sprnum = $86
 
+!starcoin_sprnum = $B9
+!woozyguy_sprnum = $BA
 
 ; ambient
 !ambient_score_10pt_id   = $13

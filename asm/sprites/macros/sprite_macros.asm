@@ -50,8 +50,8 @@ macro alloc_sprite(sprite_id, name, init_rt, main_rt, n_oam_tiles, spr_1656_val,
 	;assert or(equal(bank(<spr_gfx_rt_id>), $87),equal(<spr_gfx_rt_id>,$0000)), "Sprite graphics routines must be in bank 7."
 endmacro
 
-macro alloc_sprite_dynamic_512k(sprite_id, gfx_name, init_rt, main_rt, n_oam_tiles, spr_1656_val, spr_1662_val, spr_166E_val, spr_167A_val, spr_1686_val, spr_190F_val, free_tag)
-	%alloc_sprite(<sprite_id>, <gfx_name>, <init_rt>, <main_rt>, <n_oam_tiles>, <spr_1656_val>, <spr_1662_val>, <spr_166E_val>, <spr_167A_val>, <spr_1686_val>, <spr_190F_val>, $0000)
+macro alloc_sprite_dynamic_512k(sprite_id, gfx_name, init_rt, main_rt, n_oam_tiles, spr_1656_val, spr_1662_val, spr_166E_val, spr_167A_val, spr_1686_val, spr_190F_val, free_tag, spr_pose_tbl, spr_gfx_rt_id)
+	%alloc_sprite(<sprite_id>, <gfx_name>, <init_rt>, <main_rt>, <n_oam_tiles>, <spr_1656_val>, <spr_1662_val>, <spr_166E_val>, <spr_167A_val>, <spr_1686_val>, <spr_190F_val>, <spr_pose_tbl>, <spr_gfx_rt_id>)
 	if not(defined("n_dyn_gfx"))
 		!n_dyn_gfx #= 0
 	endif
@@ -71,6 +71,8 @@ macro alloc_sprite_dynamic_512k(sprite_id, gfx_name, init_rt, main_rt, n_oam_til
 			!n_dyn_gfx #= !n_dyn_gfx+1
 		endif
 	endif
+
+	!{sprite_!{sid}_166E} = (<spr_166E_val>|$01)
 endmacro
 
 macro alloc_sprite_dynamic_free(sprite_id, gfx_name, init_rt, main_rt, n_oam_tiles, spr_1656_val, spr_1662_val, spr_166E_val, spr_167A_val, spr_1686_val, spr_190F_val, spr_pose_tbl, spr_gfx_rt_id)

@@ -1,4 +1,4 @@
-;freedata
+
 %set_free_start("bank7")
 !sine_table_size = 1280
 !sine_table_circ = !sine_table_size-(!sine_table_size/5)

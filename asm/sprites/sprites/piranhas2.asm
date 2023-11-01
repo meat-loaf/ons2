@@ -1,6 +1,6 @@
 ; big thanks to imamelia for the original
 
-%alloc_sprite_spriteset_1(!piranhas_sprite_id, "piranha_plants", piranha_plants_init, piranha_plants_main, 5, \
+%alloc_sprite_spriteset_1(!piranhas_sprnum, "piranha_plants", piranha_plants_init, piranha_plants_main, 5, \
 	$113, \
 	$81, $01, $00, $00, $10, $20, \
 	piranha_plants_gfx_ptrs, \
@@ -261,6 +261,7 @@ piranha_plants_init:
 	and #$07
 	tay
 	lda .properties,y
+	ora !sprite_oam_properties,x
 	sta !sprite_oam_properties,x
 
 	rtl

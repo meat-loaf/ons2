@@ -33,6 +33,7 @@ endstruct
 org !rot_spr_gfx_arr
 struct rot_spr_gfx_buff
 	.ntiles: skip 1
+	.end_ntiles: skip 1
 	.tile_x_delta: skip 1
 	.tile_y_delta: skip 1
 	.tile_id: skip 1

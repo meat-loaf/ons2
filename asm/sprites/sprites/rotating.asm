@@ -2,298 +2,279 @@ includefrom "list.def"
 
 %alloc_sprite_spriteset_1($A3, "rotating_platforms", rot_plats_init, rot_plats_main, 8, $112, \
 	$00, $1F, $E2, $A2, $29, $41, \
-	circle_gfx_temp_tile,
-	$0000)
-
-
-%alloc_sprite_spriteset_1($A4, "pendulum_platforms", rot_plats_init, pend_plats_main, 8, $112, \
-	$00, $1F, $E2, $A2, $29, $41, \
-	circle_gfx_temp_tile,
-	$0000)
+	circle_gfx_temp_tile, \
+	!spr_nom_gfx_rot_rt_id)
 
 %set_free_start("bank3_sprites")
 
-!rot_timer = !sprite_misc_1540
-!rot_angle_hi = !sprite_misc_151c
-!rot_angle_lo = !sprite_misc_1528
+!rot_angle_lo = !sprite_misc_151c
+!rot_playermove = !sprite_misc_1528
 !rot_angle_inc = !sprite_misc_1534
+;!rot_timer = !sprite_misc_1540
 !rot_angle_accel = !sprite_misc_1570
 !rot_angle_dir   = !sprite_misc_157c
+!rot_angle_hi = !sprite_misc_1594
 
 !rot_spr_radius = !sprite_misc_160e
+!rot_spr_last_x_lo = !sprite_misc_1626
+;!rot_spr_ball_off  = !sprite_misc_187b
+
+!resultant_angle_scr = $0E
+
+!x_low_bak  = $45
+!x_high_bak = !x_low_bak+1
+!y_low_bak  = !x_high_bak+1
+!y_high_bak = !y_low_bak+1
+!sine_scr = !y_high_bak+1
+!cosine_scr = !sine_scr+2
 
 rot_plats_init:
-	lda #$30
-;	sta !rot_spr_radius,x
-;	lda !spr_extra_byte_1,x
-;	sta !rot_timer,x
-;
-;	lda #$02
-;	sta !rot_angle_inc,x
-	rtl
-
-pend_plats_main:
+	txy
+	lda.l spr_id_to_rot_spr_gfx_buff,x
+	tax
+	; TODO make all these dynamic
+	;lda #$02
 	lda #$03
-	jsl sub_off_screen
+	sta rot_spr_gfx_buff.ntiles,x
 
-	;jsr pendulate
-	;jsr pendulate2
-	jsr rot_movement
-	jsr write_angle_stdout
-	jsr circle_gfx_temp
-	rtl
+	lda #$03
+	sta rot_spr_gfx_buff.end_ntiles,x
 
-rot_movement:
-	rts
+	lda #$04
+	sta rot_spr_gfx_buff.tile_id,x
 
-pendulate2:
-	lda !rot_angle_dir,x
-	asl #3
-	sta $02
-	stz $03
-
-	lda !rot_angle_lo,x
-	sta $00
-	lda !rot_angle_hi,x
-	sta $01
+	lda #$02
+	sta rot_spr_gfx_buff.tile_prop,x
 
 	lda #$00
-	ldy !rot_angle_accel,x
-	bpl .accel_pos
-	lda #$ff
-.accel_pos:
-	xba
-	tya
-	rep #$31
-	stz $04
-	clc
-	adc $00
-	sta $00
+	sta rot_spr_gfx_buff.draw_end,x
+	sta rot_spr_gfx_buff.draw_end+1,x
 
-;	stz $05
-;	lda !rot_angle_accel,x
-;	sta $04
-;	bpl .accell_ok
-;	ldy #$ff
-;	sta $05
-;.accel_ok:
-;	lsr #4
-;	clc
-;	adc !rot_angle_lo,x
-;	sta $00
-;	lda !rot_angle_hi,x
-;	adc #$00
-;	sta $01
-
-;	rep #$30
-;	stz $04
-
-;	lda $00
-	bit #$00FF
-	bne .not_max
-	pha
-	lda !rot_angle_dir,x
-;	and #$FF00
-	eor #$0001
-	sta !rot_angle_dir,x
-	pla
-.not_max:
-	cmp #$0400
-	bcc .ok
-	lda #$0400
-.ok:
-	sta $00
-
-	xba
-	and #$00FF
-	asl
-	ora $02
-
-	tay
-	lda .accels,y
-	sep #$20
-	sta !rot_angle_accel,x
-	lda $00
-	sta !rot_angle_lo,x
-	lda $01
-	sta !rot_angle_hi,x
-	rts
-.accels:
-	dw $0004, $0006, $0008, $000A
-	;dw invert($0004), invert($0006), invert($0008), invert($000A)
-	dw $FFFC, $FFFA, $FFF8, $FFF4
-
-pendulate:
-;	lda !rot_timer,x
-;	bne .angle_ok
-;	lda !spr_extra_byte_1,x
-;	sta !rot_timer,x
-
-	stz $02
-	ldy #$00
-	lda !rot_angle_inc,x
-	sta $00
-	bpl .hi_zero
-	dey
-.hi_zero:
-	sty $01
-	lda !rot_angle_hi,x
-	xba
-	lda !rot_angle_lo,x
-	rep #$21
-	adc $00
-	bne .chk_hi
-	inc $02
-	inc #2
-	bra .no_clamp
-.chk_hi:
-	cmp #$0400
-	bcc .no_clamp
-	inc $02
-	lda #$0400-2
-.no_clamp:
-	sta $00
-	cmp #$0200
-	bne .no_inc
-	inc $02
-.no_inc:
-	sep #$20
-	lda $02
-	beq .angle_ok
-	lda !rot_angle_inc,x
-	eor #$ff
-	inc
-	sta !rot_angle_inc,x
-.angle_ok:
-	lda $00
-	sta !rot_angle_lo,x
-	lda $01
-	sta !rot_angle_hi,x
-	rts
-
-rot_plats_main:
-	lda #$02
-	sta !rot_angle_inc,x
-
-	lda #$03
-	jsl sub_off_screen
+	tyx
+	; TODO variable
+	;lda #$48
+	lda #$30
+	sta !rot_spr_radius,x
 	rtl
 
-	lda !rot_timer,x
-	bne .no_angle_upd_yet
+rot_plats_main:
+	lda #$03
+	jsl sub_off_screen
+
+	ldy #$00
+	lda !spr_extra_byte_1,x
+	lsr
+	bcc .no_pendulum
+	ldy #$02
+.no_pendulum:
+	tyx
+	jsr (.angle_handlers,x)
+	jsr backup_spr_pos
+	jsr apply_angle_to_pos
+	jsl spr_invis_blk_rt_l
+	;jsr circle_gfx_temp
+	jsr rot_setup_gfx
+	jsr restore_spr_pos
+	rtl
+
+.angle_handlers:
+	dw rot_movement
+	dw pend_movement
+
+backup_spr_pos:
+	lda !sprite_x_low,x
+	sta !x_low_bak
+	lda !sprite_x_high,x
+	sta !x_high_bak
+
+	lda !sprite_y_low,x
+	sta !y_low_bak
+	lda !sprite_y_high,x
+	sta !y_high_bak
+	rts
+
+restore_spr_pos:
+	lda !x_low_bak
+	sta !sprite_x_low,x
+	lda !x_high_bak
+	sta !sprite_x_high,x
+
+	lda !y_low_bak
+	sta !sprite_y_low,x
+	lda !y_high_bak
+	sta !sprite_y_high,x
+	rts
+
+apply_angle_to_pos:
+	rep #$30
+
+	lda !resultant_angle_scr
+	asl
+	tax
+	lda.l sine_table,x
+	sta !sine_scr
+	lda.l sine_table+((!sine_table_size*2)/5),x
+	sta !cosine_scr
+	sep #$30
+
+	ldx !current_sprite_process
+	ldy !rot_spr_radius,x
+
+	lda !sine_scr
+	sta !ppu_matrix_a
+	lda !sine_scr+1
+	sta !ppu_matrix_a
+	sty !ppu_matrix_b
+
+	lda !sprite_y_high,x
+	xba
+	lda !sprite_y_low,x
+	rep #$21
+	adc !ppu_mult_res+1
+	sta !sine_scr
+	sep #$20
+	sta !sprite_y_low,x
+	xba
+	sta !sprite_y_high,x
+
+	lda !cosine_scr
+	sta !ppu_matrix_a
+	lda !cosine_scr+1
+	sta !ppu_matrix_a
+	sty !ppu_matrix_b
+
+
+	lda !sprite_x_high,x
+	xba
+	lda !sprite_x_low,x
+	rep #$21
+	adc !ppu_mult_res+1
+	sta !cosine_scr
+	sep #$21
+	sta !sprite_x_low,x
+	xba
+	sta !sprite_x_high,x
+
+	lda !sprite_x_low,x
+	tay
+	sbc !rot_spr_last_x_lo,x
+	sta !rot_playermove,x
+	tya
+	sta !rot_spr_last_x_lo,x
+	rts
+
+pend_movement:
+	ldx !current_sprite_process
+	rts
+
+rot_movement:
+	ldx !current_sprite_process
+	lda !spr_extra_byte_1,x
+	lsr
+	; A = !spr_extra_byte_1,x >> 1
+	; todo mask out other eventual bits
+	tay
+	lda .angle_traversal_speeds,y
+	sta !rot_angle_inc,x
+
+	stz $01
+	;lda !rot_angle_inc,x
+	sta $00
+	bpl .not_neg
+	dec $01
+.not_neg:
 	lda !rot_angle_hi,x
 	xba
 	lda !rot_angle_lo,x
 	rep #$20
-	inc
-	inc
-	cmp #(!sine_table_size-(!sine_table_size/5))
-	bcc .angle_ok
-	sec
-	sbc #(!sine_table_size-(!sine_table_size/5))
+	clc
+	adc $00
+	and #$03FF
 .angle_ok:
+	sta !resultant_angle_scr
 	sep #$20
 	sta !rot_angle_lo,x
 	xba
 	sta !rot_angle_hi,x
+	rts
 
-	lda !spr_extra_byte_1,x
-	sta !rot_timer,x
-.no_angle_upd_yet:
-
-	jsr circle_gfx_temp
-	rtl
+.angle_traversal_speeds:
+	db $02, invert($02)
+	db $04, invert($04)
 
 circle_gfx_temp:
-	lda !rot_angle_hi,x
-	xba
-	lda !rot_angle_lo,x
-
-	rep #$30
-	asl
-	tax
-	lda sine_table,x
-	sta $0C
-	lda sine_table+((!sine_table_size*2)/5),x
-	sta $0E
-	sep #$30
-	ldx !current_sprite_process
-
-	lda !sprite_y_low,x
-	pha
-	lda !sprite_y_high,x
-	pha
-
-	lda !sprite_x_low,x
-	pha
-	lda !sprite_x_high,x
-	pha
-
-
-	lda $0C
-	sta !ppu_matrix_a
-	lda $0D
-	sta !ppu_matrix_a
-	lda !rot_spr_radius,x
-	sta !ppu_matrix_b
-
-	lda !sprite_y_high,x
-	xba
-	lda !sprite_y_low,x
-	rep #$30
-	clc
-	adc !ppu_mult_res+1
-	sep #$30
-	sta !sprite_y_low,x
-	xba
-	sta !sprite_y_high,x
-
-	lda $0E
-	sta !ppu_matrix_a
-	lda $0F
-	sta !ppu_matrix_a
-	lda !rot_spr_radius,x
-	sta !ppu_matrix_b
-
-	lda !sprite_x_high,x
-	xba
-	lda !sprite_x_low,x
-	rep #$30
-	clc
-	adc !ppu_mult_res+1
-	sep #$30
-	sta !sprite_x_low,x
-	xba
-	sta !sprite_x_high,x
-
 	jsl spr_gfx_single
-
-	pla
-	sta !sprite_x_high,x
-	pla
-	sta !sprite_x_low,x
-
-	pla
-	sta !sprite_y_high,x
-	pla
-	sta !sprite_y_low,x
 	rts
 
 .tile:
 	db #$04
 
-write_angle_stdout:
-	lda !rot_angle_hi,x
-	and #$0F
-	sta !status_bar_tilemap
-	lda !rot_angle_lo,x
-	and #$F0
-	lsr #4
-	sta !status_bar_tilemap+1
-	lda !rot_angle_lo,x
-	and #$0F
-	sta !status_bar_tilemap+2
+; TODO DYNAMIC POSITIONING FOR DIVISOR
+rot_setup_gfx:
+	stz $01
+	stz $02
+	ldx #$ff
+
+	; NUMBER OF SEGMENTS TO DRAW
+	;ldy #$02
+	ldy #$03
+	rep #$20
+	lda !cosine_scr
+	sec
+	sbc !x_low_bak
+	bpl .x_off_ok
+	eor #$ffff
+	inc
+	stx $01
+.x_off_ok:
+	sta !hw_dividend_c_lo
+	sty !hw_divisor_b
+	lda !sine_scr
+	sec
+	sbc !y_low_bak
+	bpl .y_off_ok
+	eor #$ffff
+	inc
+	stx $02
+.y_off_ok:
+	; TODO i think this nop is unnecesary
+	;nop
+	ldx !hw_div_result_lo
+	stx $00
+	sta !hw_dividend_c_lo
+	sty !hw_divisor_b
+	ldx !current_sprite_process
+	txy
+	lda.l spr_id_to_rot_spr_gfx_buff,x
+	tax
+	lda $00
+	eor $01
+	bpl .x_store
+	inc
+.x_store:
+	sta rot_spr_gfx_buff.tile_x_delta,x
+	sep #$20
+	lda !hw_div_result_lo
+	eor $02
+	bpl .y_store
+	inc
+.y_store:
+	sta rot_spr_gfx_buff.tile_y_delta,x
+	tyx
 	rts
+
+;write_angle_stdout:
+;	lda !rot_angle_hi,x
+;	and #$0F
+;	sta !status_bar_tilemap
+;	lda !rot_angle_lo,x
+;	and #$F0
+;	lsr #4
+;	sta !status_bar_tilemap+1
+;	lda !rot_angle_lo,x
+;	and #$0F
+;	sta !status_bar_tilemap+2
+;	rts
 
 plats_main_done:
 %set_free_finish("bank3_sprites", plats_main_done)

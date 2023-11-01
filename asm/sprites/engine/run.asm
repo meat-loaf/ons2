@@ -52,7 +52,8 @@ allocate_oam_dec_timers:
 	lda $13F9|!addr
 	beq +
 	ldy #$1C
-+	tya
++
+	tya
 	sta !sprite_oam_index,x
 	bra .handle_timers
 .cont:
@@ -199,8 +200,8 @@ handle_sprite_gfx:
 .routines:
 	dl spr_gfx_single
 	dl spr_gfx_2
-	; todo: dynamic rt, for rotating
 	dl gen_spr_gfx_dyn
+	dl rotspr_gfx
 	; todo: player
 	dl $000000
 

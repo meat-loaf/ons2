@@ -1,39 +1,40 @@
-!starcoin_sprnum = $B9
+includefrom "list.def"
 
 %alloc_sprite_dynamic_512k(!starcoin_sprnum, "starcoin", starcoin_init, starcoin_main, 4, \
-	$8E, $0E, $75, $9B, $B9, $46, "bank7")
+	$8E, $0E, $75, $9B, $B9, $46, "bank7",\
+	dyn_starcoin_gfx_ptrs,
+	!spr_norm_gfx_dyn_rt_id)
 
-!starcoin_collect_sfx = $1A
+!starcoin_collect_sfx  = $1A
 !starcoin_collect_port = $1DFC|!addr
 
-!starcoin_ani_timer = !sprite_misc_1570
-!starcoin_slot      = !sprite_misc_1602
+!starcoin_ani_timer    = !sprite_misc_1570
+!starcoin_ani_frame_id = !sprite_misc_160e
 
 %set_free_start("bank3_sprites")
 starcoin_init:
-	lda #$C0
-	sta !spr_spriteset_off,x
-	lda #$01
-	ora !sprite_oam_properties,x
-	sta !sprite_oam_properties,x
+	%dyn_slot_setup("starcoin")
 	jsl sprite_read_item_memory
 	beq .nodie
 	stz !sprite_status,x
 .exit:
 	rtl
+
 .nodie:
 	lda !spr_extra_byte_1,x
-	jml spr_init_pos_offset
+	%spr_offset_xy8()
+	rtl
 
 starcoin_main:
-	%dynamic_gfx_rt_bank3("lda !starcoin_ani_timer,x : lsr #3 : and #$03", "starcoin")
-
-	lda !sprites_locked
-	bne starcoin_init_exit
+	lda #$00
 	jsl sub_off_screen
 	; update ani frame
 	inc !starcoin_ani_timer,x
-	jsl   mario_spr_interact_l
+	lda !starcoin_ani_timer,x
+	lsr #3
+	and #$03
+	sta !starcoin_ani_frame_id,x
+	jsl mario_spr_interact_l
 	bcc starcoin_init_exit
 	lda #!starcoin_collect_sfx
 	sta !starcoin_collect_port
@@ -61,7 +62,14 @@ starcoin_main:
 	stz !sprite_status,x
 	jml sprite_write_item_memory|!bank
 
-;.exit:
-;	rtl
-.done:
-%set_free_finish("bank3_sprites", starcoin_main_done)
+%start_sprite_pose_entry_list("dyn_starcoin")
+	%start_sprite_pose_entry("dyn_starcoin_impl", 32, 32)
+		%sprite_pose_tile_entry($F8, $F8, $80, $00, 2, 1)
+		%sprite_pose_tile_entry($08, $F8, $82, $00, 2, 1)
+		%sprite_pose_tile_entry($F8, $08, $84, $00, 2, 1)
+		%sprite_pose_tile_entry($08, $08, $86, $00, 2, 1)
+	%finish_sprite_pose_entry()
+%finish_sprite_pose_entry_list()
+
+starcoin_done:
+%set_free_finish("bank3_sprites", starcoin_done)

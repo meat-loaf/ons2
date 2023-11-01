@@ -1,0 +1,305 @@
+[{
+	"id":"91",
+	"name":"Chargin' Chuck",
+	"desc":"A Chargin' Chuck that charges towards Mario and jumps over ground. It destroys turn blocks and throw blocks when it runs into them. This one will start looking to the side, waiting for Mario to get close, occasionally walking around.",
+	"category":"chucks",
+	"custom":false,
+	"extra_bit":false,
+	"n_exbytes":1,
+	"which_exbyte":0,
+	"which_exbyte_val":0,
+	"reqfiles":{"sp3":"100"},
+	"smap16":[{
+		"xoff":-8,
+		"yoff":"-B",
+		"tile":"640"
+	},{
+		"xoff":"-8",
+		"yoff":1,
+		"tile":"650"
+	},{
+		"xoff":8,
+		"yoff":1,
+		"tile":"651"
+	},{
+		"xoff":"2",
+		"yoff":"-6",
+		"tile":"65D"
+	}]
+},{
+	"id":"91",
+	"name":"...doesn't change kind when jumped on",
+	"desc":"A Chargin' Chuck that charges towards Mario and jumps over ground. It destroys turn blocks and throw blocks when it runs into them. This one will start looking to the side, waiting for Mario to get close, occasionally walking around. If it were another Chuck, it'd stay itself when hit, but instead it's just blue.",
+	"category":"chucks",
+	"custom":false,
+	"extra_bit":true,
+	"n_exbytes":1,
+	"which_exbyte":0,
+	"which_exbyte_val":0,
+	"reqfiles":{"sp3":"100"},
+	"smap16":[{
+		"xoff":-8,
+		"yoff":"-B",
+		"tile":"660"
+	},{
+		"xoff":"-8",
+		"yoff":1,
+		"tile":"670"
+	},{
+		"xoff":8,
+		"yoff":1,
+		"tile":"671"
+	},{
+		"xoff":"2",
+		"yoff":"-6",
+		"tile":"67D"
+	}]
+},{
+	"id":"91",
+	"name":"Chargin' Chuck, running",
+	"desc":"A Chargin' Chuck that charges towards Mario and jumps over ground. It destroys turn blocks and throw blocks when it runs into them. This one will immediately begin running.",
+	"category":"chucks",
+	"custom":false,
+	"extra_bit":false,
+	"n_exbytes":1,
+	"which_exbyte":0,
+	"which_exbyte_val":1,
+	"reqfiles":{"sp3":"100"},
+	"smap16":[{
+		"xoff":-8,
+		"yoff":"-B",
+		"tile":"640"
+	},{
+		"xoff":"-8",
+		"yoff":1,
+		"tile":"65E"
+	},{
+		"xoff":8,
+		"yoff":1,
+		"tile":"65F"
+	},{
+		"xoff":"2",
+		"yoff":"-6",
+		"tile":"65D"
+	}]
+},{
+	"id":"91",
+	"name":"...doesn't change kind when jumped on",
+	"desc":"A Chargin' Chuck that charges towards Mario and jumps over ground. It destroys turn blocks and throw blocks when it runs into them. This one will immediately begin running. If it were another Chuck, it'd stay itself when hit, but instead it's just blue.",
+	"category":"chucks",
+	"custom":false,
+	"extra_bit":true,
+	"n_exbytes":1,
+	"which_exbyte":0,
+	"which_exbyte_val":1,
+	"reqfiles":{"sp3":"100"},
+	"smap16":[{
+		"xoff":-8,
+		"yoff":"-B",
+		"tile":"660"
+	},{
+		"xoff":"-8",
+		"yoff":1,
+		"tile":"67E"
+	},{
+		"xoff":8,
+		"yoff":1,
+		"tile":"67F"
+	},{
+		"xoff":"2",
+		"yoff":"-6",
+		"tile":"67D"
+	}]
+},{
+	"id":"91",
+	"name":"Hurt Chuck",
+	"desc":"A Chargin' Chuck that acts like it has just been hurt. It then turns into a Chargin' Chuck.",
+	"custom":false,
+	"extra_bit":false,
+	"n_exbytes":1,
+	"which_exbyte":0,
+	"which_exbyte_val":3,
+	"reqfiles":{"sp3":"100"},
+	"smap16":[{
+		"xoff":"-4",
+		"yoff":1,
+		"tile":"655"
+	},{
+		"xoff":"C",
+		"yoff":1,
+		"tile":"656"
+	},{
+		"yoff":"-6",
+		"tile":"641"
+	}]
+},{
+	"id":"91",
+	"name":"...doesn't change kind when jumped on",
+	"desc":"A Chargin' Chuck that acts like it has just been hurt. It uses the low nybble of its second extra byte to determine what phase to transition to.",
+	"custom":false,
+	"extra_bit":true,
+	"n_exbytes":1,
+	"which_exbyte":0,
+	"which_exbyte_val":3,
+	"reqfiles":{"sp3":"100"},
+	"smap16":[{
+		"xoff":"-4",
+		"yoff":1,
+		"tile":"675"
+	},{
+		"xoff":"C",
+		"yoff":1,
+		"tile":"676"
+	},{
+		"yoff":"-6",
+		"tile":"661"
+	}]
+},{
+	"id":"91",
+	"name":"Splittin' Chuck",
+	"desc":"A Splittin' Chuck that jumps and spawns two other Chargin' Chucks. It itself turns into a Chargin' Chuck afterwards, or when it is hit.",
+	"custom":false,
+	"extra_bit":false,
+	"n_exbytes":1,
+	"which_exbyte":0,
+	"which_exbyte_val":5,
+	"reqfiles":{"sp3":"100"},
+	"smap16":[{
+		"xoff":"-4",
+		"yoff":1,
+		"tile":"64E"
+	},{
+		"xoff":"C",
+		"yoff":1,
+		"tile":"64F"
+	},{
+		"yoff":"-3",
+		"tile":"640"
+	}]
+},{
+	"id":"91",
+	"name":"...doesn't change kind when jumped on",
+	"desc":"A Splittin' Chuck that jumps and spawns two other Chargin' Chucks. It doesn't turn into a Chargin' Chuck when jumped on, so will attempt to clone itself until it dies, or successfully does so (at which point it acts like a Chargin' Chuck).",
+	"custom":false,
+	"extra_bit":true,
+	"n_exbytes":1,
+	"which_exbyte":0,
+	"which_exbyte_val":5,
+	"reqfiles":{"sp3":"100"},
+	"smap16":[{
+		"xoff":"-4",
+		"yoff":1,
+		"tile":"66E"
+	},{
+		"xoff":"C",
+		"yoff":1,
+		"tile":"66F"
+	},{
+		"yoff":"-3",
+		"tile":"660"
+	}]
+},{
+	"id":"91",
+	"name":"Clappin' Chuck",
+	"desc":"A Clappin' Chuck that jumps into the air and claps. It turns into a Chargin' Chuck when jumped on.",
+	"custom":false,
+	"extra_bit":false,
+	"n_exbytes":1,
+	"which_exbyte":0,
+	"which_exbyte_val":8,
+	"reqfiles":{"sp3":"100"},
+	"smap16":[{
+		"yoff":"-C",
+		"tile":"641"
+	},{
+		"xoff":"-8",
+		"yoff":-1,
+		"tile":"652"
+	},{
+		"xoff":8,
+		"yoff":-1,
+		"tile":"653"
+	},{
+		"yoff":"-11",
+		"tile":"654"
+	}]
+},{
+	"id":"91",
+	"name":"...doesn't change kind when jumped on",
+	"desc":"A Clappin' Chuck that jumps into the air and claps. It stays a Clappin' Chuck when jumped on.",
+	"custom":false,
+	"extra_bit":true,
+	"n_exbytes":1,
+	"which_exbyte":0,
+	"which_exbyte_val":8,
+	"reqfiles":{"sp3":"100"},
+	"smap16":[{
+
+		"yoff":"-C",
+		"tile":"661"
+	},{
+		"xoff":"-8",
+		"yoff":-1,
+		"tile":"672"
+	},{
+		"xoff":8,
+		"yoff":-1,
+		"tile":"673"
+	},{
+		"yoff":"-11",
+		"tile":"674"
+	}]
+},{
+	"id":"91",
+	"name":"Pitchin' Chuck",
+	"desc":"A Pitchin' Chuck that throws baseballs towards Mario. It turns into a Chargin' Chuck when jumped on.",
+	"custom":false,
+	"extra_bit":false,
+	"n_exbytes":1,
+	"which_exbyte":0,
+	"which_exbyte_val":"A",
+	"reqfiles":{"sp3":"100"},
+	"smap16":[{
+		"xoff":-8,
+		"yoff":-7,
+		"tile":"640"
+	},{
+		"yoff":1,
+		"tile":"65C"
+	},{
+		"xoff":-8,
+		"yoff":1,
+		"tile":"65B"
+	},{
+		"xoff":"-10",
+		"yoff":1,
+		"tile":"647"
+	}]
+},{
+	"id":"91",
+	"name":"...doesn't change kind when jumped on",
+	"desc":"A Pitchin' Chuck that throws baseballs towards Mario. It stays a Pitchin' Chuck when jumped on.",
+	"custom":false,
+	"extra_bit":true,
+	"n_exbytes":1,
+	"which_exbyte":0,
+	"which_exbyte_val":"A",
+	"reqfiles":{"sp3":"100"},
+	"smap16":[{
+		"xoff":-8,
+		"yoff":-7,
+		"tile":"660"
+	},{
+		"yoff":1,
+		"tile":"67C"
+	},{
+		"xoff":-8,
+		"yoff":1,
+		"tile":"67B"
+	},{
+		"xoff":"-10",
+		"yoff":1,
+		"tile":"647"
+	}]
+
+}]
