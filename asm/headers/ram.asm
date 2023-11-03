@@ -587,7 +587,7 @@ oam_rts_low_prio:
 oam_rts_lowest_prio:
 	skip (!num_lowest_prio_oam_rt_slots*!oam_rt_struct_size)
 rot_spr_gfx_arr:
-	skip 8*!num_sprites
+	skip 10*!num_sprites
 .end:
 assert .end <= $7FABFF
 

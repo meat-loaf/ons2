@@ -673,12 +673,18 @@ rotspr_gfx:
 	sta $0D
 
 	lda.l rot_spr_gfx_buff.tile_x_delta,x
+	sta $45
+	stz $47
+	lda.l rot_spr_gfx_buff.tile_x_delta+1,x
 	sta $04
 	stz $05
 	bpl .xnotneg
 	dec $05
 .xnotneg:
 	lda.l rot_spr_gfx_buff.tile_y_delta,x
+	sta $46
+	stz $48
+	lda.l rot_spr_gfx_buff.tile_y_delta+1,x
 	sta $06
 	stz $07
 	bpl .ynotneg
@@ -689,23 +695,34 @@ rotspr_gfx:
 	stz $0B
 
 	; TODO TILE SIZE PARAM?
-	lda #$02
-	sta $0F
+;	lda #$02
+;	sta $0F
 
 	ldx !current_sprite_process
 .draw_loop:
-	rep #$20
 	; TODO TILE SIZE PARAM?
-	lda #$0200
-	sta $0E
+	lda #$02
+	sta $0F
+	stz $0E
 
-	lda $00
 	clc
+	lda $45
+	adc $47
+	sta $47
+
+	rep #$20
+	lda $00
 	adc $04
 	sta $00
 
-	lda $02
+	sep #$20
 	clc
+	lda $46
+	adc $48
+	sta $48
+	rep #$20
+
+	lda $02
 	adc $06
 	sta $02
 

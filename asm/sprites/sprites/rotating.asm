@@ -2,7 +2,7 @@ includefrom "list.def"
 
 %alloc_sprite_spriteset_1($A3, "rotating_platforms", rot_plats_init, rot_plats_main, 8, $112, \
 	$00, $1F, $E2, $A2, $29, $41, \
-	circle_gfx_temp_tile, \
+	$0000, \
 	!spr_nom_gfx_rot_rt_id)
 
 %set_free_start("bank3_sprites")
@@ -34,7 +34,7 @@ rot_plats_init:
 	tax
 	; TODO make all these dynamic
 	;lda #$02
-	lda #$03
+	lda #$08
 	sta rot_spr_gfx_buff.ntiles,x
 
 	lda #$03
@@ -54,6 +54,7 @@ rot_plats_init:
 	; TODO variable
 	;lda #$48
 	lda #$30
+	;lda #$40
 	sta !rot_spr_radius,x
 	rtl
 
@@ -71,6 +72,7 @@ rot_plats_main:
 	jsr (.angle_handlers,x)
 	jsr backup_spr_pos
 	jsr apply_angle_to_pos
+	jsr write_pos_diff_stdout
 	jsl spr_invis_blk_rt_l
 	;jsr circle_gfx_temp
 	jsr rot_setup_gfx
@@ -211,13 +213,16 @@ circle_gfx_temp:
 
 ; TODO DYNAMIC POSITIONING FOR DIVISOR
 rot_setup_gfx:
-	stz $01
 	stz $02
+	stz $03
+	stz $04
+	stz $05
 	ldx #$ff
 
 	; NUMBER OF SEGMENTS TO DRAW
 	;ldy #$02
-	ldy #$03
+;	ldy #$06
+	ldy #$08
 	rep #$20
 	lda !cosine_scr
 	sec
@@ -225,8 +230,13 @@ rot_setup_gfx:
 	bpl .x_off_ok
 	eor #$ffff
 	inc
-	stx $01
+	stx $02
+	stx $03
 .x_off_ok:
+	;rol
+	;asl #7
+	xba
+	and #$ff00
 	sta !hw_dividend_c_lo
 	sty !hw_divisor_b
 	lda !sine_scr
@@ -235,12 +245,17 @@ rot_setup_gfx:
 	bpl .y_off_ok
 	eor #$ffff
 	inc
-	stx $02
+	stx $04
+	stx $05
 .y_off_ok:
 	; TODO i think this nop is unnecesary
 	;nop
 	ldx !hw_div_result_lo
 	stx $00
+	ldx !hw_div_result_lo+1
+	stx $01
+	xba
+	and #$ff00
 	sta !hw_dividend_c_lo
 	sty !hw_divisor_b
 	ldx !current_sprite_process
@@ -248,21 +263,79 @@ rot_setup_gfx:
 	lda.l spr_id_to_rot_spr_gfx_buff,x
 	tax
 	lda $00
-	eor $01
+	eor $02
 	bpl .x_store
 	inc
 .x_store:
 	sta rot_spr_gfx_buff.tile_x_delta,x
-	sep #$20
 	lda !hw_div_result_lo
-	eor $02
+	eor $04
 	bpl .y_store
 	inc
 .y_store:
 	sta rot_spr_gfx_buff.tile_y_delta,x
+	sep #$20
 	tyx
 	rts
 
+write_pos_diff_stdout:
+	lda !sprite_x_high,x
+	xba
+	lda !sprite_x_low,x
+	rep #$20
+	sec
+	sbc !x_low_bak
+	sep #$20
+	pha
+	and #$0F
+	sta !status_bar_tilemap+1
+	pla
+	and #$F0
+	lsr #4
+	sta !status_bar_tilemap
+
+	lda #$25
+	sta !status_bar_tilemap+2
+
+	lda !sprite_y_high,x
+	xba
+	lda !sprite_y_low,x
+	rep #$20
+	sec
+	sbc !y_low_bak
+	sep #$20
+	pha
+
+	and #$0F
+	sta !status_bar_tilemap+4
+	pla
+	and #$F0
+	lsr #4
+	sta !status_bar_tilemap+3
+	rts
+
+;write_pos_stdout:
+;	lda !sprite_x_low,x
+;	and #$0F
+;	sta !status_bar_tilemap
+;	lda !sprite_x_low,x
+;	and #$F0
+;	lsr #4
+;	sta !status_bar_tilemap+1
+;
+;	lda #$25
+;	sta !status_bar_tilemap+2
+;
+;	lda !sprite_y_low,x
+;	and #$0F
+;	sta !status_bar_tilemap+3
+;	lda !sprite_y_low,x
+;	and #$F0
+;	lsr #4
+;	sta !status_bar_tilemap+4
+;	rts
+
+	
 ;write_angle_stdout:
 ;	lda !rot_angle_hi,x
 ;	and #$0F
